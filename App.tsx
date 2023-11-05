@@ -23,6 +23,7 @@ import Photo from "./pages/photo";
 import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
 import Exhibition from "./pages/Exibition/exibition";
 import LightMap from "./pages/LightMap/lightMap";
+import LightMapList from "./pages/LightMap/lightMapList";
 
 export default function App() {
   //Custom Header for SearchBar
@@ -80,6 +81,13 @@ export default function App() {
         <Stack.Screen
           name="LightMap"
           component={LightMap}
+          options={{
+            header: () => <CustomHeader />,
+          }}
+        />
+        <Stack.Screen
+          name="LightMapList"
+          component={LightMapList}
           options={{
             header: () => <CustomHeader />,
           }}

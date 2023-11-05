@@ -4,30 +4,41 @@ import {
   Image,
   Alert,
   Text,
+  View,
   SafeAreaView,
   TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Dimensions,
-  ScrollView,
-  ImageBackground,
-  View,
 } from "react-native";
 
 import * as Location from "expo-location";
+import { API_KEY } from "@env";
 
-import GlobalStyles from "../../assets/styles";
 import MapView, { Marker } from "react-native-maps";
 import { NavBar, SvgType } from "../../components/navbar";
+import axios from "axios";
+import Icon from "react-native-vector-icons/FontAwesome5";
+
+//페이지 이동 타입
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  LightMapList: {
+    state: string;
+    city: string;
+    town: string;
+  };
+};
 
 const LightMap: React.FC = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const [currentRegion, setCurrentRegion] = useState({
     latitude: 37.557067,
     longitude: 126.971179,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
-  const mapRef = useRef(null);
+  const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
     (async () => {
@@ -49,6 +60,10 @@ const LightMap: React.FC = () => {
         currentLocation.coords.latitude,
         currentLocation.coords.longitude
       );
+      getLocationInfo(
+        currentLocation.coords.latitude,
+        currentLocation.coords.longitude
+      );
     })();
   }, []);
 
@@ -57,18 +72,52 @@ const LightMap: React.FC = () => {
     setCurrentRegion({
       latitude: currentLocation.coords.latitude,
       longitude: currentLocation.coords.longitude,
-      latitudeDelta: 0.005,
-      longitudeDelta: 0.005,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
     });
-    mapRef.current.animateToRegion(
+    mapRef.current?.animateToRegion(
       {
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
       },
       1000
     );
+  };
+
+  const [locationInfo, setLocationInfo] = useState<any>([
+    "State",
+    "City",
+    "Town",
+  ]);
+
+  const getLocationInfo = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json",
+        {
+          params: {
+            latlng: `${latitude},${longitude}`,
+            key: API_KEY,
+            language: "ko",
+          },
+        }
+      );
+
+      const formattedAddress = response.data.results[0].formatted_address;
+
+      const addressParts = formattedAddress.split(" ");
+
+      const country = addressParts[0] || "";
+      const state = addressParts[1] || "";
+      const city = addressParts[2] || "";
+
+      setLocationInfo([country, state, city]);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   };
 
   const getData = (lat: number, lon: number) => {
@@ -83,8 +132,8 @@ const LightMap: React.FC = () => {
     //   "latitude" : "",
     //   "longitude" : "",
     //   "state" : "",
-    //   "district" : "",
-    //   "local" : "",
+    //   "city" : "",
+    //   "town" : "",
     //   "thumnail" : "",
     //   "count" : 1
     //   },
@@ -104,38 +153,45 @@ const LightMap: React.FC = () => {
     {
       latitude: 37.5342,
       longitude: 126.9947,
-      state: "",
-      district: "",
-      local: "",
+      state: "서울특별시",
+      city: "이태원",
+      town: "어딘가",
       thumnail: require("../../assets/photodummy5.jpg"),
       count: 1,
     },
     {
       latitude: 37.5826,
       longitude: 127.0019,
-      state: "",
-      city: "",
-      town: "",
+      state: "서울 특별시",
+      city: "혜화",
+      town: "어딘가",
       thumnail: require("../../assets/photodummy4.jpg"),
-      count: 1,
+      count: 2,
     },
   ];
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TouchableOpacity
-        onPress={goToCurrentLocation}
+      <View
         style={{
-          position: "absolute",
-          bottom: 10,
-          right: 10,
           backgroundColor: "white",
-          padding: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 20,
+          height: 40,
         }}
       >
-        <Text>내 위치로</Text>
-      </TouchableOpacity>
+        <Text style={{ fontSize: 16, borderBottomWidth: 0.8, width: 250 }}>
+          {locationInfo[0]}, {locationInfo[1]}, {locationInfo[2]}
+        </Text>
+        <TouchableOpacity onPress={goToCurrentLocation} style={{}}>
+          <Icon name="map-marked" size={25} color={"black"} />
+        </TouchableOpacity>
+      </View>
+
       <MapView
+        ref={mapRef}
         style={{ flex: 1 }}
         initialRegion={currentRegion}
         region={currentRegion}
@@ -155,9 +211,22 @@ const LightMap: React.FC = () => {
               latitude: e.latitude,
               longitude: e.longitude,
             }}
-            onPress={() => {}}
+            onPress={() =>
+              navigation.navigate("LightMapList", {
+                state: e.state,
+                city: e.city,
+                town: e.town,
+              })
+            }
           >
-            <Image source={e.thumnail} style={{ width: 50, height: 50 }} />
+            <Image
+              source={e.thumnail}
+              style={{
+                width: 50 * e.count,
+                height: 50 * e.count,
+                borderRadius: 50,
+              }}
+            />
           </Marker>
         ))}
       </MapView>

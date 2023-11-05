@@ -8,6 +8,7 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
+  ImageBackground,
   ScrollView,
   View,
 } from "react-native";
@@ -18,7 +19,7 @@ import { Modalize } from "react-native-modalize";
 import { NavBar, SvgType } from "../../components/navbar";
 
 //assets
-import { GuestBook, ProfilePhoto } from "../../assets/svg";
+import { ProfilePhoto } from "../../assets/svg";
 import GlobalStyles from "../../assets/styles";
 
 //사진 랜더링 시 필요한 width 계산
@@ -174,11 +175,19 @@ const ExhibitionProfile: React.FC = () => {
           });
         }}
       >
-        <Image
+        <ImageBackground
           // source={{ uri: item.story }}
           source={item.photo}
           style={{ width: "100%", height: "100%" }}
-        />
+        >
+          <View
+            style={{
+              flex: 1,
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          ></View>
+        </ImageBackground>
       </TouchableOpacity>
     );
   };
@@ -214,7 +223,7 @@ const ExhibitionProfile: React.FC = () => {
         <Text
           style={{
             fontSize: 20,
-            fontWeight: "600",
+            fontWeight: "500",
           }}
         >
           {userDataDummy.nickname}'s Gallery
@@ -226,7 +235,6 @@ const ExhibitionProfile: React.FC = () => {
           <Text
             style={{
               fontSize: 17,
-              fontWeight: "500",
               color: "white",
             }}
           >
@@ -235,36 +243,51 @@ const ExhibitionProfile: React.FC = () => {
         </TouchableOpacity>
       </View>
       {/* 1-1 맨 위 A's Gallery, Support Button 끝*/}
-      <ScrollView style={GlobalStyles.container}>
+      <ScrollView
+        style={{ ...GlobalStyles.container, backgroundColor: "black" }}
+      >
         {/* 1-1 프로필 사진, Biography, 방명록 아이콘 시작*/}
         <View
           style={{
             ...GlobalStyles.rowSpaceBetweenContainer,
             alignItems: "flex-start",
+            marginTop: 15,
           }}
         >
-          <ProfilePhoto />
+          <View style={{ backgroundColor: "#E3E3E3" }}>
+            <ProfilePhoto />
+          </View>
+
           {/* <Image source={{ uri: userDataDummy.profile_img }} /> */}
-          <Text style={{ width: 130 }}>{userDataDummy.biography}</Text>
+          <Text style={{ width: 130, color: "white" }}>
+            {userDataDummy.biography}
+          </Text>
 
           <TouchableOpacity onPress={openModal}>
-            <Icon name="reader-outline" size={27} color={"black"} />
+            <Icon name="reader-outline" size={27} color={"white"} />
           </TouchableOpacity>
         </View>
         {/* 1-1 프로필 사진, Biography, 방명록 아이콘 끝*/}
 
         {/* 현재 전시회 부분 시작 */}
-        <Text style={{ fontWeight: "500", marginBottom: 10 }}>
+        <Text style={{ color: "white", marginBottom: 10 }}>
           {userDataDummy.genres.map((e, i) => {
             return e + "  ";
           })}
         </Text>
-        <Text style={{ fontWeight: "500", marginBottom: 10 }}>
+        <Text style={{ color: "white", marginBottom: 10 }}>
           {userDataDummy.equipments.map((e, i) => {
             return e + "  ";
           })}
         </Text>
-        <Text style={{ fontSize: 17, fontWeight: "600", marginBottom: 10 }}>
+        <Text
+          style={{
+            fontSize: 17,
+            fontWeight: "500",
+            color: "white",
+            marginBottom: 10,
+          }}
+        >
           Current Exibition
         </Text>
         <TouchableOpacity
@@ -278,35 +301,50 @@ const ExhibitionProfile: React.FC = () => {
             });
           }}
         >
-          <Image
+          <ImageBackground
             source={currentExibitionDummy.exhibition_thumbnail}
             style={{ width: 120, height: 120 }}
-          />
+          >
+            <View
+              style={{
+                flex: 1,
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+              }}
+            ></View>
+          </ImageBackground>
           <View style={{ width: 120, marginLeft: 15 }}>
-            <Text style={{ fontWeight: "600" }}>
+            <Text style={{ fontWeight: "500", color: "white" }}>
               {currentExibitionDummy.exhibition_title}
             </Text>
-            <Text>{currentExibitionDummy.exhibition_discription}</Text>
+            <Text style={{ color: "white" }}>
+              {currentExibitionDummy.exhibition_discription}
+            </Text>
           </View>
         </TouchableOpacity>
         {/* 현재 전시회 부분 끝 */}
 
         {/* 사진 나열 시작 */}
-        <Text style={{ fontSize: 17, fontWeight: "600", marginVertical: 10 }}>
+        <Text
+          style={{
+            fontSize: 17,
+            fontWeight: "500",
+            marginVertical: 10,
+            color: "white",
+          }}
+        >
           Photographs
         </Text>
-        <View>
-          <FlatList
-            data={photoListDummy.content}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.photo_id}
-            numColumns={3}
-            scrollEnabled={false}
-            // columnWrapperStyle={{ marginBottom: 5 }}
-            style={{ marginBottom: 30 }}
-            // onEndReached={loadMoreData}
-          />
-        </View>
+        <FlatList
+          data={photoListDummy.content}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.photo_id}
+          numColumns={3}
+          scrollEnabled={false}
+          // columnWrapperStyle={{ marginBottom: 5 }}
+          style={{ marginBottom: 30 }}
+          // onEndReached={loadMoreData}
+        />
       </ScrollView>
       <NavBar type={SvgType.Exibition} />
       <Modalize ref={GuestBookModal} adjustToContentHeight={true}></Modalize>
