@@ -19,11 +19,9 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Logo } from "./assets/svg";
 
 //Pages
-//One
-import OneProfile from "./pages/One/OneProfile";
-
-//Two
 import Photo from "./pages/photo";
+import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
+import Exhibition from "./pages/Exibition/exibition";
 
 export default function App() {
   //Custom Header for SearchBar
@@ -59,7 +57,7 @@ export default function App() {
       >
         <Stack.Screen
           name="Profile"
-          component={OneProfile}
+          component={ExhibitionProfile}
           options={{
             header: () => <CustomHeader />,
           }}
@@ -67,6 +65,13 @@ export default function App() {
         <Stack.Screen
           name="Photo"
           component={Photo}
+          options={{
+            header: () => <CustomHeader />,
+          }}
+        />
+        <Stack.Screen
+          name="Exhibition"
+          component={Exhibition}
           options={{
             header: () => <CustomHeader />,
           }}

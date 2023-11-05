@@ -33,10 +33,19 @@ type RootStackParamList = {
   Photo: {
     photo_id: string;
   };
+  Exhibition: {
+    exhibition_id: string;
+    exhibition_title: string;
+    exhibition_discription: string;
+    exhibition_thumbnail: string;
+    user_id: string;
+    profile_img: string;
+    nickname: string;
+  };
 };
 
 //FunctionComponents
-const OneProfile: React.FC = () => {
+const ExhibitionProfile: React.FC = () => {
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -59,7 +68,7 @@ const OneProfile: React.FC = () => {
   //더미:
   const userDataDummy = {
     user_id: "",
-    profile_img: "",
+    profile_img: require("../../assets/profiledummy.jpg"),
     nickname: "Jekoo",
     biography:
       "나는 자랑스러운 태극기 앞에 자유롭고 정의로운 대한민국의 무궁한 영광을 위하여 충성을 다할 것을 굳게 맹세합니다.",
@@ -151,7 +160,7 @@ const OneProfile: React.FC = () => {
       },
     ],
   };
-  const renderItem = ({ item }): React.JSX.Element => {
+  const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
         style={{
@@ -258,7 +267,17 @@ const OneProfile: React.FC = () => {
         <Text style={{ fontSize: 17, fontWeight: "600", marginBottom: 10 }}>
           Current Exibition
         </Text>
-        <TouchableOpacity style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{ flexDirection: "row" }}
+          onPress={() => {
+            navigation.navigate("Exhibition", {
+              ...currentExibitionDummy,
+              user_id: userDataDummy.user_id,
+              profile_img: userDataDummy.profile_img,
+              nickname: userDataDummy.nickname,
+            });
+          }}
+        >
           <Image
             source={currentExibitionDummy.exhibition_thumbnail}
             style={{ width: 120, height: 120 }}
@@ -295,6 +314,6 @@ const OneProfile: React.FC = () => {
   );
 };
 
-export default OneProfile;
+export default ExhibitionProfile;
 
 const styles = StyleSheet.create({});

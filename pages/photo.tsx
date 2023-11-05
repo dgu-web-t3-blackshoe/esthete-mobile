@@ -2,18 +2,15 @@ import React, { useState } from "react";
 
 import {
   Image,
-  Alert,
   Text,
   SafeAreaView,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
   Dimensions,
   ScrollView,
   View,
 } from "react-native";
 import Swiper from "react-native-swiper";
 import GlobalStyles from "../assets/styles";
+import MapView, { Marker } from "react-native-maps";
 
 import { NavBar, SvgType } from "../components/navbar";
 
@@ -44,12 +41,12 @@ const Photo: React.FC = () => {
     title: "Memory at Seoul",
     dicription:
       "복무 신조 우리의 결의 하나 나는 국가와 국민에 충성을 다하는 대한민국 국민이다. 둘 까먹음",
-    longitude: "",
-    latitude: "",
-    state: "도쿄도",
-    city: "시부야구",
-    town: "에비스",
-    time: "2023-11-01",
+    longitude: 139.698212,
+    latitude: 35.664035,
+    state: "Tokyo-to",
+    city: "Shibuya-ku",
+    town: "ebisu-3chome",
+    time: "2023년 11월 1일 12시 20분",
     equipments: [],
     genre_ids: [],
   };
@@ -110,7 +107,7 @@ const Photo: React.FC = () => {
         {/* 사진 끝 */}
         {/* 사진 정보 시작 */}
         <Swiper
-          style={{ height: 230, marginVertical: 8 }}
+          style={{ height: 280, marginVertical: 8 }}
           activeDotColor="black"
           dotColor="white"
           dotStyle={{
@@ -127,6 +124,7 @@ const Photo: React.FC = () => {
             borderColor: "black",
           }}
         >
+          {/* 슬라이드1 정보 */}
           <View>
             <View style={GlobalStyles.rowSpaceBetweenContainer}>
               <Text style={{ fontSize: 16, fontWeight: "500" }}>
@@ -146,28 +144,79 @@ const Photo: React.FC = () => {
                   padding: 15,
                   lineHeight: 20,
                   marginVertical: 10,
-                  height: 100,
+                  height: 150,
                 }}
               >
                 {PhotoDummy.dicription}
               </Text>
             </View>
           </View>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>Slide 2</Text>
+
+          {/* 슬라이드2 (위치) */}
+          <View>
+            <View style={GlobalStyles.rowSpaceBetweenContainer}>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>Location</Text>
+              <View style={{ width: 260, borderBottomWidth: 0.8 }}>
+                <Text style={{ fontSize: 14 }}>
+                  {PhotoDummy.state}, {PhotoDummy.city}, {PhotoDummy.town}
+                </Text>
+              </View>
+            </View>
+            <MapView
+              scrollEnabled={false}
+              style={{ width: "100%", height: 180 }}
+              initialRegion={{
+                latitude: PhotoDummy.latitude ? PhotoDummy.latitude : 37.557067,
+                longitude: PhotoDummy ? PhotoDummy.longitude : 126.971179,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            >
+              <Marker
+                coordinate={{
+                  latitude: PhotoDummy ? PhotoDummy.latitude : 37.557067,
+                  longitude: PhotoDummy ? PhotoDummy.longitude : 126.971179,
+                }}
+              />
+            </MapView>
           </View>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>Slide 3</Text>
+
+          {/* 슬라이드3 날짜 etc */}
+          <View>
+            <View style={GlobalStyles.rowSpaceBetweenContainer}>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>Time</Text>
+              <View style={{ width: 230, borderBottomWidth: 0.8 }}>
+                <Text style={{ fontSize: 14 }}>{PhotoDummy.time} </Text>
+              </View>
+            </View>
+            <View>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>Genres</Text>
+              <Text
+                style={{
+                  borderWidth: 0.8,
+                  padding: 15,
+                  lineHeight: 20,
+                  marginVertical: 10,
+                  height: 50,
+                }}
+              >
+                {PhotoDummy.genre_ids}
+              </Text>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                Equipments
+              </Text>
+              <Text
+                style={{
+                  borderWidth: 0.8,
+                  padding: 15,
+                  lineHeight: 20,
+                  marginVertical: 10,
+                  height: 50,
+                }}
+              >
+                {PhotoDummy.genre_ids}
+              </Text>
+            </View>
           </View>
         </Swiper>
         {/* 사진 정보 끝 */}
