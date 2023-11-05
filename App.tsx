@@ -22,6 +22,7 @@ import { Logo } from "./assets/svg";
 import Photo from "./pages/photo";
 import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
 import Exhibition from "./pages/Exibition/exibition";
+import LightMap from "./pages/LightMap/lightMap";
 
 export default function App() {
   //Custom Header for SearchBar
@@ -72,6 +73,13 @@ export default function App() {
         <Stack.Screen
           name="Exhibition"
           component={Exhibition}
+          options={{
+            header: () => <CustomHeader />,
+          }}
+        />
+        <Stack.Screen
+          name="LightMap"
+          component={LightMap}
           options={{
             header: () => <CustomHeader />,
           }}

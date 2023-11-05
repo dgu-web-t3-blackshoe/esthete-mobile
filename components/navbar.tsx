@@ -108,7 +108,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
               if (i === 0) {
                 navigation.navigate("Profile");
               } else if (i === 1) {
-                navigation.navigate("Profile");
+                navigation.navigate("LightMap");
                 // if (userId === null) {
                 //   Alert.alert(
                 //     "알림",
