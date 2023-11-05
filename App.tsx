@@ -17,8 +17,16 @@ const Stack = createStackNavigator();
 //icons & SVGs
 import Icon from "react-native-vector-icons/Ionicons";
 import { Logo } from "./assets/svg";
+
 //Pages
-import One_Profile from "./pages/One/One_Profile";
+//One
+import OneProfile from "./pages/One/OneProfile";
+
+//Two
+import Photo from "./pages/photo";
+
+
+
 
 export default function App() {
   //Custom Header for SearchBar
@@ -50,7 +58,14 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen
           name="Profile"
-          component={One_Profile}
+          component={OneProfile}
+          options={{
+            header: () => <CustomHeader />,
+          }}
+        />
+        <Stack.Screen
+          name="Photo"
+          component={Photo}
           options={{
             header: () => <CustomHeader />,
           }}

@@ -15,18 +15,31 @@ import {
 //libs
 import Icon from "react-native-vector-icons/Ionicons";
 import { Modalize } from "react-native-modalize";
+import { NavBar, SvgType } from "../../components/navbar";
 
 //assets
 import { GuestBook, ProfilePhoto } from "../../assets/svg";
-import GlobalStyles from "../../assets/styles.tsx";
+import GlobalStyles from "../../assets/styles";
 
 //사진 랜더링 시 필요한 width 계산
-
 const numColumns = 3;
 const size = (Dimensions.get("window").width - 40) / numColumns;
 
+//페이지 이동 타입
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  Photo: {
+    photo_id: string;
+  };
+};
+
 //FunctionComponents
-const One_Profile: React.FC = () => {
+const OneProfile: React.FC = () => {
+  //화면 이동(사진 조회)
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   //방명록 모달
   const GuestBookModal = useRef<Modalize>(null);
   const openModal = () => GuestBookModal.current?.open();
@@ -138,21 +151,28 @@ const One_Profile: React.FC = () => {
       },
     ],
   };
-  const renderItem = ({ item }): React.JSX.Element => (
-    <TouchableOpacity
-      style={{
-        width: size,
-        height: size,
-        aspectRatio: 1,
-      }}
-    >
-      <Image
-        // source={{ uri: item.story }}
-        source={item.photo}
-        style={{ width: "100%", height: "100%" }}
-      />
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }): React.JSX.Element => {
+    return (
+      <TouchableOpacity
+        style={{
+          width: size,
+          height: size,
+          aspectRatio: 1,
+        }}
+        onPress={() => {
+          navigation.navigate("Photo", {
+            photo_id: item.photo_id,
+          });
+        }}
+      >
+        <Image
+          // source={{ uri: item.story }}
+          source={item.photo}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </TouchableOpacity>
+    );
+  };
 
   //구독 완료 전송 함수
   const submitSupport = () => {
@@ -174,34 +194,39 @@ const One_Profile: React.FC = () => {
   return (
     // (API연결시 랜더링 전 data 있는지 체크 후 랜더링 로직 추가)
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={GlobalStyles.container}>
-        {/* 1-1 맨 위 A's Gallery, Support Button 시작*/}
-        <View style={GlobalStyles.rowSpaceBetweenContainer}>
+      {/* 1-1 맨 위 A's Gallery, Support Button 시작*/}
+      <View
+        style={{
+          ...GlobalStyles.rowSpaceBetweenContainer,
+          backgroundColor: "white",
+          paddingHorizontal: 20,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "600",
+          }}
+        >
+          {userDataDummy.nickname}'s Gallery
+        </Text>
+        <TouchableOpacity
+          onPress={submitSupport}
+          style={GlobalStyles.backgroundBlackBox}
+        >
           <Text
             style={{
-              fontSize: 20,
-              fontWeight: "600",
+              fontSize: 17,
+              fontWeight: "500",
+              color: "white",
             }}
           >
-            {userDataDummy.nickname}'s Gallery
+            Support
           </Text>
-          <TouchableOpacity
-            onPress={submitSupport}
-            style={GlobalStyles.backgroundBlackBox}
-          >
-            <Text
-              style={{
-                fontSize: 17,
-                fontWeight: "500",
-                color: "white",
-              }}
-            >
-              Support
-            </Text>
-          </TouchableOpacity>
-        </View>
-        {/* 1-1 맨 위 A's Gallery, Support Button 끝*/}
-
+        </TouchableOpacity>
+      </View>
+      {/* 1-1 맨 위 A's Gallery, Support Button 끝*/}
+      <ScrollView style={GlobalStyles.container}>
         {/* 1-1 프로필 사진, Biography, 방명록 아이콘 시작*/}
         <View
           style={{
@@ -259,17 +284,17 @@ const One_Profile: React.FC = () => {
             numColumns={3}
             scrollEnabled={false}
             // columnWrapperStyle={{ marginBottom: 5 }}
-            style={{ marginBottom: 50 }}
+            style={{ marginBottom: 30 }}
             // onEndReached={loadMoreData}
           />
         </View>
       </ScrollView>
-
+      <NavBar type={SvgType.Exibition} />
       <Modalize ref={GuestBookModal} adjustToContentHeight={true}></Modalize>
     </SafeAreaView>
   );
 };
 
-export default One_Profile;
+export default OneProfile;
 
 const styles = StyleSheet.create({});
