@@ -25,9 +25,6 @@ import OneProfile from "./pages/One/OneProfile";
 //Two
 import Photo from "./pages/photo";
 
-
-
-
 export default function App() {
   //Custom Header for SearchBar
   const [search, setSearch] = useState<Boolean | false>(false);
@@ -55,7 +52,11 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          animationEnabled: false,
+        }}
+      >
         <Stack.Screen
           name="Profile"
           component={OneProfile}

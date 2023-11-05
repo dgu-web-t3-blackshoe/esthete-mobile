@@ -12,8 +12,10 @@ import {
   ScrollView,
   View,
 } from "react-native";
-
+import Swiper from "react-native-swiper";
 import GlobalStyles from "../assets/styles";
+
+import { NavBar, SvgType } from "../components/navbar";
 
 const Photo: React.FC = () => {
   //사진 조회 API--------------------------------------------
@@ -89,7 +91,6 @@ const Photo: React.FC = () => {
           </Text>
         </View>
         {/* 맨 위 제목 끝 */}
-
         {/* 사진 시작 */}
         <View style={{ width: "100%", alignItems: "center" }}>
           <Image
@@ -107,30 +108,71 @@ const Photo: React.FC = () => {
           />
         </View>
         {/* 사진 끝 */}
-
         {/* 사진 정보 시작 */}
-        <View style={GlobalStyles.rowSpaceBetweenContainer}>
-          <Text style={{ fontSize: 16, fontWeight: "500" }}>Photographer</Text>
-          <View style={{ width: 235, borderBottomWidth: 0.8 }}>
-            <Text style={{ fontSize: 16 }}>{UserDummy.nickname}</Text>
+        <Swiper
+          style={{ height: 230, marginVertical: 8 }}
+          activeDotColor="black"
+          dotColor="white"
+          dotStyle={{
+            width: 13,
+            height: 13,
+            borderRadius: 50,
+            borderWidth: 0.8,
+            borderColor: "black",
+          }}
+          activeDotStyle={{
+            width: 13,
+            height: 13,
+            borderRadius: 50,
+            borderColor: "black",
+          }}
+        >
+          <View>
+            <View style={GlobalStyles.rowSpaceBetweenContainer}>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                Photographer
+              </Text>
+              <View style={{ width: 235, borderBottomWidth: 0.8 }}>
+                <Text style={{ fontSize: 16 }}>{UserDummy.nickname}</Text>
+              </View>
+            </View>
+            <View>
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                Description
+              </Text>
+              <Text
+                style={{
+                  borderWidth: 0.8,
+                  padding: 15,
+                  lineHeight: 20,
+                  marginVertical: 10,
+                  height: 100,
+                }}
+              >
+                {PhotoDummy.dicription}
+              </Text>
+            </View>
           </View>
-        </View>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: "500" }}>Description</Text>
-          <Text
+          <View
             style={{
-              borderWidth: 0.8,
-              padding: 15,
-              lineHeight: 20,
-              marginVertical: 10,
-              height: 100,
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {PhotoDummy.dicription}
-          </Text>
-        </View>
+            <Text>Slide 2</Text>
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>Slide 3</Text>
+          </View>
+        </Swiper>
         {/* 사진 정보 끝 */}
       </ScrollView>
+      <NavBar type={SvgType.Exibition} />
     </SafeAreaView>
   );
 };
