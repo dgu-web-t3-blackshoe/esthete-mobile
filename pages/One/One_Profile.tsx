@@ -4,22 +4,17 @@ import { Logo } from "../../assets/svg";
 
 const One_Profile: React.FC = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
         }}
-      >
-        <Logo/>
-
-      </View>
+      ></View>
     </SafeAreaView>
   );
 };
 
 export default One_Profile;
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});

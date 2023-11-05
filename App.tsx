@@ -1,25 +1,45 @@
 import React, { useState } from "react";
 
 //Components
-import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 
 //Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 
+//icons & SVGs
+import Icon from "react-native-vector-icons/Ionicons";
+import { Logo } from "./assets/svg";
 //Pages
 import One_Profile from "./pages/One/One_Profile";
 
 export default function App() {
-  //SearchBar
+  //Custom Header for SearchBar
   const [search, setSearch] = useState<Boolean | false>(false);
   const CustomHeader: React.FC = () => {
     return (
-      <View style={styles.headerContainer}>
-        <TextInput style={styles.searchInput} placeholder="검색" />
+      <View
+        style={{ ...styles.headerContainer, paddingRight: search ? 10 : 15 }}
+      >
+        {search ? (
+          <TextInput style={styles.searchInput} placeholder="검색" />
+        ) : (
+          <Logo />
+        )}
+
         <TouchableOpacity onPress={() => setSearch(!search)}>
-          {/* //search-outline */}
+          {search ? (
+            <Icon name="close-outline" size={35} color={"#fff"} />
+          ) : (
+            <Icon name="search-outline" size={30} color={"#fff"} />
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -42,10 +62,15 @@ export default function App() {
 
 const styles = StyleSheet.create({
   headerContainer: {
+    marginTop: StatusBar.currentHeight,
     flexDirection: "row",
     height: 50,
     alignItems: "center",
     backgroundColor: "black",
+    gap: 10,
+
+    paddingLeft: 20,
+    justifyContent: "space-between",
   },
   searchInput: {
     flex: 1,
@@ -53,5 +78,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
+
+    backgroundColor: "white",
   },
 });
