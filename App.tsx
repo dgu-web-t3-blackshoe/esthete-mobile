@@ -1,20 +1,57 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+
+//Components
+import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+
+//Navigation
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+const Stack = createStackNavigator();
+
+//Pages
+import One_Profile from "./pages/One/One_Profile";
 
 export default function App() {
+  //SearchBar
+  const [search, setSearch] = useState<Boolean | false>(false);
+  const CustomHeader: React.FC = () => {
+    return (
+      <View style={styles.headerContainer}>
+        <TextInput style={styles.searchInput} placeholder="검색" />
+        <TouchableOpacity onPress={() => setSearch(!search)}>
+          {/* //search-outline */}
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Profile"
+          component={One_Profile}
+          options={{
+            header: () => <CustomHeader />,
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  headerContainer: {
+    flexDirection: "row",
+    height: 50,
+    alignItems: "center",
+    backgroundColor: "black",
+  },
+  searchInput: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
   },
 });
