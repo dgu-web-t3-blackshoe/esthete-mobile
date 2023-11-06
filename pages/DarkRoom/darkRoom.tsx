@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 //요소
 import {
@@ -80,6 +80,44 @@ const DarkRoom: React.FC = () => {
     "state",
     "city",
   ]);
+
+  //위도 경도로 위치 정보 받아오는 함수
+  const getLocationInfo = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json",
+        {
+          params: {
+            latlng: `${latitude},${longitude}`,
+            key: API_KEY,
+            language: "ko",
+          },
+        }
+      );
+
+      const formattedAddress = response.data.results[0].formatted_address;
+
+      const addressParts = formattedAddress.split(" ");
+
+      const country = addressParts[0] || "";
+      const state = addressParts[1] || "";
+      const city = addressParts[2] || "";
+
+      setLocationInfo([longitude, latitude, country, state, city]);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  //위도, 경도로 위치 정보 이름 가져오기
+  useEffect(() => {
+    if (temporaryLocation !== null) {
+      getLocationInfo(temporaryLocation.latitude, temporaryLocation.longitude);
+    }
+  }, [temporaryLocation]);
+
+
 
   //맵뷰 관련 끝-----------------------------------------------------------------
 
