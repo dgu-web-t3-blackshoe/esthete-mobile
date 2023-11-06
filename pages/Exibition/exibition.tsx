@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Image,
-  Alert,
   Text,
   SafeAreaView,
   TouchableOpacity,
@@ -12,12 +11,12 @@ import {
   ImageBackground,
   View,
 } from "react-native";
-import GlobalStyles from "../../assets/styles";
 
 import { NavBar, SvgType } from "../../components/navbar";
 
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
 type RootStackParamList = {
   Profile: undefined;
 };
@@ -53,19 +52,21 @@ const Exhibition: React.FC = ({ route }: any) => {
       {
         room_id: "1",
         title: "방1",
-        description: "ABCDEFGHIJKLMNOP",
+        description: "서해의 밝은 기상 한몸에 안고 경인벌 넓은 들에 뭉친 용사들",
         thumnail: require("../../assets/photodummy1.jpg"),
       },
       {
         room_id: "2",
         title: "방2",
-        description: "어제 원서햄이 룸 얘기한 이후로 룸이란 단어 쫌 그래서",
+        description:
+          "동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리 나라만세",
         thumnail: require("../../assets/photodummy2.jpg"),
       },
       {
         room_id: "3",
         title: "방3",
-        description: "어제 원서햄이 룸 얘기해서 일단 방1,2,3으로 더미데이터 짬",
+        description:
+          "찬란한 조국강산 겨례의 앞날 ",
         thumnail: require("../../assets/photodummy2.jpg"),
       },
     ],
