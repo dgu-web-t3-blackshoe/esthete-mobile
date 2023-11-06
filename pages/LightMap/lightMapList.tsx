@@ -10,13 +10,14 @@ import {
   Dimensions,
   ImageBackground,
   View,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 
 //라이브러리
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import RNPickerSelect from 'react-native-picker-select';
 
 //사진 나열 위한 width 계산
 const numColumns = 3;
@@ -31,9 +32,22 @@ type RootStackParamList = {
   };
 };
 
-
 const LightMapList: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  //정렬 방식 모달 시작-------------------------------------------
+  const [isSortModalVisible, setSortModalVisible] = useState(false);
+  const [sortOption, setSortOption] = useState("recent");
+
+  const toggleSortModal = () => {
+    setSortModalVisible(!isSortModalVisible);
+  };
+
+  const handleSortSelection = (option: string) => {
+    setSortOption(option);
+    toggleSortModal();
+  };
+  //정렬 방식 모달 끝------------------------------------------------
 
   //동별 사진 조회
   //URL: photos?town={동 이름}&sort={}&size={}&page={}
@@ -119,7 +133,7 @@ const LightMapList: React.FC = ({ route }: any) => {
         <Text style={{ fontSize: 16, borderBottomWidth: 0.8 }}>
           {route.params.state}, {route.params.city}, {route.params.town}
         </Text>
-        <TouchableOpacity >
+        <TouchableOpacity onPress={toggleSortModal}>
           <Icon name="sort" size={27} color={"black"} />
         </TouchableOpacity>
       </View>
@@ -153,9 +167,88 @@ const LightMapList: React.FC = ({ route }: any) => {
       />
       {/* 사진 나열 끝 */}
 
+      {/* 정렬 모달 시작 */}
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={isSortModalVisible}
+        onRequestClose={toggleSortModal}
+      >
+        <TouchableWithoutFeedback onPress={toggleSortModal}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 22,
+            }}
+          >
+            <TouchableWithoutFeedback>
+              <View
+                style={{
+                  gap: 20,
+                  backgroundColor: "white",
+                  paddingVertical: 30,
+                  paddingHorizontal: 40,
+                  width: 200,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 5,
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.modalTextContainer}
+                  onPress={() => handleSortSelection("recent")}
+                >
+                  <Text style={styles.modalText}>Recent</Text>
+                  {sortOption === "recent" ? (
+                    <Icon name="check" size={27} color={"black"} />
+                  ) : null}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalTextContainer}
+                  onPress={() => handleSortSelection("popular")}
+                >
+                  <Text style={styles.modalText}>Popular</Text>
+                  {sortOption === "popular" ? (
+                    <Icon name="check" size={27} color={"black"} />
+                  ) : null}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalTextContainer}
+                  onPress={() => handleSortSelection("trending")}
+                >
+                  <Text style={styles.modalText}>Trending</Text>
+                  {sortOption === "trending" ? (
+                    <Icon name="check" size={27} color={"black"} />
+                  ) : null}
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+      {/* 정렬 모달 끝 */}
+
       <NavBar type={SvgType.LightMap} />
     </SafeAreaView>
   );
 };
 
 export default LightMapList;
+
+const styles = StyleSheet.create({
+  modalText: {
+    fontSize: 20,
+  },
+  modalTextContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+});

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
+//요소
 import {
   Image,
   Alert,
@@ -8,19 +9,20 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
+import { NavBar, SvgType } from "../../components/navbar";
 
-import * as Location from "expo-location";
+//구글지오코딩 API KEY
 import { API_KEY } from "@env";
 
+//라이브러리
 import MapView, { Marker } from "react-native-maps";
-import { NavBar, SvgType } from "../../components/navbar";
 import axios from "axios";
+import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
-//페이지 이동 타입
+//네비게이션
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-
 type RootStackParamList = {
   LightMapList: {
     state: string;
