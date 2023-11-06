@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 
 //요소
 import {
@@ -18,11 +18,21 @@ import GlobalStyles from "../../assets/styles";
 //라이브러리
 import Swiper from "react-native-swiper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapView, { Marker } from "react-native-maps";
 import axios from "axios";
 import * as Location from "expo-location";
 
 const DarkRoom: React.FC = () => {
+  //스위퍼 레프
+  const swiperRef = useRef<Swiper>(null);
+  const goToNextSlide = () => {
+    swiperRef.current?.scrollBy(1);
+  };
+  const goToPrevSlide = () => {
+    swiperRef.current?.scrollBy(-1);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* 맨 위 Dark Room 글자랑 Publish 버튼 뷰 시작 */}
@@ -100,6 +110,7 @@ const DarkRoom: React.FC = () => {
               borderRadius: 50,
               borderColor: "black",
             }}
+            ref={swiperRef}
           >
             {/* 슬라이드1 시작 */}
             <View
@@ -146,14 +157,13 @@ const DarkRoom: React.FC = () => {
                 </Text>
                 <TextInput
                   style={{
-                    borderColor: "gray",
-                    borderWidth: 1,
                     paddingHorizontal: 10,
                     width: 300,
                     height: 150,
                     backgroundColor: "white",
+                    textAlign: "center",
                   }}
-                  placeholder="사진 제목을 입력하세요."
+                  placeholder="사진 설명을 입력하세요."
                 />
               </View>
               {/* 슬라이드1 설명 입력 뷰 끝 */}
@@ -168,18 +178,30 @@ const DarkRoom: React.FC = () => {
             >
               <View
                 style={{
-                  ...GlobalStyles.rowSpaceBetweenContainer,
                   width: 300,
                 }}
               >
                 <Text
-                  style={{ fontSize: 22, color: "white", fontWeight: "500" }}
+                  style={{
+                    fontSize: 22,
+                    color: "white",
+                    fontWeight: "500",
+                    marginBottom: 20,
+                  }}
                 >
                   Location
                 </Text>
-                <View style={{ width: 260, borderBottomWidth: 0.8 }}>
-                  <Text style={{ fontSize: 14 }}></Text>
-                </View>
+                <TouchableOpacity
+                  style={{
+                    width: 300,
+                    height: 200,
+                    backgroundColor: "white",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text>위치 정보를 입력하세요</Text>
+                </TouchableOpacity>
               </View>
             </View>
 

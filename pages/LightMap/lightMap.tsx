@@ -14,6 +14,10 @@ import { NavBar, SvgType } from "../../components/navbar";
 //구글지오코딩 API KEY
 import { API_KEY } from "@env";
 
+//Redux
+import { useSelector } from "react-redux";
+import { State } from "../../storage/reducers";
+
 //라이브러리
 import MapView, { Marker } from "react-native-maps";
 import axios from "axios";
@@ -34,40 +38,59 @@ type RootStackParamList = {
 const LightMap: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  //현재 위치 (기본값 : 서울역)
   const [currentRegion, setCurrentRegion] = useState({
     latitude: 37.557067,
     longitude: 126.971179,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+
+  //현재 위치 업데이트
+  const { lat, lon } = useSelector((state: State) => state.location);
+
+  //맵뷰의 현재 보여주는 곳 참조
   const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission to access location was denied");
-        return;
-      }
-
-      let currentLocation = await Location.getCurrentPositionAsync({});
-
+    if (lat !== null && lon !== null) {
       setCurrentRegion({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
+        latitude: lat,
+        longitude: lon,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
-      getData(
-        currentLocation.coords.latitude,
-        currentLocation.coords.longitude
-      );
-      getLocationInfo(
-        currentLocation.coords.latitude,
-        currentLocation.coords.longitude
-      );
-    })();
-  }, []);
+      getData(lat, lon);
+      getLocationInfo(lat, lon);
+    }
+  }, [lat, lon]);
+  
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       Alert.alert("Permission to access location was denied");
+  //       return;
+  //     }
+
+  //     let currentLocation = await Location.getCurrentPositionAsync({});
+
+  // setCurrentRegion({
+  //   latitude: currentLocation.coords.latitude,
+  //   longitude: currentLocation.coords.longitude,
+  //   latitudeDelta: 0.0922,
+  //   longitudeDelta: 0.0421,
+  // });
+  // getData(
+  //   currentLocation.coords.latitude,
+  //   currentLocation.coords.longitude
+  // );
+  // getLocationInfo(
+  //   currentLocation.coords.latitude,
+  //   currentLocation.coords.longitude
+  // );
+  //   })();
+  // }, []);
 
   const goToCurrentLocation = async () => {
     let currentLocation = await Location.getCurrentPositionAsync({});
@@ -123,9 +146,8 @@ const LightMap: React.FC = () => {
   };
 
   const getData = (lat: number, lon: number) => {
-    console.log(lat);
-    console.log(lon);
-
+    // console.log(lat);
+    // console.log(lon);
     //위도, 경도로 동별 대표사진 및 갯수 조회
     //URL: photos?latitude={}&longitude={}&radius={}
     //응답:
@@ -174,6 +196,7 @@ const LightMap: React.FC = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* 맨 위 지역 명, 내 위치로 이동 버튼 뷰 시작 */}
       <View
         style={{
           backgroundColor: "white",
@@ -191,6 +214,7 @@ const LightMap: React.FC = () => {
           <Icon name="map-marked" size={25} color={"black"} />
         </TouchableOpacity>
       </View>
+      {/* 맨 위 지역 명, 내 위치로 이동 버튼 뷰 끝 */}
 
       <MapView
         ref={mapRef}

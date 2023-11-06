@@ -19,12 +19,17 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Logo } from "./assets/svg";
 
 //Pages
+import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
 import Exhibition from "./pages/Exibition/exibition";
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
 import DarkRoom from "./pages/DarkRoom/darkRoom";
+
+//Redux
+import { Provider } from "react-redux";
+import Store from "./storage/store";
 
 export default function App() {
   //Custom Header for SearchBar
@@ -52,60 +57,70 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          animationEnabled: false,
-        }}
-      >
-        <Stack.Screen
-          name="ExhibitionProfile"
-          component={ExhibitionProfile}
-          options={{
-            header: () => <CustomHeader />,
+    <Provider store={Store}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="InitialPage"
+          screenOptions={{
+            animationEnabled: false,
           }}
-        />
-        <Stack.Screen
-          name="Photo"
-          component={Photo}
-          options={{
-            header: () => <CustomHeader />,
-          }}
-        />
-        <Stack.Screen
-          name="Exhibition"
-          component={Exhibition}
-          options={{
-            header: () => <CustomHeader />,
-          }}
-        />
+        >
+          <Stack.Screen
+            name="InitialPage"
+            component={InitialPage}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="ExhibitionProfile"
+            component={ExhibitionProfile}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="Photo"
+            component={Photo}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="Exhibition"
+            component={Exhibition}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
 
-        {/* Light Map */}
-        <Stack.Screen
-          name="LightMap"
-          component={LightMap}
-          options={{
-            header: () => <CustomHeader />,
-          }}
-        />
-        <Stack.Screen
-          name="LightMapList"
-          component={LightMapList}
-          options={{
-            header: () => <CustomHeader />,
-          }}
-        />
+          {/* Light Map */}
+          <Stack.Screen
+            name="LightMap"
+            component={LightMap}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="LightMapList"
+            component={LightMapList}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
 
-        {/* Dark Room */}
-        <Stack.Screen
-          name="DarkRoom"
-          component={DarkRoom}
-          options={{
-            header: () => <CustomHeader />,
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* Dark Room */}
+          <Stack.Screen
+            name="DarkRoom"
+            component={DarkRoom}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 
