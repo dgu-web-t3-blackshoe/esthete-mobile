@@ -56,6 +56,16 @@ export default function App() {
     );
   };
 
+  const CustomHeader2: React.FC = () => {
+    return (
+      <View
+        style={{ ...styles.headerContainer, paddingRight: search ? 10 : 15 }}
+      >
+        <Logo />
+      </View>
+    );
+  };
+
   return (
     <Provider store={Store}>
       <NavigationContainer>
@@ -115,7 +125,7 @@ export default function App() {
             name="DarkRoom"
             component={DarkRoom}
             options={{
-              header: () => <CustomHeader />,
+              header: () => <CustomHeader2 />,
             }}
           />
         </Stack.Navigator>

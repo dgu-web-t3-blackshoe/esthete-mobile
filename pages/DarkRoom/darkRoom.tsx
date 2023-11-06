@@ -10,6 +10,7 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  StatusBar,
   ScrollView,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
@@ -110,16 +111,17 @@ const DarkRoom: React.FC = () => {
                 fontSize: 18,
                 borderWidth: 1,
                 width: "80%",
-                paddingLeft: "5%",
+                paddingLeft: 15,
                 borderColor: "#DDE1E4",
               },
               container: {
                 position: "absolute",
+                top: 0,
                 paddingTop: "2%",
-                paddingBottom: "1%",
+                paddingBottom: 13,
                 paddingHorizontal: "3%",
                 width: "100%",
-                backgroundColor: "#FF6121",
+                backgroundColor: "black",
                 zIndex: 2,
               },
             }}
@@ -148,18 +150,16 @@ const DarkRoom: React.FC = () => {
                 <View style={{ alignItems: "center" }}>
                   <View
                     style={{
-                      backgroundColor: "#FF6121",
+                      backgroundColor: "black",
                       padding: 5,
                       borderRadius: 5,
-                      borderColor: "#DDE1E4",
-                      borderWidth: 1,
                     }}
                   >
                     <Text
                       style={{
                         color: "white",
                         fontWeight: "600",
-                        paddingHorizontal: "2%",
+                        paddingHorizontal: 8,
                       }}
                     >
                       {locationInfo[2] +
@@ -169,22 +169,21 @@ const DarkRoom: React.FC = () => {
                         locationInfo[4]}
                     </Text>
                   </View>
-                  <Icon name="location" size={40} color={"#FF6121"} />
                 </View>
               </Marker>
             )}
           </MapView>
 
-          <View
-            style={{
-              position: "absolute",
-              bottom: 0,
-              width: "100%",
-              backgroundColor: temporaryLocation ? "#FF6121" : "#c9c9c9",
-              paddingVertical: "3%",
-            }}
-          >
-            {temporaryLocation ? (
+          {temporaryLocation ? (
+            <View
+              style={{
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                backgroundColor: "black",
+                paddingVertical: 10,
+              }}
+            >
               <TouchableOpacity
                 onPress={() => {
                   setSelectedLocation(temporaryLocation);
@@ -200,32 +199,14 @@ const DarkRoom: React.FC = () => {
                     color: "white",
                     fontSize: 23,
                     fontWeight: "600",
-                    letterSpacing: 5,
+                    letterSpacing: 10,
                   }}
                 >
                   확인
                 </Text>
               </TouchableOpacity>
-            ) : (
-              <View
-                style={{
-                  width: "100%",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 23,
-                    fontWeight: "600",
-                    letterSpacing: 2,
-                  }}
-                >
-                  사진 찍은 장소를 확인해주세요
-                </Text>
-              </View>
-            )}
-          </View>
+            </View>
+          ) : null}
         </SafeAreaView>
       ) : (
         // 맵뷰 끝-------------------------------------------------------------
