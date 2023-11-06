@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+//요소
 import {
   Image,
   Text,
@@ -8,11 +9,12 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import Swiper from "react-native-swiper";
 import GlobalStyles from "../assets/styles";
-import MapView, { Marker } from "react-native-maps";
-
 import { NavBar, SvgType } from "../components/navbar";
+
+//라이브러리
+import Swiper from "react-native-swiper";
+import MapView, { Marker } from "react-native-maps";
 
 const Photo: React.FC = () => {
   //사진 조회 API--------------------------------------------
