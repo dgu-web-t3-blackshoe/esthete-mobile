@@ -64,33 +64,6 @@ const LightMap: React.FC = () => {
       getLocationInfo(lat, lon);
     }
   }, [lat, lon]);
-  
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       Alert.alert("Permission to access location was denied");
-  //       return;
-  //     }
-
-  //     let currentLocation = await Location.getCurrentPositionAsync({});
-
-  // setCurrentRegion({
-  //   latitude: currentLocation.coords.latitude,
-  //   longitude: currentLocation.coords.longitude,
-  //   latitudeDelta: 0.0922,
-  //   longitudeDelta: 0.0421,
-  // });
-  // getData(
-  //   currentLocation.coords.latitude,
-  //   currentLocation.coords.longitude
-  // );
-  // getLocationInfo(
-  //   currentLocation.coords.latitude,
-  //   currentLocation.coords.longitude
-  // );
-  //   })();
-  // }, []);
 
   const goToCurrentLocation = async () => {
     let currentLocation = await Location.getCurrentPositionAsync({});
