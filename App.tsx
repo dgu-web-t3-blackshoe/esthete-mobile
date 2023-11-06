@@ -24,6 +24,7 @@ import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
 import Exhibition from "./pages/Exibition/exibition";
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
+import DarkRoom from "./pages/DarkRoom/darkRoom";
 
 export default function App() {
   //Custom Header for SearchBar
@@ -58,7 +59,7 @@ export default function App() {
         }}
       >
         <Stack.Screen
-          name="Profile"
+          name="ExhibitionProfile"
           component={ExhibitionProfile}
           options={{
             header: () => <CustomHeader />,
@@ -78,6 +79,8 @@ export default function App() {
             header: () => <CustomHeader />,
           }}
         />
+
+        {/* Light Map */}
         <Stack.Screen
           name="LightMap"
           component={LightMap}
@@ -88,6 +91,15 @@ export default function App() {
         <Stack.Screen
           name="LightMapList"
           component={LightMapList}
+          options={{
+            header: () => <CustomHeader />,
+          }}
+        />
+
+        {/* Dark Room */}
+        <Stack.Screen
+          name="DarkRoom"
+          component={DarkRoom}
           options={{
             header: () => <CustomHeader />,
           }}

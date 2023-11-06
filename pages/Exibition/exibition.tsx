@@ -18,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
-  Profile: undefined;
+  ExhibitionProfile: undefined;
 };
 
 const numColumns = 2;
@@ -180,7 +180,7 @@ const Exhibition: React.FC = ({ route }: any) => {
                 alignItems: "flex-end",
                 gap: 10,
               }}
-              onPress={() => navigation.navigate("Profile")}
+              onPress={() => navigation.navigate("ExhibitionProfile")}
             >
               <Image
                 source={route.params.profile_img}

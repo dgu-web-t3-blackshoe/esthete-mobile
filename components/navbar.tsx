@@ -20,10 +20,9 @@ interface SvgProps {
 
 type RootStackParamList = {
   // 로그인: undefined;
-  Profile: undefined;
+  ExhibitionProfile: undefined;
   LightMap: undefined;
-  // LightMap: undefined;
-  // DarkRoom: undefined;
+  DarkRoom: undefined;
   // MyGallery: undefined;
 };
 
@@ -102,7 +101,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
             key={i}
             onPress={() => {
               if (i === 0) {
-                navigation.navigate("Profile");
+                navigation.navigate("ExhibitionProfile");
               } else if (i === 1) {
                 navigation.navigate("LightMap");
                 // if (userId === null) {
@@ -123,7 +122,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
                 //   );
                 // }
               } else if (i === 2) {
-                navigation.navigate("Profile");
+                navigation.navigate("DarkRoom");
                 // if (userId === null) {
                 //   Alert.alert(
                 //     "알림",
@@ -142,7 +141,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
                 //   );
                 // }
               } else {
-                navigation.navigate("Profile");
+                navigation.navigate("ExhibitionProfile");
                 // if (userId === null) {
                 //   Alert.alert(
                 //     "알림",

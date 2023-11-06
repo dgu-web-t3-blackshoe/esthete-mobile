@@ -89,6 +89,7 @@ const LightMapList: React.FC = ({ route }: any) => {
     ],
   };
 
+  //사진 나열
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity

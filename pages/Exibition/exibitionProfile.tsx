@@ -186,7 +186,7 @@ const ExhibitionProfile: React.FC = () => {
               ...StyleSheet.absoluteFillObject,
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
-          ></View>
+          />
         </ImageBackground>
       </TouchableOpacity>
     );
