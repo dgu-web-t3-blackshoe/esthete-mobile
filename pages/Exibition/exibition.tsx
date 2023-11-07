@@ -1,3 +1,4 @@
+//3-1
 import React from "react";
 import {
   Image,
@@ -21,7 +22,11 @@ type RootStackParamList = {
   ExhibitionProfile: undefined;
   Room: {
     exhibition_id: string;
+    exhibition_title: string;
     room_id: string;
+    room_thumbnail: string;
+    room_title: string;
+    room_description: string;
   };
 };
 
@@ -30,7 +35,7 @@ const size = (Dimensions.get("window").width - 56) / numColumns;
 
 const Exhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  console.log(route.params);
+
   //전시회 룸 목록 조회
   //URL: exhibitions/{exhibition_id}/rooms
   //응답:
@@ -88,7 +93,11 @@ const Exhibition: React.FC = ({ route }: any) => {
         onPress={() => {
           navigation.navigate("Room", {
             exhibition_id: route.params.exhibition_id,
+            exhibition_title: route.params.exhibition_title,
             room_id: item.room_id,
+            room_thumbnail: item.thumnail,
+            room_title: item.title,
+            room_description: item.description,
           });
         }}
       >
