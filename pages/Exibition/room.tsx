@@ -17,10 +17,12 @@ import {
   Animated,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
+
+//화면 넓이 계산 (이미지 넓이에 사용)
 const size = Dimensions.get("window").width - 45;
 
 const Room: React.FC = ({ route }: any) => {
-  console.log(route.params);
+  //이미지 높이 계산----------------------------------------------------------
   const [imageHeights, setImageHeights] = useState<Map<string, number>>(
     new Map()
   );
@@ -28,7 +30,7 @@ const Room: React.FC = ({ route }: any) => {
   const handleImageLoaded = (event: any, photo_id: string) => {
     const { width, height } = event.nativeEvent.source;
     const aspectRatio = height / width;
-    const calculatedHeight = size * aspectRatio /2;
+    const calculatedHeight = (size * aspectRatio) / 2;
 
     setImageHeights((prevHeights) => {
       const newHeights = new Map(prevHeights);
@@ -144,7 +146,7 @@ const Room: React.FC = ({ route }: any) => {
           </View>
         </>
         {/* 방 썸네일 방 제목 방 설명  끝 */}
-
+        {/* 이미지 랜더링 시작 */}
         <View
           style={{
             width: "100%",
@@ -202,6 +204,7 @@ const Room: React.FC = ({ route }: any) => {
             })}
           </View>
         </View>
+        {/* 이미지 랜더링 끝 */}
       </ScrollView>
       <NavBar type={SvgType.Exibition} />
     </SafeAreaView>
