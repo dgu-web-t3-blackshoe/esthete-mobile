@@ -26,6 +26,7 @@ import Exhibition from "./pages/Exibition/exibition";
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
 import DarkRoom from "./pages/DarkRoom/darkRoom";
+import Room from "./pages/Exibition/room";
 
 //Redux
 import { Provider } from "react-redux";
@@ -99,6 +100,13 @@ export default function App() {
           <Stack.Screen
             name="Exhibition"
             component={Exhibition}
+            options={{
+              header: () => <CustomHeader />,
+            }}
+          />
+          <Stack.Screen
+            name="Room"
+            component={Room}
             options={{
               header: () => <CustomHeader />,
             }}
