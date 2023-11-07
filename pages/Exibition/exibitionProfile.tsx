@@ -12,6 +12,7 @@ import {
   ImageBackground,
   ScrollView,
   View,
+  TextInput,
 } from "react-native";
 
 //libs
@@ -348,7 +349,79 @@ const ExhibitionProfile: React.FC = () => {
         />
       </ScrollView>
       <NavBar type={SvgType.Exibition} />
-      <Modalize ref={GuestBookModal} adjustToContentHeight={true}></Modalize>
+      <Modalize
+        ref={GuestBookModal}
+        avoidKeyboardLikeIOS={true}
+        
+        modalHeight={400}
+        modalStyle={{
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+        }}
+      >
+        <Text
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 15,
+            fontSize: 20,
+            fontWeight: "500",
+          }}
+        >
+          Guest Book
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            paddingHorizontal: 20,
+          }}
+        >
+          <TextInput
+            style={{
+              paddingLeft: 20,
+              width: 260,
+              backgroundColor: "white",
+
+              borderWidth: 0.8,
+            }}
+            placeholder="방명록을 입력하세요."
+          />
+          <TouchableOpacity
+            style={{
+              width: size * numColumns - 260,
+              justifyContent: "center",
+              alignItems: "center",
+
+              backgroundColor: "black",
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "500" }}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 50 }}>12312541253</Text>
+          </View>
+      </Modalize>
     </SafeAreaView>
   );
 };
