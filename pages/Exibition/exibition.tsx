@@ -19,6 +19,10 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
   ExhibitionProfile: undefined;
+  Room: {
+    exhibition_id: string;
+    room_id: string;
+  };
 };
 
 const numColumns = 2;
@@ -26,7 +30,7 @@ const size = (Dimensions.get("window").width - 56) / numColumns;
 
 const Exhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-
+  console.log(route.params);
   //전시회 룸 목록 조회
   //URL: exhibitions/{exhibition_id}/rooms
   //응답:
@@ -52,7 +56,8 @@ const Exhibition: React.FC = ({ route }: any) => {
       {
         room_id: "1",
         title: "방1",
-        description: "서해의 밝은 기상 한몸에 안고 경인벌 넓은 들에 뭉친 용사들",
+        description:
+          "서해의 밝은 기상 한몸에 안고 경인벌 넓은 들에 뭉친 용사들",
         thumnail: require("../../assets/photodummy1.jpg"),
       },
       {
@@ -65,8 +70,7 @@ const Exhibition: React.FC = ({ route }: any) => {
       {
         room_id: "3",
         title: "방3",
-        description:
-          "찬란한 조국강산 겨례의 앞날 ",
+        description: "찬란한 조국강산 겨례의 앞날 ",
         thumnail: require("../../assets/photodummy2.jpg"),
       },
     ],
@@ -81,11 +85,12 @@ const Exhibition: React.FC = ({ route }: any) => {
           aspectRatio: 1,
           marginBottom: 16,
         }}
-        // onPress={() => {
-        //   navigation.navigate("Photo", {
-        //     photo_id: item.photo_id,
-        //   });
-        // }}
+        onPress={() => {
+          navigation.navigate("Room", {
+            exhibition_id: route.params.exhibition_id,
+            room_id: item.room_id,
+          });
+        }}
       >
         <ImageBackground
           // source={{ uri: item.story }}
