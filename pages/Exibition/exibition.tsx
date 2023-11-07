@@ -186,25 +186,33 @@ const Exhibition: React.FC = ({ route }: any) => {
             {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 끝 */}
 
             {/* 이미지 백그라운드 내 아래쪽 프로필 시작 */}
-            <TouchableOpacity
+            <View
               style={{
                 width: "100%",
-                flexDirection: "row",
-                justifyContent: "flex-end",
                 alignItems: "flex-end",
-                gap: 10,
               }}
-              onPress={() => navigation.navigate("ExhibitionProfile")}
             >
-              <Image
-                source={route.params.profile_img}
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-              />
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-end",
+                  gap: 10,
+                }}
+                onPress={() => navigation.navigate("ExhibitionProfile")}
+              >
+                <Image
+                  source={route.params.profile_img}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                />
 
-              <Text style={{ fontSize: 22, fontWeight: "500", color: "white" }}>
-                {route.params.nickname}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={{ fontSize: 22, fontWeight: "500", color: "white" }}
+                >
+                  {route.params.nickname}
+                </Text>
+              </TouchableOpacity>
+            </View>
             {/* 이미지 백그라운드 내 아래쪽 프로필 끝 */}
           </View>
         </ImageBackground>
