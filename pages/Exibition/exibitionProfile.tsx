@@ -1,3 +1,4 @@
+//1-1 1-2 1-3
 import React, { useState, useRef, useEffect } from "react";
 import {
   Image,
@@ -180,13 +181,13 @@ const ExhibitionProfile: React.FC = () => {
           source={item.photo}
           style={{ width: "100%", height: "100%" }}
         >
-          <View
+          {/* <View
             style={{
               flex: 1,
               ...StyleSheet.absoluteFillObject,
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
-          />
+          /> */}
         </ImageBackground>
       </TouchableOpacity>
     );
@@ -305,13 +306,13 @@ const ExhibitionProfile: React.FC = () => {
             source={currentExibitionDummy.exhibition_thumbnail}
             style={{ width: 120, height: 120 }}
           >
-            <View
+            {/* <View
               style={{
                 flex: 1,
                 ...StyleSheet.absoluteFillObject,
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
               }}
-            ></View>
+            /> */}
           </ImageBackground>
           <View style={{ width: 120, marginLeft: 15 }}>
             <Text style={{ fontWeight: "500", color: "white" }}>

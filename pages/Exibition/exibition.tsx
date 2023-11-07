@@ -1,3 +1,4 @@
+//3-1
 import React from "react";
 import {
   Image,
@@ -19,6 +20,14 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
   ExhibitionProfile: undefined;
+  Room: {
+    exhibition_id: string;
+    exhibition_title: string;
+    room_id: string;
+    room_thumbnail: string;
+    room_title: string;
+    room_description: string;
+  };
 };
 
 const numColumns = 2;
@@ -52,7 +61,8 @@ const Exhibition: React.FC = ({ route }: any) => {
       {
         room_id: "1",
         title: "방1",
-        description: "서해의 밝은 기상 한몸에 안고 경인벌 넓은 들에 뭉친 용사들",
+        description:
+          "서해의 밝은 기상 한몸에 안고 경인벌 넓은 들에 뭉친 용사들",
         thumnail: require("../../assets/photodummy1.jpg"),
       },
       {
@@ -65,8 +75,7 @@ const Exhibition: React.FC = ({ route }: any) => {
       {
         room_id: "3",
         title: "방3",
-        description:
-          "찬란한 조국강산 겨례의 앞날 ",
+        description: "찬란한 조국강산 겨례의 앞날 ",
         thumnail: require("../../assets/photodummy2.jpg"),
       },
     ],
@@ -81,11 +90,16 @@ const Exhibition: React.FC = ({ route }: any) => {
           aspectRatio: 1,
           marginBottom: 16,
         }}
-        // onPress={() => {
-        //   navigation.navigate("Photo", {
-        //     photo_id: item.photo_id,
-        //   });
-        // }}
+        onPress={() => {
+          navigation.navigate("Room", {
+            exhibition_id: route.params.exhibition_id,
+            exhibition_title: route.params.exhibition_title,
+            room_id: item.room_id,
+            room_thumbnail: item.thumnail,
+            room_title: item.title,
+            room_description: item.description,
+          });
+        }}
       >
         <ImageBackground
           // source={{ uri: item.story }}
@@ -172,25 +186,33 @@ const Exhibition: React.FC = ({ route }: any) => {
             {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 끝 */}
 
             {/* 이미지 백그라운드 내 아래쪽 프로필 시작 */}
-            <TouchableOpacity
+            <View
               style={{
                 width: "100%",
-                flexDirection: "row",
-                justifyContent: "flex-end",
                 alignItems: "flex-end",
-                gap: 10,
               }}
-              onPress={() => navigation.navigate("ExhibitionProfile")}
             >
-              <Image
-                source={route.params.profile_img}
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-              />
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-end",
+                  gap: 10,
+                }}
+                onPress={() => navigation.navigate("ExhibitionProfile")}
+              >
+                <Image
+                  source={route.params.profile_img}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                />
 
-              <Text style={{ fontSize: 22, fontWeight: "500", color: "white" }}>
-                {route.params.nickname}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={{ fontSize: 22, fontWeight: "500", color: "white" }}
+                >
+                  {route.params.nickname}
+                </Text>
+              </TouchableOpacity>
+            </View>
             {/* 이미지 백그라운드 내 아래쪽 프로필 끝 */}
           </View>
         </ImageBackground>

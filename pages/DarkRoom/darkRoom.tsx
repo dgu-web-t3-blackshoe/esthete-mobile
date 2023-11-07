@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 //요소
 import {
@@ -12,12 +12,17 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 
 //구글맵 Autocomplete API KEY
 import { API_KEY } from "@env";
+
+//Redux
+import { useSelector } from "react-redux";
+import { State } from "../../storage/reducers";
 
 //라이브러리
 import Swiper from "react-native-swiper";
@@ -44,6 +49,8 @@ const DarkRoom: React.FC = () => {
   };
 
   //맵뷰 관련 시작-----------------------------------------------------------------
+  //현재 위치 업데이트
+  const { lat, lon } = useSelector((state: State) => state.location);
   //맵뷰 visible 상태
   const [showMap, setShowMap] = useState<Boolean | false>(false);
   //맵뷰 위치정보 상태
@@ -76,13 +83,49 @@ const DarkRoom: React.FC = () => {
   const [locationInfo, setLocationInfo] = useState<(string | number)[]>([
     0,
     0,
-    "country",
     "state",
     "city",
+    "town",
   ]);
+
+  //위도 경도로 위치 정보 받아오는 함수
+  const getLocationInfo = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json",
+        {
+          params: {
+            latlng: `${latitude},${longitude}`,
+            key: API_KEY,
+            language: "ko",
+          },
+        }
+      );
+
+      const formattedAddress = response.data.results[0].formatted_address;
+
+      const addressParts = formattedAddress.split(" ");
+      const length = addressParts.length;
+      const state = addressParts[length - 4] || "";
+      const city = addressParts[length - 3] || "";
+      const town = addressParts[length - 2] || "";
+
+      setLocationInfo([longitude, latitude, state, city, town]);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+  //위도, 경도로 위치 정보 이름 가져오기
+  useEffect(() => {
+    if (temporaryLocation !== null) {
+      getLocationInfo(temporaryLocation.latitude, temporaryLocation.longitude);
+    }
+  }, [temporaryLocation]);
 
   //맵뷰 관련 끝-----------------------------------------------------------------
 
+  console.log("selectedLocation: ", selectedLocation);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {showMap ? (
@@ -135,12 +178,8 @@ const DarkRoom: React.FC = () => {
               setTemporaryLocation(e.nativeEvent.coordinate);
             }}
             initialRegion={{
-              latitude: selectedLocation
-                ? selectedLocation.latitude
-                : 37.557067,
-              longitude: selectedLocation
-                ? selectedLocation.longitude
-                : 126.971179,
+              latitude: lat ? lat : 37.557067,
+              longitude: lon ? lon : 126.971179,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
@@ -188,6 +227,7 @@ const DarkRoom: React.FC = () => {
                 onPress={() => {
                   setSelectedLocation(temporaryLocation);
                   setTemporaryLocation(null);
+                  setShowMap(!showMap);
                 }}
                 style={{
                   width: "100%",
@@ -364,28 +404,74 @@ const DarkRoom: React.FC = () => {
                       width: 300,
                     }}
                   >
-                    <Text
+                    <View
                       style={{
-                        fontSize: 22,
-                        color: "white",
-                        fontWeight: "500",
+                        ...GlobalStyles.rowSpaceBetweenContainer,
+                        
                         marginBottom: 20,
                       }}
                     >
-                      Location
-                    </Text>
-                    <TouchableOpacity
-                      style={{
-                        width: 300,
-                        height: 200,
-                        backgroundColor: "white",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      onPress={() => setShowMap(!showMap)}
-                    >
-                      <Text>위치 정보를 입력하세요</Text>
-                    </TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: 22,
+                          color: "white",
+                          fontWeight: "500",
+                        }}
+                      >
+                        Location
+                      </Text>
+                      {locationInfo[2] === "state" ? null : (
+                        <Text
+                          style={{
+                            color: "white",
+                     
+                            width: 200,
+                          }}
+                        >
+                          {locationInfo[2] +
+                            " " +
+                            locationInfo[3] +
+                            " " +
+                            locationInfo[4]}
+                        </Text>
+                      )}
+                    </View>
+
+                    {/* <Spinner size="small" color="white" /> */}
+
+                    {selectedLocation === null ? (
+                      <TouchableOpacity
+                        style={{
+                          width: 300,
+                          height: 180,
+                          backgroundColor: "white",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onPress={() => setShowMap(!showMap)}
+                      >
+                        <Text>위치 정보를 입력하세요</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <MapView
+                        scrollEnabled={false}
+                        style={{ width: 300, height: 180 }}
+                        initialRegion={{
+                          latitude: selectedLocation.latitude,
+                          longitude: selectedLocation.longitude,
+                          latitudeDelta: 0.0922,
+                          longitudeDelta: 0.0421,
+                        }}
+                      >
+                        <Marker
+                          coordinate={{
+                            latitude: selectedLocation.latitude,
+                            longitude: selectedLocation.longitude,
+                          }}
+                          title={"내 위치"}
+                        />
+                      </MapView>
+                    )}
                   </View>
                 </View>
 
