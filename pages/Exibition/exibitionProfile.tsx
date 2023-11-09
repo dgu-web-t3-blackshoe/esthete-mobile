@@ -269,6 +269,9 @@ const ExhibitionProfile: React.FC = () => {
       </View>
     );
   };
+  //Guest Book Modal Header 끝-----------------------------------------------
+
+
 
   //방명록 조회
   //URL:
@@ -510,8 +513,9 @@ const ExhibitionProfile: React.FC = () => {
       <NavBar type={SvgType.Exibition} />
       <Modalize
         ref={GuestBookModal}
-        // adjustToContentHeight={true}
         avoidKeyboardLikeIOS={true}
+        // adjustToContentHeight={true}
+        keyboardAvoidingBehavior="height"
         modalHeight={600}
         modalStyle={{
           borderTopLeftRadius: 0,
