@@ -21,14 +21,19 @@ import { Logo } from "./assets/svg";
 //Pages
 import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
+
 import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
 import Exhibition from "./pages/Exibition/exibition";
+import Room from "./pages/Exibition/room";
+
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
+
 import DarkRoom from "./pages/DarkRoom/darkRoom";
-import Room from "./pages/Exibition/room";
+
 import MyGallery from "./pages/MyGallery/myGallery";
 import MyPhotographers from "./pages/MyGallery/myPhotographers";
+import AllSupportingPG from "./pages/MyGallery/allSupportingPG";
 
 //Redux
 import { Provider } from "react-redux";
@@ -150,6 +155,13 @@ export default function App() {
           <Stack.Screen
             name="MyPhotographers"
             component={MyPhotographers}
+            options={{
+              header: () => <CustomHeader2 />,
+            }}
+          />
+          <Stack.Screen
+            name="AllSupportingPG"
+            component={AllSupportingPG}
             options={{
               header: () => <CustomHeader2 />,
             }}

@@ -1,5 +1,7 @@
 //1-1 1-2 1-3
 import React, { useState, useRef, useEffect } from "react";
+
+//요소
 import {
   Image,
   Alert,

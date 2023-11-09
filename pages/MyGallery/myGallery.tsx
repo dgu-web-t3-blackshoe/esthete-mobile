@@ -1,3 +1,4 @@
+//6-1 6-2 6-3
 import React, { useState } from "react";
 
 //요소
@@ -39,6 +40,7 @@ type RootStackParamList = {
     profile_img: string;
     nickname: string;
   };
+  AllSupportingPG: undefined;
 };
 
 //넓이 계산
@@ -275,7 +277,11 @@ const MyGallery: React.FC = () => {
           <Text style={{ fontSize: 20, fontWeight: "500" }}>
             Supporting Photographers
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("AllSupportingPG");
+            }}
+          >
             <Text>See All</Text>
           </TouchableOpacity>
         </View>
@@ -313,7 +319,7 @@ const MyGallery: React.FC = () => {
                       height: e.has_new ? 75 : 70,
                       borderRadius: 50,
                       borderWidth: e.has_new ? 3 : 0,
-                      borderColor: e.has_new ? "#FFA800" : "none",
+                      borderColor: "#FFA800",
                     }}
                   />
                   <Text>{displayedName}</Text>
