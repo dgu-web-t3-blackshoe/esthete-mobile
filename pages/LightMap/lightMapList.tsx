@@ -37,8 +37,8 @@ const LightMapList: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   //정렬 방식 모달 시작-------------------------------------------
-  const [isSortModalVisible, setSortModalVisible] = useState(false);
-  const [sortOption, setSortOption] = useState("recent");
+  const [isSortModalVisible, setSortModalVisible] = useState<boolean>(false);
+  const [sortOption, setSortOption] = useState<string>("recent");
 
   const toggleSortModal = () => {
     setSortModalVisible(!isSortModalVisible);
@@ -109,15 +109,7 @@ const LightMapList: React.FC = ({ route }: any) => {
           // source={{ uri: item.story }}
           source={item.photo}
           style={{ width: "100%", height: "100%" }}
-        >
-          <View
-            style={{
-              flex: 1,
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          ></View>
-        </ImageBackground>
+        />
       </TouchableOpacity>
     );
   };

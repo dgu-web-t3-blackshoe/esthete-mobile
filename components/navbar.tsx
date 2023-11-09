@@ -1,6 +1,14 @@
 import React from "react";
 import { SvgXml } from "react-native-svg";
-import { View, Alert, TouchableOpacity, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Alert,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  KeyboardAvoidingViewBase,
+  Text,
+  StyleSheet,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
@@ -23,7 +31,7 @@ type RootStackParamList = {
   ExhibitionProfile: undefined;
   LightMap: undefined;
   DarkRoom: undefined;
-  // MyGallery: undefined;
+  MyGallery: undefined;
 };
 
 export const NavBar: React.FC<SvgProps> = ({ type }) => {
@@ -141,7 +149,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
                 //   );
                 // }
               } else {
-                navigation.navigate("ExhibitionProfile");
+                navigation.navigate("MyGallery");
                 // if (userId === null) {
                 //   Alert.alert(
                 //     "알림",

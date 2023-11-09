@@ -27,6 +27,8 @@ import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
 import DarkRoom from "./pages/DarkRoom/darkRoom";
 import Room from "./pages/Exibition/room";
+import MyGallery from "./pages/MyGallery/myGallery";
+import MyPhotographers from "./pages/MyGallery/myPhotographers";
 
 //Redux
 import { Provider } from "react-redux";
@@ -132,6 +134,22 @@ export default function App() {
           <Stack.Screen
             name="DarkRoom"
             component={DarkRoom}
+            options={{
+              header: () => <CustomHeader2 />,
+            }}
+          />
+
+          {/* My Gallery */}
+          <Stack.Screen
+            name="MyGallery"
+            component={MyGallery}
+            options={{
+              header: () => <CustomHeader2 />,
+            }}
+          />
+          <Stack.Screen
+            name="MyPhotographers"
+            component={MyPhotographers}
             options={{
               header: () => <CustomHeader2 />,
             }}
