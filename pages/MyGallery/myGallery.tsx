@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 //요소
 import {
@@ -29,10 +29,13 @@ type RootStackParamList = {
   MyPhotographers: undefined;
 };
 
+//넓이 계산
+const size = Dimensions.get("window").width;
+
 const MyGallery: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  //유저 아이디 가져오기
+  //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
 
   //전체 후원 작가 조회 API
@@ -84,6 +87,55 @@ const MyGallery: React.FC = () => {
       updated_at: "2023-10-06",
     },
   ];
+
+  //내 프로필 조회--------------------------------------
+  //URL:
+  //users/{user_id}/profile
+  //Dummy:
+  const userDummy = {
+    user_id: "asdf",
+    profile_img: require("../../assets/photodummy4.jpg"),
+    nickname: "Jekoo",
+    biography: "나랏말싸미 동국에 달아 사맛디 아니할세",
+    genres: ["Animation", "Comics"],
+    equipments: ["갤럭시"],
+  };
+
+  //탭 이동 시 사용할 상태
+  const [selectedOption, setSelectedOption] = useState<string>("Photographs");
+
+  //내 사진 목록 조회
+  //URL:
+  //users/{user_id}/photos
+  //응답:
+  const MyPhoto = {
+    content: [
+      {
+        photo_id: "1",
+        title: "",
+        photo: "",
+        user_id: "",
+        nickname: "",
+        created_at: "",
+      },
+      {
+        photo_id: "2",
+        title: "",
+        photo: "",
+        user_id: "",
+        nickname: "",
+        created_at: "",
+      },
+      {
+        photo_id: "2",
+        title: "",
+        photo: "",
+        user_id: "",
+        nickname: "",
+        created_at: "",
+      },
+    ],
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -139,6 +191,117 @@ const MyGallery: React.FC = () => {
           })}
         </ScrollView>
         {/* 후원중인 작가 수평 스크롤뷰 끝 */}
+        <View style={{ backgroundColor: "black" }}>
+          <View
+            style={{
+              ...GlobalStyles.rowSpaceBetweenContainer,
+              paddingHorizontal: 20,
+              alignItems: "flex-end",
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "500", color: "white" }}>
+              My Profile
+            </Text>
+            <TouchableOpacity>
+              <Text style={{ color: "white" }}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 20,
+              gap: 20,
+              marginTop: 10,
+              backgroundColor: "black",
+            }}
+          >
+            <Image
+              source={userDummy.profile_img}
+              style={{ width: 140, height: 140 }}
+            />
+            <View style={{ width: 170, gap: 10, justifyContent: "center" }}>
+              <Text style={{ fontSize: 20, color: "white", fontWeight: "500" }}>
+                {userDummy.nickname}
+              </Text>
+              <Text style={{ fontSize: 16, color: "white" }}>
+                {userDummy.biography}
+              </Text>
+            </View>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 10,
+              marginVertical: 15,
+            }}
+          >
+            {userDummy.genres.map((e, i) => {
+              return (
+                <Text
+                  style={{ color: "white", marginHorizontal: 10, fontSize: 16 }}
+                  key={i}
+                >
+                  {e}
+                </Text>
+              );
+            })}
+          </ScrollView>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 10,
+              marginBottom: 15,
+            }}
+          >
+            {userDummy.equipments.map((e, i) => {
+              return (
+                <Text
+                  style={{ color: "white", marginHorizontal: 10, fontSize: 16 }}
+                  key={i}
+                >
+                  {e}
+                </Text>
+              );
+            })}
+          </ScrollView>
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+            }}
+          >
+            <TouchableOpacity
+              style={styles.tabBox}
+              onPress={() => setSelectedOption("Photographs")}
+            >
+              <Text style={styles.tapText}>Photographs</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tabBox}
+              onPress={() => setSelectedOption("Exhibitions")}
+            >
+              <Text style={styles.tapText}>Exhibitions</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.tabBox}
+              onPress={() => setSelectedOption("GuestBook")}
+            >
+              <Text style={styles.tapText}>GuestBook</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {selectedOption === "Photographs" ? (
+          <TouchableOpacity></TouchableOpacity>
+        ) : selectedOption === "Exhibitions" ? (
+          <></>
+        ) : (
+          <></>
+        )}
       </ScrollView>
 
       <NavBar type={SvgType.MyGallery} />
@@ -147,3 +310,16 @@ const MyGallery: React.FC = () => {
 };
 
 export default MyGallery;
+
+const styles = StyleSheet.create({
+  tabBox: {
+    width: size / 3,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  tapText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+});
