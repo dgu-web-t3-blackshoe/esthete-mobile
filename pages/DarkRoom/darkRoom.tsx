@@ -8,6 +8,7 @@ import {
   Text,
   KeyboardAvoidingView,
   View,
+  Platform,
   SafeAreaView,
   TouchableOpacity,
   StatusBar,
@@ -31,6 +32,9 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import MapView, { Marker, Region } from "react-native-maps";
 import axios from "axios";
 import * as Location from "expo-location";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
 //위치 정보 인터페이스
 interface Location {
@@ -125,8 +129,41 @@ const DarkRoom: React.FC = () => {
 
   //맵뷰 관련 끝-----------------------------------------------------------------
 
+  //슬라이드3 관련-----------------------------------------------------------------------------
+  //Date Picker 시작----------------------------------------
+  const [date, setDate] = useState<Date>(new Date());
+  // console.log(date);
+  //위 콘솔 로그 : 2023-11-09T03:21:10.405Z -> 파싱 필요
+  const [show, setShow] = useState<Boolean | false>(false);
+  const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === "ios");
+    setDate(currentDate);
+  };
+
+  const showDatepicker = () => {
+    setShow(true);
+  };
+  //Date Picker 끝------------------------------------------
+  //장르----------------------------------------------------
+  // "Portrait"
+  // "Landscape"
+  // "Street"
+  // "Food"
+  // "Travel"
+  // "Fashion"
+  // "Architectural"
+  // "Night"
+  // "Sports"
+  // "Journalism"
+  // "Wildlife"
+  // "Fine-art"
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
       {showMap ? (
         //맵뷰 시작
         <SafeAreaView
@@ -474,29 +511,49 @@ const DarkRoom: React.FC = () => {
                 </View>
 
                 {/* 슬라이드3 날짜 etc */}
-                <View>
+                <View style={{ paddingHorizontal: 20 }}>
                   <View style={GlobalStyles.rowSpaceBetweenContainer}>
-                    <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                      Time
-                    </Text>
-                    <View style={{ width: 230, borderBottomWidth: 0.8 }}>
-                      <Text style={{ fontSize: 14 }}> </Text>
-                    </View>
-                  </View>
-                  <View>
-                    <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                      Genres
-                    </Text>
                     <Text
                       style={{
-                        borderWidth: 0.8,
-                        padding: 15,
-                        lineHeight: 20,
-                        marginVertical: 10,
-                        height: 50,
+                        fontSize: 20,
+                        color: "white",
+                        fontWeight: "500",
                       }}
-                    ></Text>
-                    <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                    >
+                      Time
+                    </Text>
+                    <TouchableOpacity onPress={showDatepicker}>
+                      <Text style={{ color: "white" }}>Select Date</Text>
+                    </TouchableOpacity>
+                    {show && (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={"date"}
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChange}
+                      />
+                    )}
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: "white",
+                        fontWeight: "500",
+                      }}
+                    >
+                      Genres
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: "white",
+                        fontWeight: "500",
+                      }}
+                    >
                       Equipments
                     </Text>
                     <Text
@@ -519,7 +576,7 @@ const DarkRoom: React.FC = () => {
       )}
 
       <NavBar type={SvgType.DarkRoom} />
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 export default DarkRoom;

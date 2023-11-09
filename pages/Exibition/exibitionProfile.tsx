@@ -271,8 +271,6 @@ const ExhibitionProfile: React.FC = () => {
   };
   //Guest Book Modal Header 끝-----------------------------------------------
 
-
-
   //방명록 조회
   //URL:
   //users/{gallery_user_id}/guest-books
@@ -333,33 +331,6 @@ const ExhibitionProfile: React.FC = () => {
         content: "정말 기억에 남는 시간이었어요.",
         created_at: "2023-10-07",
         guest_book_profile_img: require("../../assets/photodummy6.jpg"),
-      },
-      {
-        guest_book_id: "7",
-        photographer_id: "2",
-        user_id: "",
-        nickname: "Sam",
-        content: "훌륭한 서비스에 감동받았습니다.",
-        created_at: "2023-10-06",
-        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
-      },
-      {
-        guest_book_id: "7",
-        photographer_id: "2",
-        user_id: "",
-        nickname: "Sam",
-        content: "훌륭한 서비스에 감동받았습니다.",
-        created_at: "2023-10-06",
-        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
-      },
-      {
-        guest_book_id: "7",
-        photographer_id: "2",
-        user_id: "",
-        nickname: "Sam",
-        content: "훌륭한 서비스에 감동받았습니다.",
-        created_at: "2023-10-06",
-        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
       },
       {
         guest_book_id: "7",
