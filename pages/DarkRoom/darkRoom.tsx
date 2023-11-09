@@ -125,7 +125,6 @@ const DarkRoom: React.FC = () => {
 
   //맵뷰 관련 끝-----------------------------------------------------------------
 
-  console.log("selectedLocation: ", selectedLocation);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {showMap ? (
@@ -407,7 +406,6 @@ const DarkRoom: React.FC = () => {
                     <View
                       style={{
                         ...GlobalStyles.rowSpaceBetweenContainer,
-                        
                         marginBottom: 20,
                       }}
                     >
@@ -424,7 +422,7 @@ const DarkRoom: React.FC = () => {
                         <Text
                           style={{
                             color: "white",
-                     
+
                             width: 200,
                           }}
                         >
