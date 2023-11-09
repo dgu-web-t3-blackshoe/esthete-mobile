@@ -11,11 +11,15 @@ import {
   Platform,
   SafeAreaView,
   TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
+  StyleSheet,
   StatusBar,
   ScrollView,
   ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
+import { GenreArray } from "../../components/constants";
 import GlobalStyles from "../../assets/styles";
 
 //구글맵 Autocomplete API KEY
@@ -148,19 +152,22 @@ const DarkRoom: React.FC = () => {
     setShow(true);
   };
   //Date Picker 끝------------------------------------------
+
   //장르----------------------------------------------------
-  // "Portrait"
-  // "Landscape"
-  // "Street"
-  // "Food"
-  // "Travel"
-  // "Fashion"
-  // "Architectural"
-  // "Night"
-  // "Sports"
-  // "Journalism"
-  // "Wildlife"
-  // "Fine-art"
+  //장르 모달
+  const [isGenreModalVisible, setIsGenreModalVisible] =
+    useState<boolean>(false);
+
+  const [genreOption, setGenreOption] = useState<string>("Portrait");
+
+  const toggleGenreModal = () => {
+    setIsGenreModalVisible(!isGenreModalVisible);
+  };
+
+  const handleGenreSelection = (option: string) => {
+    setGenreOption(option);
+    toggleGenreModal();
+  };
 
   return (
     <KeyboardAvoidingView
@@ -446,7 +453,7 @@ const DarkRoom: React.FC = () => {
                     <View
                       style={{
                         ...GlobalStyles.rowSpaceBetweenContainer,
-                        marginBottom: 20,
+                        marginBottom: 15,
                       }}
                     >
                       <Text
@@ -515,7 +522,13 @@ const DarkRoom: React.FC = () => {
 
                 {/* 슬라이드3 날짜 etc */}
                 <View style={{ paddingHorizontal: 20 }}>
-                  <View style={GlobalStyles.rowSpaceBetweenContainer}>
+                  {/* 날짜 시작 */}
+                  <View
+                    style={{
+                      ...GlobalStyles.rowSpaceBetweenContainer,
+                      marginBottom: 5,
+                    }}
+                  >
                     <Text
                       style={{
                         fontSize: 20,
@@ -535,7 +548,7 @@ const DarkRoom: React.FC = () => {
                       <Text
                         style={{
                           width: 200,
-                          paddingVertical: 3,
+                          paddingVertical: 5,
                           color: "#7D7D7D",
                         }}
                       >
@@ -545,13 +558,15 @@ const DarkRoom: React.FC = () => {
                     {show && (
                       <DateTimePicker
                         testID="dateTimePicker"
-                        value={date} 
+                        value={date}
                         mode={"date"}
                         display="default"
                         onChange={onChange}
                       />
                     )}
                   </View>
+                  {/* 날짜 끝 */}
+                  {/* 장르 시작 */}
                   <View>
                     <Text
                       style={{
@@ -562,25 +577,38 @@ const DarkRoom: React.FC = () => {
                     >
                       Genres
                     </Text>
-
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "white",
+                        paddingHorizontal: 15,
+                        paddingVertical: 5,
+                        marginVertical: 12,
+                      }}
+                      onPress={toggleGenreModal}
+                    >
+                      <Text style={{}}>{genreOption}</Text>
+                    </TouchableOpacity>
                     <Text
                       style={{
                         fontSize: 20,
                         color: "white",
                         fontWeight: "500",
+                        marginTop: 5,
                       }}
                     >
                       Equipments
                     </Text>
-                    <Text
+                    <TextInput
+                      // onEndEditing={}
                       style={{
                         borderWidth: 0.8,
                         padding: 15,
                         lineHeight: 20,
                         marginVertical: 10,
-                        height: 50,
+                        height: 80,
+                        backgroundColor: "white",
                       }}
-                    ></Text>
+                    />
                   </View>
                 </View>
               </Swiper>
@@ -591,8 +619,73 @@ const DarkRoom: React.FC = () => {
         // {/* 아래쪽 전부 끝 */}
       )}
 
+      {/* 장르 모달 */}
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={isGenreModalVisible}
+        onRequestClose={toggleGenreModal}
+      >
+        <TouchableWithoutFeedback onPress={toggleGenreModal}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 22,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <TouchableWithoutFeedback>
+              <View
+                style={{
+                  gap: 20,
+                  backgroundColor: "white",
+                  paddingVertical: 30,
+                  paddingHorizontal: 40,
+                  width: 280,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 5,
+                }}
+              >
+                {GenreArray.map((e, i) => {
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      style={styles.modalTextContainer}
+                      onPress={() => handleGenreSelection(e)}
+                    >
+                      <Text style={styles.modalText}>{e}</Text>
+                      {genreOption === e ? (
+                        <Icon name="check" size={27} color={"black"} />
+                      ) : null}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
       <NavBar type={SvgType.DarkRoom} />
     </KeyboardAvoidingView>
   );
 };
 export default DarkRoom;
+
+const styles = StyleSheet.create({
+  modalText: {
+    fontSize: 20,
+  },
+  modalTextContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+});
