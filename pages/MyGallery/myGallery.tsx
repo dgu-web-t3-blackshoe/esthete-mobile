@@ -30,6 +30,15 @@ type RootStackParamList = {
   Photo: {
     photo_id: string;
   };
+  Exhibition: {
+    exhibition_id: string;
+    exhibition_title: string;
+    exhibition_discription: string;
+    exhibition_thumbnail: string;
+    user_id: string;
+    profile_img: string;
+    nickname: string;
+  };
 };
 
 //넓이 계산
@@ -146,6 +155,7 @@ const MyGallery: React.FC = () => {
         created_at: "",
       },
     ],
+    totalElements: 4,
   };
 
   //사진 나열
@@ -203,6 +213,7 @@ const MyGallery: React.FC = () => {
         thumnail: require("../../assets/photodummy4.jpg"),
       },
     ],
+    totalElements: 4,
   };
 
   //내 갤러리 방명록 조회
@@ -247,6 +258,7 @@ const MyGallery: React.FC = () => {
         profile_img: require("../../assets/photodummy4.jpg"),
       },
     ],
+    totalElements: 4,
   };
 
   return (
@@ -405,25 +417,71 @@ const MyGallery: React.FC = () => {
               width: "100%",
               justifyContent: "space-between",
               marginBottom: 20,
+              paddingLeft: 5,
             }}
           >
             <TouchableOpacity
               style={styles.tabBox}
               onPress={() => setSelectedOption("Photographs")}
             >
-              <Text style={styles.tapText}>Photographs</Text>
+              <Text
+                style={{
+                  ...styles.tapText,
+                  textDecorationLine:
+                    selectedOption === "Photographs" ? "underline" : "none",
+                }}
+              >
+                Photographs
+              </Text>
+              {selectedOption === "Photographs" ? (
+                <Text style={{ color: "#FFA800" }}>
+                  {MyPhoto.totalElements}
+                </Text>
+              ) : (
+                <Text>{"  "}</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tabBox}
               onPress={() => setSelectedOption("Exhibitions")}
             >
-              <Text style={styles.tapText}>Exhibitions</Text>
+              <Text
+                style={{
+                  ...styles.tapText,
+                  textDecorationLine:
+                    selectedOption === "Exhibitions" ? "underline" : "none",
+                }}
+              >
+                Exhibitions
+              </Text>
+              {selectedOption === "Exhibitions" ? (
+                <Text style={{ color: "#FFA800" }}>
+                  {ExhibitionDummy.totalElements}
+                </Text>
+              ) : (
+                <Text>{"  "}</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.tabBox}
               onPress={() => setSelectedOption("GuestBook")}
             >
-              <Text style={styles.tapText}>GuestBook</Text>
+              <Text
+                style={{
+                  ...styles.tapText,
+                  textDecorationLine:
+                    selectedOption === "GuestBook" ? "underline" : "none",
+                }}
+              >
+                GuestBook
+              </Text>
+              {selectedOption === "GuestBook" ? (
+                <Text style={{ color: "#FFA800" }}>
+                  {GuestBookDummy.totalElements}
+                </Text>
+              ) : (
+                <Text>{"  "}</Text>
+              )}
             </TouchableOpacity>
           </View>
           {selectedOption === "Photographs" ? (
@@ -469,6 +527,17 @@ const MyGallery: React.FC = () => {
                       borderBottomWidth: 0.5,
                       borderBottomColor: "white",
                       gap: 20,
+                    }}
+                    onPress={() => {
+                      navigation.navigate("Exhibition", {
+                        exhibition_id: e.exhibition_id,
+                        exhibition_title: e.title,
+                        exhibition_discription: e.description,
+                        exhibition_thumbnail: e.thumnail,
+                        user_id: userId,
+                        profile_img: userDummy.profile_img,
+                        nickname: userDummy.nickname,
+                      });
                     }}
                   >
                     <Image
@@ -545,6 +614,8 @@ const styles = StyleSheet.create({
     width: size / 3,
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "flex-end",
+    gap: 5,
   },
   tapText: {
     color: "white",
