@@ -18,10 +18,23 @@ import {
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 
+//페이지 이동 타입
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  Photo: {
+    photo_id: string;
+  };
+};
+
 //화면 넓이 계산 (이미지 넓이에 사용)
 const size = Dimensions.get("window").width - 45;
 
 const Room: React.FC = ({ route }: any) => {
+  //화면 이동(사진 조회)-------------------------------------------------------------
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   //이미지 높이 계산----------------------------------------------------------
   const [imageHeights, setImageHeights] = useState<Map<string, number>>(
     new Map()
@@ -160,12 +173,16 @@ const Room: React.FC = ({ route }: any) => {
           <View>
             {evenPhotos.map((e, i) => {
               return (
-                <View
+                <TouchableOpacity
                   style={{
                     width: size / 2,
                     height: imageHeights.get(e.photo_id),
                     borderRadius: 50,
                     marginBottom: 10,
+                  }}
+                  key={i}
+                  onPress={() => {
+                    navigation.navigate("Photo", { photo_id: e.photo_id });
                   }}
                 >
                   <Image
@@ -176,19 +193,23 @@ const Room: React.FC = ({ route }: any) => {
                     }}
                     onLoad={(event) => handleImageLoaded(event, e.photo_id)}
                   />
-                </View>
+                </TouchableOpacity>
               );
             })}
           </View>
           <View>
             {oddPhotos.map((e, i) => {
               return (
-                <View
+                <TouchableOpacity
                   style={{
                     width: size / 2,
                     height: imageHeights.get(e.photo_id),
                     borderRadius: 50,
                     marginBottom: 10,
+                  }}
+                  key={i}
+                  onPress={() => {
+                    navigation.navigate("Photo", { photo_id: e.photo_id });
                   }}
                 >
                   <Image
@@ -199,7 +220,7 @@ const Room: React.FC = ({ route }: any) => {
                     }}
                     onLoad={(event) => handleImageLoaded(event, e.photo_id)}
                   />
-                </View>
+                </TouchableOpacity>
               );
             })}
           </View>

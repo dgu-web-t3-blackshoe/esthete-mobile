@@ -125,7 +125,6 @@ const DarkRoom: React.FC = () => {
 
   //맵뷰 관련 끝-----------------------------------------------------------------
 
-  console.log("selectedLocation: ", selectedLocation);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {showMap ? (

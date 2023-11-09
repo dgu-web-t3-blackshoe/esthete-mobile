@@ -57,8 +57,21 @@ const ExhibitionProfile: React.FC = () => {
   const openModal = () => GuestBookModal.current?.open();
   const closeModal = () => GuestBookModal.current?.close();
 
+  //추천 전시회 기본 정보 조회
+  //URL
+  //exhibitions/recommended
+  //더미:
+  const RecommendedData = {
+    exhibition_id: "",
+    title: "",
+    discription: "",
+    thumbnail: "",
+    user_id: "",
+  };
+
   //전시회 업로더 프로필 조회
   //URL: users/{gallery_user_id}/profile (get)
+  //gallery_user_id: RecommendedData.user_id
   //응답:
   // {
   //   "user_id" : "",
@@ -81,6 +94,7 @@ const ExhibitionProfile: React.FC = () => {
 
   // 업로더 현재 전시회 정보 조회
   //URL: users/{gallery_user_id}/exhibition/current (get)
+  //gallery_user_id는 RecommendedData.user_id
   //응답:
   // {
   //   "exhibition_id" : "",
@@ -97,6 +111,7 @@ const ExhibitionProfile: React.FC = () => {
 
   // 전시회 사진 받아오기
   //URL:  users/{gallery_user_id}/photos (get)
+  //gallery_user_id는 RecommendedData.user_id
   //응답:
   // {
   //   "content": [
@@ -209,6 +224,150 @@ const ExhibitionProfile: React.FC = () => {
       ],
       { cancelable: true }
     );
+  };
+
+  //Guest Book Modal Header-----------------------------------------------
+  const GuestBooKModalHeader = (): React.JSX.Element => {
+    return (
+      <View style={{ marginBottom: 20 }}>
+        <Text
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 15,
+            fontSize: 20,
+            fontWeight: "500",
+          }}
+        >
+          Guest Book
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            paddingHorizontal: 20,
+          }}
+        >
+          <TextInput
+            style={{
+              paddingLeft: 20,
+              width: 260,
+              backgroundColor: "white",
+              borderWidth: 0.8,
+            }}
+            placeholder="방명록을 입력하세요."
+          />
+          <TouchableOpacity
+            style={{
+              width: size * numColumns - 260,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "black",
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "500" }}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  //방명록 조회
+  //URL:
+  //users/{gallery_user_id}/guest-books
+  //gallery_user_id는 RecommendedData.user_id
+  //더미:
+  const GuestBookDummy = {
+    content: [
+      {
+        guest_book_id: "1",
+        photographer_id: "1",
+        user_id: "",
+        nickname: "Rio",
+        content: "오하요~~",
+        created_at: "2024-01-01",
+        guest_book_profile_img: require("../../assets/photodummy1.jpg"),
+      },
+      {
+        guest_book_id: "2",
+        photographer_id: "2",
+        user_id: "",
+        nickname: "HK",
+        content: "안녕",
+        created_at: "2023-10-11",
+        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+      },
+      {
+        guest_book_id: "3",
+        photographer_id: "3",
+        user_id: "",
+        nickname: "Lina",
+        content: "좋은 사진 감사해요!",
+        created_at: "2023-10-10",
+        guest_book_profile_img: require("../../assets/photodummy3.jpg"),
+      },
+      {
+        guest_book_id: "4",
+        photographer_id: "4",
+        user_id: "",
+        nickname: "Jun",
+        content: "멋진 경험이었습니다!",
+        created_at: "2023-10-09",
+        guest_book_profile_img: require("../../assets/photodummy4.jpg"),
+      },
+      {
+        guest_book_id: "5",
+        photographer_id: "5",
+        user_id: "",
+        nickname: "Chris",
+        content: "다음에 또 올게요.",
+        created_at: "2023-10-08",
+        guest_book_profile_img: require("../../assets/photodummy5.jpg"),
+      },
+      {
+        guest_book_id: "6",
+        photographer_id: "1",
+        user_id: "",
+        nickname: "Alex",
+        content: "정말 기억에 남는 시간이었어요.",
+        created_at: "2023-10-07",
+        guest_book_profile_img: require("../../assets/photodummy6.jpg"),
+      },
+      {
+        guest_book_id: "7",
+        photographer_id: "2",
+        user_id: "",
+        nickname: "Sam",
+        content: "훌륭한 서비스에 감동받았습니다.",
+        created_at: "2023-10-06",
+        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+      },
+      {
+        guest_book_id: "7",
+        photographer_id: "2",
+        user_id: "",
+        nickname: "Sam",
+        content: "훌륭한 서비스에 감동받았습니다.",
+        created_at: "2023-10-06",
+        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+      },
+      {
+        guest_book_id: "7",
+        photographer_id: "2",
+        user_id: "",
+        nickname: "Sam",
+        content: "훌륭한 서비스에 감동받았습니다.",
+        created_at: "2023-10-06",
+        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+      },
+      {
+        guest_book_id: "7",
+        photographer_id: "2",
+        user_id: "",
+        nickname: "Sam",
+        content: "훌륭한 서비스에 감동받았습니다.",
+        created_at: "2023-10-06",
+        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+      },
+    ],
   };
 
   return (
@@ -351,76 +510,49 @@ const ExhibitionProfile: React.FC = () => {
       <NavBar type={SvgType.Exibition} />
       <Modalize
         ref={GuestBookModal}
+        // adjustToContentHeight={true}
         avoidKeyboardLikeIOS={true}
-        
-        modalHeight={400}
+        modalHeight={600}
         modalStyle={{
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
         }}
+        HeaderComponent={GuestBooKModalHeader()}
       >
-        <Text
-          style={{
-            paddingHorizontal: 20,
-            paddingVertical: 15,
-            fontSize: 20,
-            fontWeight: "500",
-          }}
-        >
-          Guest Book
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            paddingHorizontal: 20,
-          }}
-        >
-          <TextInput
-            style={{
-              paddingLeft: 20,
-              width: 260,
-              backgroundColor: "white",
-
-              borderWidth: 0.8,
-            }}
-            placeholder="방명록을 입력하세요."
-          />
-          <TouchableOpacity
-            style={{
-              width: size * numColumns - 260,
-              justifyContent: "center",
-              alignItems: "center",
-
-              backgroundColor: "black",
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "500" }}>Submit</Text>
-          </TouchableOpacity>
+        <View style={{ paddingHorizontal: 20 }}>
+          {GuestBookDummy.content.map((e, i) => {
+            return (
+              <View
+                key={i}
+                style={{
+                  flexDirection: "row",
+                  borderBottomWidth: 0.8,
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  gap: 20,
+                }}
+              >
+                <Image
+                  source={e.guest_book_profile_img}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                />
+                <View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      gap: 10,
+                    }}
+                  >
+                    <Text style={{ fontWeight: "500" }}>{e.nickname}</Text>
+                    <Text style={{ fontSize: 12 }}>{e.created_at}</Text>
+                  </View>
+                  <Text style={{ fontSize: 17 }}>{e.content}</Text>
+                </View>
+              </View>
+            );
+          })}
         </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 50 }}>12312541253</Text>
-          </View>
       </Modalize>
     </SafeAreaView>
   );
