@@ -285,7 +285,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "Rio",
         content: "오하요~~",
         created_at: "2024-01-01",
-        guest_book_profile_img: require("../../assets/photodummy1.jpg"),
+        profile_img: require("../../assets/photodummy1.jpg"),
       },
       {
         guest_book_id: "2",
@@ -294,7 +294,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "HK",
         content: "안녕",
         created_at: "2023-10-11",
-        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+        profile_img: require("../../assets/photodummy2.jpg"),
       },
       {
         guest_book_id: "3",
@@ -303,7 +303,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "Lina",
         content: "좋은 사진 감사해요!",
         created_at: "2023-10-10",
-        guest_book_profile_img: require("../../assets/photodummy3.jpg"),
+        profile_img: require("../../assets/photodummy3.jpg"),
       },
       {
         guest_book_id: "4",
@@ -312,7 +312,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "Jun",
         content: "멋진 경험이었습니다!",
         created_at: "2023-10-09",
-        guest_book_profile_img: require("../../assets/photodummy4.jpg"),
+        profile_img: require("../../assets/photodummy4.jpg"),
       },
       {
         guest_book_id: "5",
@@ -321,7 +321,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "Chris",
         content: "다음에 또 올게요.",
         created_at: "2023-10-08",
-        guest_book_profile_img: require("../../assets/photodummy5.jpg"),
+        profile_img: require("../../assets/photodummy5.jpg"),
       },
       {
         guest_book_id: "6",
@@ -330,7 +330,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "Alex",
         content: "정말 기억에 남는 시간이었어요.",
         created_at: "2023-10-07",
-        guest_book_profile_img: require("../../assets/photodummy6.jpg"),
+        profile_img: require("../../assets/photodummy6.jpg"),
       },
       {
         guest_book_id: "7",
@@ -339,7 +339,7 @@ const ExhibitionProfile: React.FC = () => {
         nickname: "Sam",
         content: "훌륭한 서비스에 감동받았습니다.",
         created_at: "2023-10-06",
-        guest_book_profile_img: require("../../assets/photodummy2.jpg"),
+        profile_img: require("../../assets/photodummy2.jpg"),
       },
     ],
   };
@@ -508,7 +508,7 @@ const ExhibitionProfile: React.FC = () => {
                 }}
               >
                 <Image
-                  source={e.guest_book_profile_img}
+                  source={e.profile_img}
                   style={{ width: 50, height: 50, borderRadius: 50 }}
                 />
                 <View>
