@@ -131,14 +131,17 @@ const DarkRoom: React.FC = () => {
 
   //슬라이드3 관련-----------------------------------------------------------------------------
   //Date Picker 시작----------------------------------------
-  const [date, setDate] = useState<Date>(new Date());
-  // console.log(date);
-  //위 콘솔 로그 : 2023-11-09T03:21:10.405Z -> 파싱 필요
-  const [show, setShow] = useState<Boolean | false>(false);
+  const [date, setDate] = useState(new Date());
+  const [dateText, setDateText] = useState<string>("촬영 날짜를 입력하세요.");
+  const [show, setShow] = useState<boolean>(false);
+
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
-    setDate(currentDate);
+    if (event.type === "set" && selectedDate) {
+      console.log(selectedDate);
+      setDate(selectedDate);
+      setDateText(selectedDate.toISOString().split("T")[0]);
+    }
+    setShow(false); // Picker를 닫습니다.
   };
 
   const showDatepicker = () => {
@@ -522,15 +525,28 @@ const DarkRoom: React.FC = () => {
                     >
                       Time
                     </Text>
-                    <TouchableOpacity onPress={showDatepicker}>
-                      <Text style={{ color: "white" }}>Select Date</Text>
+                    <TouchableOpacity
+                      onPress={showDatepicker}
+                      style={{
+                        backgroundColor: "white",
+                        paddingHorizontal: 10,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          width: 200,
+                          paddingVertical: 3,
+                          color: "#7D7D7D",
+                        }}
+                      >
+                        {dateText}
+                      </Text>
                     </TouchableOpacity>
                     {show && (
                       <DateTimePicker
                         testID="dateTimePicker"
-                        value={date}
+                        value={date} 
                         mode={"date"}
-                        is24Hour={true}
                         display="default"
                         onChange={onChange}
                       />
