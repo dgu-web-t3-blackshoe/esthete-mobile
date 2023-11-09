@@ -96,6 +96,12 @@ const DarkRoom: React.FC = () => {
     "town",
   ]);
 
+  //맵뷰 여는 함수
+  const clearLocation = () => {
+    setSelectedLocation(null);
+    setShowMap(!showMap);
+  };
+
   //위도 경도로 위치 정보 받아오는 함수
   const getLocationInfo = async (latitude: number, longitude: number) => {
     try {
@@ -450,6 +456,7 @@ const DarkRoom: React.FC = () => {
                       width: 300,
                     }}
                   >
+                    {/* 위치 정보 타이틀 시작 */}
                     <View
                       style={{
                         ...GlobalStyles.rowSpaceBetweenContainer,
@@ -481,9 +488,10 @@ const DarkRoom: React.FC = () => {
                         </Text>
                       )}
                     </View>
+                    {/* 위치 정보 타이틀 끝*/}
 
                     {/* <Spinner size="small" color="white" /> */}
-
+                    {/* 위치 정보 지도 맵뷰 시작 */}
                     {selectedLocation === null ? (
                       <TouchableOpacity
                         style={{
@@ -493,31 +501,37 @@ const DarkRoom: React.FC = () => {
                           justifyContent: "center",
                           alignItems: "center",
                         }}
-                        onPress={() => setShowMap(!showMap)}
+                        onPress={clearLocation}
                       >
                         <Text>위치 정보를 입력하세요</Text>
                       </TouchableOpacity>
                     ) : (
-                      <MapView
-                        scrollEnabled={false}
+                      <TouchableOpacity
                         style={{ width: 300, height: 180 }}
-                        initialRegion={{
-                          latitude: selectedLocation.latitude,
-                          longitude: selectedLocation.longitude,
-                          latitudeDelta: 0.0922,
-                          longitudeDelta: 0.0421,
-                        }}
+                        onPress={clearLocation}
                       >
-                        <Marker
-                          coordinate={{
+                        <MapView
+                          scrollEnabled={false}
+                          style={{ width: 300, height: 180 }}
+                          initialRegion={{
                             latitude: selectedLocation.latitude,
                             longitude: selectedLocation.longitude,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
                           }}
-                          title={"내 위치"}
-                        />
-                      </MapView>
+                        >
+                          <Marker
+                            coordinate={{
+                              latitude: selectedLocation.latitude,
+                              longitude: selectedLocation.longitude,
+                            }}
+                            title={"내 위치"}
+                          />
+                        </MapView>
+                      </TouchableOpacity>
                     )}
                   </View>
+                  {/* 위치 정보 지도 맵뷰 끝 */}
                 </View>
 
                 {/* 슬라이드3 날짜 etc */}
@@ -608,6 +622,7 @@ const DarkRoom: React.FC = () => {
                         height: 80,
                         backgroundColor: "white",
                       }}
+                      placeholder="사진 찍을 때 사용한 장비를 입력하세요."
                     />
                   </View>
                 </View>
