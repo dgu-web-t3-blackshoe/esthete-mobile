@@ -31,7 +31,7 @@ type RootStackParamList = {
   ExhibitionProfile: undefined;
   LightMap: undefined;
   DarkRoom: undefined;
-  // MyGallery: undefined;
+  MyGallery: undefined;
 };
 
 export const NavBar: React.FC<SvgProps> = ({ type }) => {
@@ -149,7 +149,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
                 //   );
                 // }
               } else {
-                navigation.navigate("ExhibitionProfile");
+                navigation.navigate("MyGallery");
                 // if (userId === null) {
                 //   Alert.alert(
                 //     "알림",

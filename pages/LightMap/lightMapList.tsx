@@ -109,15 +109,7 @@ const LightMapList: React.FC = ({ route }: any) => {
           // source={{ uri: item.story }}
           source={item.photo}
           style={{ width: "100%", height: "100%" }}
-        >
-          <View
-            style={{
-              flex: 1,
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          ></View>
-        </ImageBackground>
+        />
       </TouchableOpacity>
     );
   };
