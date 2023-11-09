@@ -407,7 +407,6 @@ const DarkRoom: React.FC = () => {
                     <View
                       style={{
                         ...GlobalStyles.rowSpaceBetweenContainer,
-                        
                         marginBottom: 20,
                       }}
                     >
@@ -424,7 +423,7 @@ const DarkRoom: React.FC = () => {
                         <Text
                           style={{
                             color: "white",
-                     
+
                             width: 200,
                           }}
                         >
