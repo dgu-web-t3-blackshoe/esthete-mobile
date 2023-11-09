@@ -27,6 +27,9 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 type RootStackParamList = {
   MyPhotographers: undefined;
+  Photo: {
+    photo_id: string;
+  };
 };
 
 //넓이 계산
@@ -113,7 +116,7 @@ const MyGallery: React.FC = () => {
       {
         photo_id: "1",
         title: "",
-        photo: "",
+        photo: require("../../assets/photodummy1.jpg"),
         user_id: "",
         nickname: "",
         created_at: "",
@@ -121,18 +124,83 @@ const MyGallery: React.FC = () => {
       {
         photo_id: "2",
         title: "",
-        photo: "",
+        photo: require("../../assets/photodummy2.jpg"),
         user_id: "",
         nickname: "",
         created_at: "",
       },
       {
-        photo_id: "2",
+        photo_id: "3",
         title: "",
-        photo: "",
+        photo: require("../../assets/photodummy3.jpg"),
         user_id: "",
         nickname: "",
         created_at: "",
+      },
+      {
+        photo_id: "4",
+        title: "",
+        photo: require("../../assets/photodummy4.jpg"),
+        user_id: "",
+        nickname: "",
+        created_at: "",
+      },
+    ],
+  };
+
+  //사진 나열
+  const renderItem = ({ item }: any): React.JSX.Element => {
+    return (
+      <TouchableOpacity
+        style={{
+          width: size / 3,
+          height: size / 3,
+          aspectRatio: 1,
+        }}
+        onPress={() => {
+          navigation.navigate("Photo", {
+            photo_id: item.photo_id,
+          });
+        }}
+      >
+        <ImageBackground
+          // source={{ uri: item.story }}
+          source={item.photo}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  //내 전시 목록 조회
+  //URL:
+  //users/{user_id}/exhibitions
+  //DUMMY
+  const ExhibitionDummy = {
+    content: [
+      {
+        exhibition_id: "1",
+        title: "전시1",
+        description: "전시 설명1",
+        thumnail: require("../../assets/photodummy1.jpg"),
+      },
+      {
+        exhibition_id: "2",
+        title: "전시2",
+        description: "전시 설명2",
+        thumnail: require("../../assets/photodummy2.jpg"),
+      },
+      {
+        exhibition_id: "3",
+        title: "전시3",
+        description: "전시 설명3",
+        thumnail: require("../../assets/photodummy3.jpg"),
+      },
+      {
+        exhibition_id: "4",
+        title: "전시3",
+        description: "전시 설명4",
+        thumnail: require("../../assets/photodummy4.jpg"),
       },
     ],
   };
@@ -272,6 +340,7 @@ const MyGallery: React.FC = () => {
               flexDirection: "row",
               width: "100%",
               justifyContent: "space-between",
+              marginBottom: 20,
             }}
           >
             <TouchableOpacity
@@ -293,15 +362,69 @@ const MyGallery: React.FC = () => {
               <Text style={styles.tapText}>GuestBook</Text>
             </TouchableOpacity>
           </View>
-        </View>
+          {selectedOption === "Photographs" ? (
+            // 내 사진 확인 시작
+            <FlatList
+              scrollEnabled={false}
+              data={MyPhoto.content}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.photo_id}
+              numColumns={3}
+              // columnWrapperStyle={{ marginBottom: 5 }}
+              style={{
+                flex: 1,
+                backgroundColor: "black",
+                marginBottom: 20,
+              }}
+              // onEndReached={loadMoreData}
+            />
+          ) : // 내 사진 확인 끝
+          selectedOption === "Exhibitions" ? (
+            <View style={{ paddingBottom: 20 }}>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "flex-end",
+                  paddingHorizontal: 20,
+                }}
+              >
+                <TouchableOpacity>
+                  <Text style={{ color: "white" }}>New Exhibition</Text>
+                </TouchableOpacity>
+              </View>
 
-        {selectedOption === "Photographs" ? (
-          <TouchableOpacity></TouchableOpacity>
-        ) : selectedOption === "Exhibitions" ? (
-          <></>
-        ) : (
-          <></>
-        )}
+              {ExhibitionDummy.content.map((e, i) => {
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={{
+                      flexDirection: "row",
+                      marginHorizontal: 20,
+                      paddingVertical: 10,
+                      borderBottomWidth: 0.5,
+                      borderBottomColor: "white",
+                      gap: 20,
+                    }}
+                  >
+                    <Image
+                      source={e.thumnail}
+                      style={{ width: 80, height: 80 }}
+                    />
+                    <View style={{ gap: 5 }}>
+                      <Text style={{ color: "white", fontSize: 20 }}>
+                        {e.title}
+                      </Text>
+                      <Text style={{ color: "white" }}>{e.description}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <View></View>
+          )}
+        </View>
       </ScrollView>
 
       <NavBar type={SvgType.MyGallery} />
