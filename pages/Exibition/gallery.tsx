@@ -50,7 +50,7 @@ type RootStackParamList = {
 };
 
 //FunctionComponents
-const ExhibitionProfile: React.FC = () => {
+const Gallery: React.FC = ({ route }: any) => {
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -535,6 +535,6 @@ const ExhibitionProfile: React.FC = () => {
   );
 };
 
-export default ExhibitionProfile;
+export default Gallery;
 
 const styles = StyleSheet.create({});

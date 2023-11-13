@@ -127,6 +127,7 @@ const AllSupportingPG: React.FC = () => {
             {MySupportDummy.content.map((e, i) => {
               return (
                 <View
+                  key={i}
                   style={{
                     borderBottomWidth: 1,
                     borderTopWidth: 1,
@@ -205,7 +206,7 @@ const AllSupportingPG: React.FC = () => {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              alignItems:'center',
+              alignItems: "center",
               width: "100%",
               backgroundColor: "white",
               paddingHorizontal: 20,

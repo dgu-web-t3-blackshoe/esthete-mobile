@@ -22,7 +22,7 @@ import { Logo } from "./assets/svg";
 import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 
-import ExhibitionProfile from "./pages/Exibition/exibitionProfile";
+import Gallery from "./pages/Exibition/gallery";
 import Exhibition from "./pages/Exibition/exibition";
 import Room from "./pages/Exibition/room";
 
@@ -91,8 +91,8 @@ export default function App() {
             }}
           />
           <Stack.Screen
-            name="ExhibitionProfile"
-            component={ExhibitionProfile}
+            name="Gallery"
+            component={Gallery}
             options={{
               header: () => <CustomHeader />,
             }}
