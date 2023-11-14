@@ -18,7 +18,6 @@ import {
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import { GenreArray } from "../../components/constants";
-import CheckBox from "@react-native-community/checkbox";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -91,14 +90,16 @@ const AllSupportingPG: React.FC = () => {
     });
   };
 
+  //필터--------------------------------------------------------------------------
   //필터 여는 상태
   const [showFilter, setShowFilter] = useState<boolean>(false);
 
-  //필터 중 정렬 방식 선택 상태
+  //정렬--------------------------------------------------------------------
+  //정렬 방식 선택 상태
   const [selectedSortOption, setSelectedSortOption] =
     useState<string>("Recent");
 
-  //필터 정렬 방식 라디오 버튼 컴포넌트
+  //정렬 방식 라디오 버튼 컴포넌트
   const RadioButton = ({ text, onPress, selected }: any) => (
     <TouchableOpacity
       style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}
@@ -133,14 +134,20 @@ const AllSupportingPG: React.FC = () => {
     </TouchableOpacity>
   );
 
-  //필터 중 장르 선택 상태
-  const [checkedItems, setCheckedItems] = useState<any>(null);
-
-  const handleCheck = (itemName: string) => {
-    setCheckedItems((prevState: { [x: string]: any }) => ({
-      ...prevState,
-      [itemName]: !prevState[itemName],
-    }));
+  //장르--------------------------------------------------------------------
+  //장르 선택 상태
+  const [checkedItems, setCheckedItems] = useState<Array<string>>([]);
+  
+  //장르 선택 함수
+  const handleCheck = (item: string) => {
+    if (checkedItems.includes(item)) {
+      const temp = checkedItems.filter((e) => {
+        return e !== item;
+      });
+      setCheckedItems(temp);
+    } else {
+      setCheckedItems((prev) => [...prev, item]);
+    }
   };
 
   return (
@@ -315,7 +322,13 @@ const AllSupportingPG: React.FC = () => {
           </View>
           {/* 맨 위에 필터 타이틀, Apply 버튼 뷰 끝 */}
 
-          <View style={{ paddingHorizontal: 20, marginTop: 10 }}>
+          <View
+            style={{
+              paddingHorizontal: 20,
+              marginTop: 10,
+              flex: 1,
+            }}
+          >
             <Text style={styles.textBox}>Nickname</Text>
             <TextInput
               style={{
@@ -329,52 +342,79 @@ const AllSupportingPG: React.FC = () => {
               }}
               placeholder="후원 중인 작가를 검색해보세요."
             />
-
-            <Text style={styles.textBox}>Sorting</Text>
-            {/* 정렬 라디오버튼 시작 */}
-            <View
-              style={{
-                paddingTop: 10,
-                borderBottomWidth: 0.8,
-                borderBlockColor: "white",
-                marginBottom: 10,
-              }}
-            >
-              <RadioButton
-                text="Recent"
-                selected={selectedSortOption === "Recent"}
-                onPress={() => setSelectedSortOption("Recent")}
-              />
-              <RadioButton
-                text="Trending"
-                selected={selectedSortOption === "Trending"}
-                onPress={() => setSelectedSortOption("Trending")}
-              />
-              <RadioButton
-                text="Popular"
-                selected={selectedSortOption === "Popular"}
-                onPress={() => setSelectedSortOption("Popular")}
-              />
-            </View>
-            {/* 정렬 라디오버튼 끝 */}
-
-            <Text style={styles.textBox}>Genre</Text>
-            {GenreArray.map((item, index) => (
+            <ScrollView style={{ flex: 1 }}>
+              <Text style={styles.textBox}>Sorting</Text>
+              {/* 정렬 라디오버튼 시작 */}
               <View
-                key={index}
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginVertical: 5,
+                  paddingTop: 10,
+                  borderBottomWidth: 0.8,
+                  borderBlockColor: "white",
+                  marginBottom: 10,
                 }}
               >
-                <CheckBox
-                  value={checkedItems[item]}
-                  onValueChange={() => handleCheck(item)}
+                <RadioButton
+                  text="Recent"
+                  selected={selectedSortOption === "Recent"}
+                  onPress={() => setSelectedSortOption("Recent")}
                 />
-                <Text>{item}</Text>
+                <RadioButton
+                  text="Trending"
+                  selected={selectedSortOption === "Trending"}
+                  onPress={() => setSelectedSortOption("Trending")}
+                />
+                <RadioButton
+                  text="Popular"
+                  selected={selectedSortOption === "Popular"}
+                  onPress={() => setSelectedSortOption("Popular")}
+                />
               </View>
-            ))}
+              {/* 정렬 라디오버튼 끝 */}
+
+
+              {/* 장르 체크박스 시작 */}
+              <Text style={styles.textBox}>Genre</Text>
+              <View
+                style={{
+                  borderBottomWidth: 0.8,
+                  borderColor: "white",
+                  marginBottom: 20,
+                  paddingHorizontal: 5,
+                  paddingTop: 7,
+                  paddingBottom: 7,
+                }}
+              >
+                {GenreArray.map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                      marginVertical: 5,
+                      width: "100%",
+                    }}
+                    onPress={() => {
+                      handleCheck(item);
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 13,
+                        height: 13,
+                        backgroundColor: checkedItems.includes(item)
+                          ? "#FFA800"
+                          : "white",
+                        borderWidth: 1,
+                        borderColor: "white",
+                      }}
+                    />
+                    <Text style={{ color: "white", fontSize: 16 }}>{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              {/* 장르 체크박스 끝 */}
+            </ScrollView>
           </View>
         </View>
       )}
