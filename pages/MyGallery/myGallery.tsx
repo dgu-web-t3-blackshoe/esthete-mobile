@@ -26,10 +26,12 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
 type RootStackParamList = {
-  MyPhotographers: undefined;
-  Photo: {
-    photo_id: string;
+  Gallery: {
+    user_id: string;
+    profile_img: string;
+    nickname: string;
   };
   Exhibition: {
     exhibition_id: string;
@@ -39,6 +41,10 @@ type RootStackParamList = {
     user_id: string;
     profile_img: string;
     nickname: string;
+  };
+  MyPhotographers: undefined;
+  Photo: {
+    photo_id: string;
   };
   AllSupportingPG: undefined;
 };
@@ -310,6 +316,13 @@ const MyGallery: React.FC = () => {
                   style={{
                     alignItems: "center",
                     justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    navigation.navigate("Gallery", {
+                      user_id: e.photographer_id,
+                      profile_img: e.profile_img,
+                      nickname: e.nickname,
+                    });
                   }}
                 >
                   <Image
