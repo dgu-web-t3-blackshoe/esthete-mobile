@@ -22,15 +22,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
-  Gallery: {
-    exhibition_id: string;
-    title: string;
-    discription: string;
-    thumbnail: string;
-    user_id: string;
-    profile_img: string;
-    name: string;
-  };
+  Gallery: undefined;
 };
 
 // 앱이 시작하면 현재 위치를 전역 상태로 관리할 생각
@@ -56,15 +48,7 @@ const InitialPage: React.FC = () => {
         })
       );
 
-      navigation.navigate("Gallery", {
-        exhibition_id: "",
-        title: "",
-        discription: "",
-        thumbnail: "",
-        user_id: "",
-        profile_img: "",
-        name: "",
-      });
+      navigation.navigate("Gallery");
     })();
   }, []);
 
