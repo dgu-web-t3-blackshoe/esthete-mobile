@@ -32,8 +32,9 @@ import LightMapList from "./pages/LightMap/lightMapList";
 import DarkRoom from "./pages/DarkRoom/darkRoom";
 
 import MyGallery from "./pages/MyGallery/myGallery";
-import MyPhotographers from "./pages/MyGallery/myPhotographers";
 import AllSupportingPG from "./pages/MyGallery/allSupportingPG";
+import EditProfile from "./pages/MyGallery/editProfile";
+import NewExhibition from "./pages/MyGallery/newExhibition";
 
 //Redux
 import { Provider } from "react-redux";
@@ -154,16 +155,22 @@ export default function App() {
           />
 
           <Stack.Screen
-            name="MyPhotographers"
-            component={MyPhotographers}
+            name="AllSupportingPG"
+            component={AllSupportingPG}
             options={{
               header: () => <CustomHeader2 />,
             }}
           />
-          
           <Stack.Screen
-            name="AllSupportingPG"
-            component={AllSupportingPG}
+            name="EditProfile"
+            component={EditProfile}
+            options={{
+              header: () => <CustomHeader2 />,
+            }}
+          />
+          <Stack.Screen
+            name="NewExhibition"
+            component={NewExhibition}
             options={{
               header: () => <CustomHeader2 />,
             }}

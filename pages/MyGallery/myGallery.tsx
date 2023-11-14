@@ -42,7 +42,14 @@ type RootStackParamList = {
     profile_img: string;
     nickname: string;
   };
-  MyPhotographers: undefined;
+  EditProfile: {
+    user_id: string;
+    profile_img: string;
+    nickname: string;
+    biography: string;
+    genres: Array<string>;
+    equipments: Array<string>;
+  };
   Photo: {
     photo_id: string;
   };
@@ -117,8 +124,8 @@ const MyGallery: React.FC = () => {
     profile_img: require("../../assets/photodummy4.jpg"),
     nickname: "Jekoo",
     biography: "나랏말싸미 동국에 달아 사맛디 아니할세",
-    genres: ["Animation", "Comics"],
-    equipments: ["갤럭시"],
+    genres: ["Portrait", "Sports"],
+    equipments: ["갤럭시", "아이폰"],
   };
 
   //탭 이동 시 사용할 상태
@@ -280,9 +287,7 @@ const MyGallery: React.FC = () => {
             alignItems: "flex-end",
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "500" }}>
-            Supporting Photographers
-          </Text>
+          <Text style={GlobalStyles.bigFont}>Supporting Photographers</Text>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("AllSupportingPG");
@@ -355,7 +360,18 @@ const MyGallery: React.FC = () => {
             <Text style={{ fontSize: 20, fontWeight: "500", color: "white" }}>
               My Profile
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("EditProfile", {
+                  user_id: userDummy.user_id,
+                  profile_img: userDummy.profile_img,
+                  nickname: userDummy.nickname,
+                  biography: userDummy.biography,
+                  genres: userDummy.genres,
+                  equipments: userDummy.equipments,
+                })
+              }
+            >
               <Text style={{ color: "white" }}>Edit</Text>
             </TouchableOpacity>
           </View>

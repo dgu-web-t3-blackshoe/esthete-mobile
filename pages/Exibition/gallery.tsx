@@ -360,10 +360,7 @@ const Gallery: React.FC = ({ route }: any) => {
         }}
       >
         <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "500",
-          }}
+          style={GlobalStyles.bigFont}
         >
           {userDataDummy.nickname}'s Gallery
         </Text>

@@ -6,6 +6,10 @@ export default StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 20,
   },
+  bigFont: {
+    fontSize: 20,
+    fontWeight: "500",
+  },
 
   rowSpaceBetweenContainer: {
     flexDirection: "row",

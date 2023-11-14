@@ -1,4 +1,4 @@
-//6-4
+//6-4 6-5
 import React, { useState, useRef, useEffect } from "react";
 
 //요소
@@ -137,7 +137,7 @@ const AllSupportingPG: React.FC = () => {
   //장르--------------------------------------------------------------------
   //장르 선택 상태
   const [checkedItems, setCheckedItems] = useState<Array<string>>([]);
-  
+
   //장르 선택 함수
   const handleCheck = (item: string) => {
     if (checkedItems.includes(item)) {
@@ -312,7 +312,6 @@ const AllSupportingPG: React.FC = () => {
               <Text
                 style={{
                   color: "white",
-
                   fontSize: 17,
                 }}
               >
@@ -370,7 +369,6 @@ const AllSupportingPG: React.FC = () => {
                 />
               </View>
               {/* 정렬 라디오버튼 끝 */}
-
 
               {/* 장르 체크박스 시작 */}
               <Text style={styles.textBox}>Genre</Text>
