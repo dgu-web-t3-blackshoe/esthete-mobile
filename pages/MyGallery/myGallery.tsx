@@ -269,6 +269,7 @@ const MyGallery: React.FC = () => {
     totalElements: 4,
   };
 
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={{ flex: 1 }}>
@@ -318,7 +319,7 @@ const MyGallery: React.FC = () => {
                     justifyContent: "center",
                   }}
                   onPress={() => {
-                    navigation.navigate("Gallery", {
+                    navigation.push("Gallery", {
                       user_id: e.photographer_id,
                       profile_img: e.profile_img,
                       nickname: e.nickname,

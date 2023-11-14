@@ -52,7 +52,7 @@ type RootStackParamList = {
 //FunctionComponents
 const Gallery: React.FC = ({ route }: any) => {
   //라우트.파람스가 있는지 봐서 데이터 확인
-  
+
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 

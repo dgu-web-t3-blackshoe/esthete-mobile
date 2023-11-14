@@ -241,7 +241,7 @@ const AllSupportingPG: React.FC = () => {
                   <View style={{ width: "100%", alignItems: "flex-end" }}>
                     <TouchableOpacity
                       onPress={() => {
-                        navigation.navigate("Gallery", {
+                        navigation.push("Gallery", {
                           user_id: e.photographer_id,
                           profile_img: e.profile_img,
                           nickname: e.nickname,

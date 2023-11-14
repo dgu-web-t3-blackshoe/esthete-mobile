@@ -152,6 +152,7 @@ export default function App() {
               header: () => <CustomHeader2 />,
             }}
           />
+
           <Stack.Screen
             name="MyPhotographers"
             component={MyPhotographers}
@@ -159,6 +160,7 @@ export default function App() {
               header: () => <CustomHeader2 />,
             }}
           />
+          
           <Stack.Screen
             name="AllSupportingPG"
             component={AllSupportingPG}

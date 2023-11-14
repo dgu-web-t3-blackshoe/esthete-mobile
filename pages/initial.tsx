@@ -52,7 +52,7 @@ const InitialPage: React.FC = () => {
     })();
   }, []);
 
-  return <></>;
+  return <Text>hhi</Text>;
 };
 
 export default InitialPage;
