@@ -22,9 +22,8 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
-  ExhibitionProfile: undefined;
+  Gallery: undefined;
 };
-
 
 // 앱이 시작하면 현재 위치를 전역 상태로 관리할 생각
 const InitialPage: React.FC = () => {
@@ -48,14 +47,12 @@ const InitialPage: React.FC = () => {
           lon: currentLocation.coords.longitude,
         })
       );
-      
 
-      navigation.navigate("ExhibitionProfile");
-
+      navigation.navigate("Gallery");
     })();
   }, []);
 
-  return <></>;
+  return <Text>hhi</Text>;
 };
 
 export default InitialPage;

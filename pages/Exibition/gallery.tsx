@@ -1,5 +1,7 @@
 //1-1 1-2 1-3
 import React, { useState, useRef, useEffect } from "react";
+
+//요소
 import {
   Image,
   Alert,
@@ -48,7 +50,9 @@ type RootStackParamList = {
 };
 
 //FunctionComponents
-const ExhibitionProfile: React.FC = () => {
+const Gallery: React.FC = ({ route }: any) => {
+  //라우트.파람스가 있는지 봐서 데이터 확인
+
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -533,6 +537,6 @@ const ExhibitionProfile: React.FC = () => {
   );
 };
 
-export default ExhibitionProfile;
+export default Gallery;
 
 const styles = StyleSheet.create({});

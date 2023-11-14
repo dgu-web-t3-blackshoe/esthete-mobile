@@ -19,7 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
-  ExhibitionProfile: undefined;
+  Gallery: undefined;
   Room: {
     exhibition_id: string;
     exhibition_title: string;
@@ -199,7 +199,7 @@ const Exhibition: React.FC = ({ route }: any) => {
                   alignItems: "flex-end",
                   gap: 10,
                 }}
-                onPress={() => navigation.navigate("ExhibitionProfile")}
+                onPress={() => navigation.navigate("Gallery")}
               >
                 <Image
                   source={route.params.profile_img}

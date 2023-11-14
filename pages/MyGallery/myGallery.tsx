@@ -1,3 +1,4 @@
+//6-1 6-2 6-3
 import React, { useState } from "react";
 
 //요소
@@ -25,10 +26,12 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
 type RootStackParamList = {
-  MyPhotographers: undefined;
-  Photo: {
-    photo_id: string;
+  Gallery: {
+    user_id: string;
+    profile_img: string;
+    nickname: string;
   };
   Exhibition: {
     exhibition_id: string;
@@ -39,6 +42,11 @@ type RootStackParamList = {
     profile_img: string;
     nickname: string;
   };
+  MyPhotographers: undefined;
+  Photo: {
+    photo_id: string;
+  };
+  AllSupportingPG: undefined;
 };
 
 //넓이 계산
@@ -275,7 +283,11 @@ const MyGallery: React.FC = () => {
           <Text style={{ fontSize: 20, fontWeight: "500" }}>
             Supporting Photographers
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("AllSupportingPG");
+            }}
+          >
             <Text>See All</Text>
           </TouchableOpacity>
         </View>
@@ -305,6 +317,13 @@ const MyGallery: React.FC = () => {
                     alignItems: "center",
                     justifyContent: "center",
                   }}
+                  onPress={() => {
+                    navigation.push("Gallery", {
+                      user_id: e.photographer_id,
+                      profile_img: e.profile_img,
+                      nickname: e.nickname,
+                    });
+                  }}
                 >
                   <Image
                     source={e.profile_img}
@@ -313,7 +332,7 @@ const MyGallery: React.FC = () => {
                       height: e.has_new ? 75 : 70,
                       borderRadius: 50,
                       borderWidth: e.has_new ? 3 : 0,
-                      borderColor: e.has_new ? "#FFA800" : "none",
+                      borderColor: "#FFA800",
                     }}
                   />
                   <Text>{displayedName}</Text>
