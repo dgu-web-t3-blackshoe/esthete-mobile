@@ -17,6 +17,8 @@ import {
   TextInput,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
+import { GenreArray } from "../../components/constants";
+import CheckBox from "@react-native-community/checkbox";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -111,6 +113,7 @@ const AllSupportingPG: React.FC = () => {
           borderColor: "#000",
           alignItems: "center",
           justifyContent: "center",
+          backgroundColor: "white",
         }}
       >
         {selected ? (
@@ -119,14 +122,26 @@ const AllSupportingPG: React.FC = () => {
               height: 10,
               width: 10,
               borderRadius: 5,
-              backgroundColor: "#000",
+              backgroundColor: "#FFA800",
             }}
           />
         ) : null}
       </View>
-      <Text style={{ marginLeft: 10 }}>{text}</Text>
+      <Text style={{ marginLeft: 10, color: "white", fontSize: 16 }}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
+
+  //필터 중 장르 선택 상태
+  const [checkedItems, setCheckedItems] = useState<any>(null);
+
+  const handleCheck = (itemName: string) => {
+    setCheckedItems((prevState: { [x: string]: any }) => ({
+      ...prevState,
+      [itemName]: !prevState[itemName],
+    }));
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -316,22 +331,50 @@ const AllSupportingPG: React.FC = () => {
             />
 
             <Text style={styles.textBox}>Sorting</Text>
-            <RadioButton
-              text="Recent"
-              selected={selectedSortOption === "Recent"}
-              onPress={() => setSelectedSortOption("Recent")}
-            />
-            <RadioButton
-              text="Trending"
-              selected={selectedSortOption === "Trending"}
-              onPress={() => setSelectedSortOption("Trending")}
-            />
-            <RadioButton
-              text="Popular"
-              selected={selectedSortOption === "Popular"}
-              onPress={() => setSelectedSortOption("Popular")}
-            />
+            {/* 정렬 라디오버튼 시작 */}
+            <View
+              style={{
+                paddingTop: 10,
+                borderBottomWidth: 0.8,
+                borderBlockColor: "white",
+                marginBottom: 10,
+              }}
+            >
+              <RadioButton
+                text="Recent"
+                selected={selectedSortOption === "Recent"}
+                onPress={() => setSelectedSortOption("Recent")}
+              />
+              <RadioButton
+                text="Trending"
+                selected={selectedSortOption === "Trending"}
+                onPress={() => setSelectedSortOption("Trending")}
+              />
+              <RadioButton
+                text="Popular"
+                selected={selectedSortOption === "Popular"}
+                onPress={() => setSelectedSortOption("Popular")}
+              />
+            </View>
+            {/* 정렬 라디오버튼 끝 */}
+
             <Text style={styles.textBox}>Genre</Text>
+            {GenreArray.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 5,
+                }}
+              >
+                <CheckBox
+                  value={checkedItems[item]}
+                  onValueChange={() => handleCheck(item)}
+                />
+                <Text>{item}</Text>
+              </View>
+            ))}
           </View>
         </View>
       )}

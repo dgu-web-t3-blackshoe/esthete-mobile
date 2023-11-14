@@ -269,7 +269,6 @@ const MyGallery: React.FC = () => {
     totalElements: 4,
   };
 
-  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={{ flex: 1 }}>
