@@ -50,6 +50,9 @@ type RootStackParamList = {
     genres: Array<string>;
     equipments: Array<string>;
   };
+  NewExhibition: {
+    myPhotos: Array<object>;
+  };
   Photo: {
     photo_id: string;
   };
@@ -546,7 +549,13 @@ const MyGallery: React.FC = () => {
                   paddingHorizontal: 20,
                 }}
               >
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("NewExhibition", {
+                      myPhotos: MyPhoto.content,
+                    })
+                  }
+                >
                   <Text style={{ color: "white" }}>New Exhibition</Text>
                 </TouchableOpacity>
               </View>

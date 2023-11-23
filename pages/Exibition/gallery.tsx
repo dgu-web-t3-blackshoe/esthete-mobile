@@ -15,6 +15,8 @@ import {
   ScrollView,
   View,
   TextInput,
+  Animated,
+  PanResponder,
 } from "react-native";
 
 //libs
@@ -55,6 +57,58 @@ const Gallery: React.FC = ({ route }: any) => {
 
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  //좌우 제스처
+  // const pan = useRef(new Animated.ValueXY()).current;
+
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onMoveShouldSetPanResponder: (evt, gestureState) => {
+  //       const isHorizontalSwipe =
+  //         Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+  //       console.log("Swipe Detected:", isHorizontalSwipe);
+  //       return isHorizontalSwipe;
+  //     },
+  //     onPanResponderRelease: (evt, gestureState) => {
+  //       if (gestureState.dx > 0) {
+  //         console.log("Right Swipe");
+  //         // 오른쪽 스와이프 시 실행할 함수
+  //       } else {
+  //         console.log("Left Swipe");
+  //         // 왼쪽 스와이프 시 실행할 함수
+  //       }
+  //     },
+  //   })
+  // ).current;
+
+  //좌우 제스처 2
+  const rotate = useRef(new Animated.Value(0)).current; // 회전 상태
+  const rotateInterpolate = rotate.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ["-360deg", "360deg"],
+  });
+  console.log("render");
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // 스와이프에 따라 회전값 조정
+        rotate.setValue(gestureState.dx / 1000);
+        // 회전 속도 조정
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+          Animated.spring(rotate, {
+            toValue: 0,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    })
+  ).current;
 
   //방명록 모달
   const GuestBookModal = useRef<Modalize>(null);
@@ -351,137 +405,149 @@ const Gallery: React.FC = ({ route }: any) => {
   return (
     // (API연결시 랜더링 전 data 있는지 체크 후 랜더링 로직 추가)
     <SafeAreaView style={{ flex: 1 }}>
-      {/* 1-1 맨 위 A's Gallery, Support Button 시작*/}
-      <View
-        style={{
-          ...GlobalStyles.rowSpaceBetweenContainer,
-          backgroundColor: "white",
-          paddingHorizontal: 20,
-        }}
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={[
+          {
+            flex: 1,
+          },
+          {
+            transform: [{ perspective: 1000 }, { rotateY: rotateInterpolate }],
+          },
+        ]}
       >
-        <Text
-          style={GlobalStyles.bigFont}
-        >
-          {userDataDummy.nickname}'s Gallery
-        </Text>
-        <TouchableOpacity
-          onPress={submitSupport}
-          style={GlobalStyles.backgroundBlackBox}
-        >
-          <Text
-            style={{
-              fontSize: 17,
-              color: "white",
-            }}
-          >
-            Support
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {/* 1-1 맨 위 A's Gallery, Support Button 끝*/}
-      <ScrollView
-        style={{ ...GlobalStyles.container, backgroundColor: "black" }}
-      >
-        {/* 1-1 프로필 사진, Biography, 방명록 아이콘 시작*/}
+        {/* 1-1 맨 위 A's Gallery, Support Button 시작*/}
         <View
           style={{
             ...GlobalStyles.rowSpaceBetweenContainer,
-            alignItems: "flex-start",
-            marginTop: 15,
+            backgroundColor: "white",
+            paddingHorizontal: 20,
           }}
         >
-          <View style={{ backgroundColor: "#E3E3E3" }}>
-            <ProfilePhoto />
-          </View>
-
-          {/* <Image source={{ uri: userDataDummy.profile_img }} /> */}
-          <Text style={{ width: 130, color: "white" }}>
-            {userDataDummy.biography}
+          <Text style={GlobalStyles.bigFont}>
+            {userDataDummy.nickname}'s Gallery
           </Text>
-
-          <TouchableOpacity onPress={openModal}>
-            <Icon name="reader-outline" size={27} color={"white"} />
+          <TouchableOpacity
+            onPress={submitSupport}
+            style={GlobalStyles.backgroundBlackBox}
+          >
+            <Text
+              style={{
+                fontSize: 17,
+                color: "white",
+              }}
+            >
+              Support
+            </Text>
           </TouchableOpacity>
         </View>
-        {/* 1-1 프로필 사진, Biography, 방명록 아이콘 끝*/}
+        {/* 1-1 맨 위 A's Gallery, Support Button 끝*/}
 
-        {/* 현재 전시회 부분 시작 */}
-        <Text style={{ color: "white", marginBottom: 10 }}>
-          {userDataDummy.genres.map((e, i) => {
-            return e + "  ";
-          })}
-        </Text>
-        <Text style={{ color: "white", marginBottom: 10 }}>
-          {userDataDummy.equipments.map((e, i) => {
-            return e + "  ";
-          })}
-        </Text>
-        <Text
-          style={{
-            fontSize: 17,
-            fontWeight: "500",
-            color: "white",
-            marginBottom: 10,
-          }}
+        <ScrollView
+          {...panResponder.panHandlers}
+          style={{ ...GlobalStyles.container, backgroundColor: "black" }}
         >
-          Current Exibition
-        </Text>
-        <TouchableOpacity
-          style={{ flexDirection: "row" }}
-          onPress={() => {
-            navigation.navigate("Exhibition", {
-              ...currentExibitionDummy,
-              user_id: userDataDummy.user_id,
-              profile_img: userDataDummy.profile_img,
-              nickname: userDataDummy.nickname,
-            });
-          }}
-        >
-          <ImageBackground
-            source={currentExibitionDummy.exhibition_thumbnail}
-            style={{ width: 120, height: 120 }}
+          {/* 1-1 프로필 사진, Biography, 방명록 아이콘 시작*/}
+          <View
+            style={{
+              ...GlobalStyles.rowSpaceBetweenContainer,
+              alignItems: "flex-start",
+              marginTop: 15,
+            }}
           >
-            {/* <View
+            <View style={{ backgroundColor: "#E3E3E3" }}>
+              <ProfilePhoto />
+            </View>
+
+            {/* <Image source={{ uri: userDataDummy.profile_img }} /> */}
+            <Text style={{ width: 130, color: "white" }}>
+              {userDataDummy.biography}
+            </Text>
+
+            <TouchableOpacity onPress={openModal}>
+              <Icon name="reader-outline" size={27} color={"white"} />
+            </TouchableOpacity>
+          </View>
+          {/* 1-1 프로필 사진, Biography, 방명록 아이콘 끝*/}
+
+          {/* 현재 전시회 부분 시작 */}
+          <Text style={{ color: "white", marginBottom: 10 }}>
+            {userDataDummy.genres.map((e, i) => {
+              return e + "  ";
+            })}
+          </Text>
+          <Text style={{ color: "white", marginBottom: 10 }}>
+            {userDataDummy.equipments.map((e, i) => {
+              return e + "  ";
+            })}
+          </Text>
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "500",
+              color: "white",
+              marginBottom: 10,
+            }}
+          >
+            Current Exibition
+          </Text>
+          <TouchableOpacity
+            style={{ flexDirection: "row" }}
+            onPress={() => {
+              navigation.navigate("Exhibition", {
+                ...currentExibitionDummy,
+                user_id: userDataDummy.user_id,
+                profile_img: userDataDummy.profile_img,
+                nickname: userDataDummy.nickname,
+              });
+            }}
+          >
+            <ImageBackground
+              source={currentExibitionDummy.exhibition_thumbnail}
+              style={{ width: 120, height: 120 }}
+            >
+              {/* <View
               style={{
                 flex: 1,
                 ...StyleSheet.absoluteFillObject,
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
               }}
             /> */}
-          </ImageBackground>
-          <View style={{ width: 120, marginLeft: 15 }}>
-            <Text style={{ fontWeight: "500", color: "white" }}>
-              {currentExibitionDummy.exhibition_title}
-            </Text>
-            <Text style={{ color: "white" }}>
-              {currentExibitionDummy.exhibition_discription}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        {/* 현재 전시회 부분 끝 */}
+            </ImageBackground>
+            <View style={{ width: 120, marginLeft: 15 }}>
+              <Text style={{ fontWeight: "500", color: "white" }}>
+                {currentExibitionDummy.exhibition_title}
+              </Text>
+              <Text style={{ color: "white" }}>
+                {currentExibitionDummy.exhibition_discription}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {/* 현재 전시회 부분 끝 */}
 
-        {/* 사진 나열 시작 */}
-        <Text
-          style={{
-            fontSize: 17,
-            fontWeight: "500",
-            marginVertical: 10,
-            color: "white",
-          }}
-        >
-          Photographs
-        </Text>
-        <FlatList
-          data={photoListDummy.content}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.photo_id}
-          numColumns={3}
-          scrollEnabled={false}
-          // columnWrapperStyle={{ marginBottom: 5 }}
-          style={{ marginBottom: 30 }}
-          // onEndReached={loadMoreData}
-        />
-      </ScrollView>
+          {/* 사진 나열 시작 */}
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "500",
+              marginVertical: 10,
+              color: "white",
+            }}
+          >
+            Photographs
+          </Text>
+          <FlatList
+            data={photoListDummy.content}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.photo_id}
+            numColumns={3}
+            scrollEnabled={false}
+            // columnWrapperStyle={{ marginBottom: 5 }}
+            style={{ marginBottom: 30 }}
+            // onEndReached={loadMoreData}
+          />
+        </ScrollView>
+      </Animated.View>
       <NavBar type={SvgType.Exibition} />
       <Modalize
         ref={GuestBookModal}

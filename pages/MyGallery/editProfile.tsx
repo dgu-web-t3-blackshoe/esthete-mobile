@@ -199,7 +199,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 5,
 
-    borderRadius: 4,
   },
   bigText: {
     color: "white",
