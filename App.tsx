@@ -11,6 +11,7 @@ import {
 
 //Gesture
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 //Navigation
 import { NavigationContainer } from "@react-navigation/native";
@@ -25,6 +26,7 @@ import { Logo } from "./assets/svg";
 import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 
+import Box from "./pages/Exibition/box";
 import Gallery from "./pages/Exibition/gallery";
 import Exhibition from "./pages/Exibition/exibition";
 import Room from "./pages/Exibition/room";
@@ -81,106 +83,115 @@ export default function App() {
   return (
     <Provider store={Store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="InitialPage"
-            screenOptions={{
-              animationEnabled: false,
-            }}
-          >
-            <Stack.Screen
-              name="InitialPage"
-              component={InitialPage}
-              options={{
-                header: () => <CustomHeader />,
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="InitialPage"
+              screenOptions={{
+                animationEnabled: false,
               }}
-            />
-            <Stack.Screen
-              name="Gallery"
-              component={Gallery}
-              options={{
-                header: () => <CustomHeader />,
-              }}
-            />
-            <Stack.Screen
-              name="Photo"
-              component={Photo}
-              options={{
-                header: () => <CustomHeader />,
-              }}
-            />
-            <Stack.Screen
-              name="Exhibition"
-              component={Exhibition}
-              options={{
-                header: () => <CustomHeader />,
-              }}
-            />
-            <Stack.Screen
-              name="Room"
-              component={Room}
-              options={{
-                header: () => <CustomHeader />,
-              }}
-            />
+            >
+              <Stack.Screen
+                name="Box"
+                component={Box}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
+              <Stack.Screen
+                name="InitialPage"
+                component={InitialPage}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
+              <Stack.Screen
+                name="Gallery"
+                component={Gallery}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
+              <Stack.Screen
+                name="Photo"
+                component={Photo}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
+              <Stack.Screen
+                name="Exhibition"
+                component={Exhibition}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
+              <Stack.Screen
+                name="Room"
+                component={Room}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
 
-            {/* Light Map */}
-            <Stack.Screen
-              name="LightMap"
-              component={LightMap}
-              options={{
-                header: () => <CustomHeader />,
-              }}
-            />
-            <Stack.Screen
-              name="LightMapList"
-              component={LightMapList}
-              options={{
-                header: () => <CustomHeader />,
-              }}
-            />
+              {/* Light Map */}
+              <Stack.Screen
+                name="LightMap"
+                component={LightMap}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
+              <Stack.Screen
+                name="LightMapList"
+                component={LightMapList}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
 
-            {/* Dark Room */}
-            <Stack.Screen
-              name="DarkRoom"
-              component={DarkRoom}
-              options={{
-                header: () => <CustomHeader2 />,
-              }}
-            />
+              {/* Dark Room */}
+              <Stack.Screen
+                name="DarkRoom"
+                component={DarkRoom}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
 
-            {/* My Gallery */}
-            <Stack.Screen
-              name="MyGallery"
-              component={MyGallery}
-              options={{
-                header: () => <CustomHeader2 />,
-              }}
-            />
+              {/* My Gallery */}
+              <Stack.Screen
+                name="MyGallery"
+                component={MyGallery}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
 
-            <Stack.Screen
-              name="AllSupportingPG"
-              component={AllSupportingPG}
-              options={{
-                header: () => <CustomHeader2 />,
-              }}
-            />
-            <Stack.Screen
-              name="EditProfile"
-              component={EditProfile}
-              options={{
-                header: () => <CustomHeader2 />,
-              }}
-            />
-            <Stack.Screen
-              name="NewExhibition"
-              component={NewExhibition}
-              options={{
-                header: () => <CustomHeader2 />,
-              }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+              <Stack.Screen
+                name="AllSupportingPG"
+                component={AllSupportingPG}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+              <Stack.Screen
+                name="EditProfile"
+                component={EditProfile}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+              <Stack.Screen
+                name="NewExhibition"
+                component={NewExhibition}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </Provider>
   );

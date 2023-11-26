@@ -60,23 +60,23 @@ const Exhibition: React.FC = ({ route }: any) => {
     rooms: [
       {
         room_id: "1",
-        title: "방1",
+        title: "영국",
         description:
-          "서해의 밝은 기상 한몸에 안고 경인벌 넓은 들에 뭉친 용사들",
-        thumnail: require("../../assets/photodummy1.jpg"),
+          "2022-07, London",
+        thumnail: require("../../assets/dummy/1.jpg"),
       },
       {
         room_id: "2",
-        title: "방2",
+        title: "프랑스",
         description:
-          "동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리 나라만세",
-        thumnail: require("../../assets/photodummy2.jpg"),
-      },
+          "2022-07, Paris",
+          thumnail: require("../../assets/dummy/2.jpg"),
+        },
       {
         room_id: "3",
-        title: "방3",
-        description: "찬란한 조국강산 겨례의 앞날 ",
-        thumnail: require("../../assets/photodummy2.jpg"),
+        title: "독일",
+        description: "2022-08, Berlin",
+        thumnail: require("../../assets/dummy/3.jpg"),
       },
     ],
   };

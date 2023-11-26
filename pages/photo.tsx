@@ -16,7 +16,19 @@ import { NavBar, SvgType } from "../components/navbar";
 import Swiper from "react-native-swiper";
 import MapView, { Marker } from "react-native-maps";
 
+//페이지 이동 타입
+
 const Photo: React.FC = () => {
+
+  //스위퍼 이동 시키는거
+  let swiperRef: any = null;
+  const goNext = () => {
+    if (swiperRef) swiperRef.scrollBy(1, true);
+  };
+  //<Swiper ref={(ref) => (swiperRef = ref)}>
+  //onPress={goNext} 
+  //이렇게 사용
+
   //사진 조회 API--------------------------------------------
   //URL: photos/{photo_id}
   //응답:
