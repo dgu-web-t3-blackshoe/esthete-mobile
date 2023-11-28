@@ -654,7 +654,7 @@ const MyGallery: React.FC = () => {
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("NewExhibition", {
-                        myPhotos: MyPhoto.content,
+                        myPhotos: myPhotoData.content,
                       })
                     }
                   >

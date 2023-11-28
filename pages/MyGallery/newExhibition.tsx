@@ -17,6 +17,7 @@ import {
   View,
   TextInput,
   KeyboardAvoidingView,
+  ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
@@ -32,53 +33,15 @@ import { StackNavigationProp } from "@react-navigation/stack";
 //넓이 계산
 const size = Dimensions.get("window").width;
 
-const NewExhibition: React.FC = () => {
+const NewExhibition: React.FC = ({ route }: any) => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
+  console.log("at newExhibition: ", route.params);
+  //input Data,
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<any | null>(null);
 
-  //내 사진 목록 조회
-  //URL:
-  //users/{user_id}/photos
-  //응답:
-  const MyPhoto = {
-    content: [
-      {
-        photo_id: "1",
-        title: "",
-        photo: require("../../assets/photodummy1.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "2",
-        title: "",
-        photo: require("../../assets/photodummy2.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "3",
-        title: "",
-        photo: require("../../assets/photodummy3.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "4",
-        title: "",
-        photo: require("../../assets/photodummy4.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-    ],
-    totalElements: 4,
-  };
-
-  //사진 나열
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
@@ -90,7 +53,7 @@ const NewExhibition: React.FC = () => {
       >
         <ImageBackground
           // source={{ uri: item.story }}
-          source={item.photo}
+          source={{ uri: item.photo_url }}
           style={{ width: "100%", height: "100%" }}
         />
       </TouchableOpacity>
@@ -113,87 +76,121 @@ const NewExhibition: React.FC = () => {
           <Text style={{ color: "white", fontSize: 17 }}>Add Room</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView
-        style={{ backgroundColor: "black", flex: 1, paddingHorizontal: 20 }}
-      >
-        <Text
-          style={{
-            fontSize: 17,
-            fontWeight: "500",
-            marginVertical: 15,
-            color: "white",
-          }}
-        >
-          Exhibition Title
-        </Text>
-        <TextInput
-          cursorColor={"#FFA800"}
-          placeholder="전시회 제목을 입력하세요."
-          style={{ backgroundColor: "white", textAlign: "center", height: 35 }}
-        />
-
-        <Text
-          style={{
-            fontSize: 17,
-            fontWeight: "500",
-            marginVertical: 15,
-            color: "white",
-          }}
-        >
-          Exhibition Description
-        </Text>
-        <TextInput
-          cursorColor={"#FFA800"}
-          placeholder="전시회 설명을 입력하세요."
-          style={{ backgroundColor: "white", textAlign: "center", height: 100 }}
-        />
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "flex-end",
-            marginVertical: 15,
-            gap: 10,
-          }}
+      {route.params.myPhotos ? (
+        <ScrollView
+          style={{ backgroundColor: "black", flex: 1, paddingHorizontal: 20 }}
         >
           <Text
             style={{
               fontSize: 17,
               fontWeight: "500",
-
+              marginVertical: 15,
               color: "white",
             }}
           >
-            Photographs
+            {title}
           </Text>
+          <TextInput
+            cursorColor={"#FFA800"}
+            placeholder="전시회 제목을 입력하세요."
+            style={{
+              backgroundColor: "white",
+              textAlign: "center",
+              height: 35,
+            }}
+          />
+
           <Text
             style={{
-              fontSize: 12,
-              color: "#c9c9c9",
+              fontSize: 17,
+              fontWeight: "500",
+              marginVertical: 15,
+              color: "white",
             }}
           >
-            전시회 대표 이미지를 선택하세요.
+            {description}
           </Text>
-        </View>
-        <FlatList
-          scrollEnabled={false}
-          data={MyPhoto.content}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.photo_id}
-          numColumns={3}
-          // columnWrapperStyle={{ marginBottom: 5 }}
+          <TextInput
+            cursorColor={"#FFA800"}
+            placeholder="전시회 설명을 입력하세요."
+            style={{
+              backgroundColor: "white",
+              textAlign: "center",
+              height: 100,
+            }}
+          />
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-end",
+              marginVertical: 15,
+              gap: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "500",
+
+                color: "white",
+              }}
+            >
+              Photographs
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#c9c9c9",
+              }}
+            >
+              전시회 대표 이미지를 선택하세요.
+            </Text>
+          </View>
+          <FlatList
+            scrollEnabled={false}
+            data={route.params.myPhotos}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.photo_id}
+            numColumns={3}
+            style={{
+              flex: 1,
+              backgroundColor: "black",
+              marginBottom: 20,
+            }}
+          />
+        </ScrollView>
+      ) : (
+        <View
           style={{
             flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
             backgroundColor: "black",
-            marginBottom: 20,
           }}
-          // onEndReached={loadMoreData}
-        />
-      </ScrollView>
-
+        >
+          <Spinner size="large" color="white" />
+        </View>
+      )}
       <NavBar type={SvgType.MyGallery} />
     </KeyboardAvoidingView>
   );
 };
 
 export default NewExhibition;
+
+const styles = StyleSheet.create({
+  button: {
+    alignItems: "center",
+    borderRadius: 5,
+    paddingVertical: 5,
+  },
+  buttonText: {
+    color: "black",
+    fontWeight: "600",
+    fontSize: 18,
+    letterSpacing: 3,
+  },
+});
