@@ -17,7 +17,11 @@ import {
   ScrollView,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
-import { GenreArray } from "../../components/constants";
+import {
+  GenreArray,
+  getGenreKeyByValue,
+  getGenreValueByKey,
+} from "../../components/constants";
 import GlobalStyles from "../../assets/styles";
 
 import { Step1 } from "../../components/darkRoom/darkRoomStep1";
@@ -33,11 +37,11 @@ import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
 //라이브러리
-import mime from "mime";
-import { Modalize } from "react-native-modalize";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapView, { Marker, Region } from "react-native-maps";
+import { Modalize } from "react-native-modalize";
+import mime from "mime";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
@@ -49,7 +53,6 @@ import { SERVER_IP } from "../../components/utils";
 //nav
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { TapGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/tapGesture";
 
 //위치 정보 인터페이스
 interface Location {
@@ -180,8 +183,6 @@ const DarkRoom: React.FC = () => {
     }
   };
 
-  const [confirm, setConfirm] = useState<boolean>(false);
-
   const upload = async () => {
     const formData = new FormData();
     formData.append("photo", {
@@ -189,42 +190,44 @@ const DarkRoom: React.FC = () => {
       type: mime.getType(selectedImage),
       name: selectedImage.split("/").pop(),
     });
-
-    console.log(locationInfo);
     const imageData = {
-      user_id: "5b34d8d8-bb85-4d05-adeb-ad77ad377b38",
       title: title,
-      discription: description,
+      description: description,
       longitude: locationInfo[1],
       latitude: locationInfo[0],
+      is_public: "string",
       state: locationInfo[2],
       city: locationInfo[3],
       town: locationInfo[4],
-      time: date.getTime(),
+      time: dateText,
       equipments: [`${equipments}`],
-      genre_ids: ["e4302d24-2199-11ee-9ef2-0a0027000003"],
+      genre_ids: genreOption.map((e: string, i: any) => getGenreValueByKey(e)),
     };
 
     const jsonData = JSON.stringify(imageData);
+    console.log("jsonData: ", jsonData);
 
     formData.append("photo_upload_request", jsonData);
+    console.log(formData);
 
     try {
-      const response = await fetch(`${SERVER_IP}core/photos`, {
-        method: "post",
-        headers: {
-          "content-Type": "multipart/form-data; ",
-          // Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      await fetch(
+        `${SERVER_IP}core/photos/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69`,
+        {
+          method: "post",
+          headers: {
+            "content-Type": "multipart/form-data; ",
+          },
+          body: formData,
+        }
+      );
       Alert.alert(
         "게시 완료",
         "사진을 게시하였습니다.",
         [
           {
             text: "OK",
-            onPress: () => navigation.navigate("MyGallery"),
+            // onPress: () => navigation.navigate("MyGallery"),
           },
         ],
         { cancelable: false }
@@ -319,17 +322,31 @@ const DarkRoom: React.FC = () => {
 
   //장르----------------------------------------------------
   //장르 모달
-  const [isGenreModalVisible, setIsGenreModalVisible] =
-    useState<boolean>(false);
-
-  const [genreOption, setGenreOption] = useState<string>("Portrait");
+  const [isGenreModalVisible, setIsGenreModalVisible] = useState<any>(false);
+  const [genreOption, setGenreOption] = useState<any>([]);
 
   const toggleGenreModal = () => {
     setIsGenreModalVisible(!isGenreModalVisible);
   };
 
-  const handleGenreSelection = (option: string) => {
-    setGenreOption(option);
+  const handleGenreSelection = (option: any) => {
+    if (genreOption.includes(option)) {
+      setGenreOption(genreOption.filter((item: any) => item !== option));
+    } else {
+      setGenreOption([...genreOption, option]);
+    }
+  };
+
+  const confirmSelection = () => {
+    const genreIds = genreOption.map((option: any) =>
+      getGenreValueByKey(option)
+    );
+    console.log(genreIds); // 선택된 장르 ID 출력
+    toggleGenreModal();
+  };
+
+  const cancelSelection = () => {
+    setGenreOption([]);
     toggleGenreModal();
   };
 
@@ -343,6 +360,7 @@ const DarkRoom: React.FC = () => {
     const calculatedHeight = (windowWidth - 90) * aspectRatio;
     setImageHeight(calculatedHeight);
   };
+  console.log(genreOption);
 
   return (
     <KeyboardAvoidingView
@@ -494,7 +512,26 @@ const DarkRoom: React.FC = () => {
                 Dark Room
               </Text>
               <TouchableOpacity
-                style={GlobalStyles.backgroundBlackBox}
+                style={{
+                  ...GlobalStyles.backgroundBlackBox,
+                  backgroundColor:
+                    selectedImage &&
+                    title.length > 0 &&
+                    description.length > 0 &&
+                    locationInfo &&
+                    equipments.length > 0
+                      ? "black"
+                      : "#c9c9c9",
+                }}
+                disabled={
+                  !(
+                    selectedImage &&
+                    title.length > 0 &&
+                    description.length > 0 &&
+                    locationInfo &&
+                    equipments.length > 0
+                  )
+                }
                 onPress={publish}
               >
                 <Text
@@ -596,6 +633,7 @@ const DarkRoom: React.FC = () => {
                     onPress={handleBack}
                     style={{
                       ...styles.button,
+                      backgroundColor: "white",
                       width: currentStep === 3 ? "100%" : 140,
                     }}
                   >
@@ -607,8 +645,29 @@ const DarkRoom: React.FC = () => {
                     onPress={handleNext}
                     style={{
                       ...styles.button,
+                      backgroundColor:
+                        (currentStep === 1 &&
+                          !(
+                            selectedImage &&
+                            title.length > 0 &&
+                            description.length > 0
+                          )) ||
+                        (currentStep === 2 && !locationInfo)
+                          ? "#c9c9c9"
+                          : "white",
                       width: currentStep === 1 ? "100%" : 140,
                     }}
+                    disabled={
+                      (currentStep === 1 &&
+                        !(
+                          selectedImage &&
+                          title.length > 0 &&
+                          description.length > 0
+                        )) ||
+                      (currentStep === 2 && !locationInfo)
+                        ? true
+                        : false
+                    }
                   >
                     <Text style={styles.buttonText}>Next</Text>
                   </TouchableOpacity>
@@ -635,27 +694,19 @@ const DarkRoom: React.FC = () => {
               justifyContent: "center",
               alignItems: "center",
               marginTop: 22,
+
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
           >
-            <TouchableWithoutFeedback>
-              <View
-                style={{
-                  gap: 20,
-                  backgroundColor: "white",
-                  paddingVertical: 30,
-                  paddingHorizontal: 40,
-                  width: 280,
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  elevation: 5,
-                }}
-              >
+            <ScrollView
+              style={{
+                backgroundColor: "white",
+                paddingVertical: 30,
+                paddingHorizontal: 40,
+                width: 280,
+              }}
+            >
+              <View>
                 {GenreArray.map((e, i) => {
                   return (
                     <TouchableOpacity
@@ -664,14 +715,30 @@ const DarkRoom: React.FC = () => {
                       onPress={() => handleGenreSelection(e)}
                     >
                       <Text style={styles.modalText}>{e}</Text>
-                      {genreOption === e ? (
+                      {genreOption.includes(e) ? (
                         <Icon name="check" size={27} color={"black"} />
                       ) : null}
                     </TouchableOpacity>
                   );
                 })}
               </View>
-            </TouchableWithoutFeedback>
+            </ScrollView>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingHorizontal: 10,
+              }}
+            >
+              <TouchableOpacity style={{}} onPress={cancelSelection}>
+                <Text style={{ fontSize: 20, fontWeight: "500" }}>취소</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{}} onPress={confirmSelection}>
+                <Text style={{ fontSize: 20, fontWeight: "500" }}>확인</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
@@ -742,7 +809,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "white",
     alignItems: "center",
     borderRadius: 5,
     paddingVertical: 5,

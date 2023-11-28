@@ -89,6 +89,7 @@ export const Step3 = ({
       >
         Genres
       </Text>
+
       <TouchableOpacity
         style={{
           backgroundColor: "white",
@@ -98,7 +99,15 @@ export const Step3 = ({
         }}
         onPress={toggleGenreModal}
       >
-        <Text style={{}}>{genreOption}</Text>
+        {genreOption.length > 0 ? (
+          <Text>
+            {genreOption.length > 3
+              ? `${genreOption.slice(0, 3).join(", ")}, ...`
+              : genreOption.join(", ")}
+          </Text>
+        ) : (
+          <Text>장르를 선택하세요.</Text>
+        )}
       </TouchableOpacity>
       <Text
         style={{

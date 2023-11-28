@@ -53,7 +53,19 @@ const InitialPage: React.FC = () => {
     })();
   }, []);
 
-  return <Text>hhi</Text>;
+  return (
+    <TouchableOpacity
+      style={{
+        width: "100%",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      onPress={() => navigation.navigate("Box")}
+    >
+      <Text>hhi</Text>
+    </TouchableOpacity>
+  );
 };
 
 export default InitialPage;

@@ -31,3 +31,4 @@ export const isAndroid = Platform.OS === 'android';
 
 
 export const SERVER_IP = 'https://api.esthete.roberniro-projects.xyz/'
+
