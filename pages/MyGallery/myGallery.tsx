@@ -87,15 +87,10 @@ const MyGallery: React.FC = () => {
   //user_id = userId
   const [mySupporting, setMySupporting] = useState<any>(null);
   const getMySupporting = async () => {
-    console.log(
-      `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
-    );
-
     try {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
       );
-      console.log(response.data);
       setMySupporting(response.data);
     } catch (e) {
       console.log(e);
@@ -154,15 +149,10 @@ const MyGallery: React.FC = () => {
   const [userData, setUserData] = useState<any | null>(null);
 
   const getMyProfile = async () => {
-    console.log(
-      `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`
-    );
-
     try {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`
       );
-      console.log("userData: ", response.data);
       setUserData(response.data);
     } catch (e) {
       console.log(e);
@@ -188,10 +178,6 @@ const MyGallery: React.FC = () => {
   const [myPhotoData, setMyPhotoData] = useState<any>(null);
 
   const getMyPhotos = async () => {
-    console.log(
-      `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
-    );
-
     try {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
@@ -279,7 +265,7 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
       );
-      console.log(response.data);
+      console.log("내 전시회 가져오기 응답 : ", response.data);
     } catch (e) {
       console.log(e);
     }

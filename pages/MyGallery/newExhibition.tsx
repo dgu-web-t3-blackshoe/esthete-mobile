@@ -19,6 +19,7 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator as Spinner,
 } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 
@@ -29,6 +30,8 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
+import { SERVER_IP } from "../../components/utils";
 
 //넓이 계산
 const size = Dimensions.get("window").width;
@@ -40,8 +43,9 @@ const NewExhibition: React.FC = ({ route }: any) => {
   //input Data,
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [selectedImage, setSelectedImage] = useState<any | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  //사진 나열
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
@@ -50,14 +54,122 @@ const NewExhibition: React.FC = ({ route }: any) => {
           height: (size - 40) / 3,
           aspectRatio: 1,
         }}
+        onPress={() => {
+          if (selectedImage) {
+            if (selectedImage === item.photo_id) {
+              setSelectedImage(null);
+            } else {
+              setSelectedImage(item.photo_id);
+            }
+          } else {
+            setSelectedImage(item.photo_id);
+          }
+        }}
       >
         <ImageBackground
           // source={{ uri: item.story }}
           source={{ uri: item.photo_url }}
           style={{ width: "100%", height: "100%" }}
-        />
+        >
+          <View
+            style={{
+              flex: 1,
+              ...StyleSheet.absoluteFillObject,
+
+              backgroundColor:
+                selectedImage === item.photo_id
+                  ? "rgba(0, 0, 0, 0.5)"
+                  : "rgba(0,0,0,0)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {selectedImage === item.photo_id ? (
+              <Icon name="checkmark" size={27} color={"white"} />
+            ) : null}
+          </View>
+        </ImageBackground>
       </TouchableOpacity>
     );
+  };
+
+  //전시회 등록
+
+  const publishExhibition = async () => {
+    if (title.length === 0) {
+      Alert.alert(
+        "알림",
+        "제목을 입력해주세요.",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      return;
+    } else if (description.length === 0) {
+      Alert.alert(
+        "알림",
+        "설명을 입력해주세요.",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      return;
+    } else if (selectedImage === null) {
+      Alert.alert(
+        "알림",
+        "대표 사진을 선택해주세요.",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      return;
+    } else {
+      try {
+        console.log(
+          `${SERVER_IP}core/exhibitions/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69`
+        );
+        console.log(title);
+        console.log(description);
+        console.log(selectedImage);
+
+        const response = await axios.post(
+          `${SERVER_IP}core/exhibitions/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69`,
+          {
+            user_id: "aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69",
+            title: title,
+            description: description,
+            thumbnail: selectedImage,
+          }
+        );
+        console.log(response);
+
+        Alert.alert(
+          "완료",
+          "전시회가 등록되었습니다.",
+          [
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+        setTitle("");
+        setDescription("");
+        setSelectedImage(null);
+        return;
+      } catch (e) {
+        console.log(e);
+      }
+    }
   };
 
   return (
@@ -72,8 +184,18 @@ const NewExhibition: React.FC = ({ route }: any) => {
         }}
       >
         <Text style={GlobalStyles.bigFont}>New Exhibition</Text>
-        <TouchableOpacity style={GlobalStyles.backgroundBlackBox}>
-          <Text style={{ color: "white", fontSize: 17 }}>Add Room</Text>
+        <TouchableOpacity
+          style={{
+            paddingVertical: 3,
+            backgroundColor:
+              selectedImage && title.length > 0 && description.length > 0
+                ? "black"
+                : "#c9c9c9",
+            paddingHorizontal: 15,
+          }}
+          onPress={publishExhibition}
+        >
+          <Text style={{ color: "white", fontSize: 17 }}>Publish</Text>
         </TouchableOpacity>
       </View>
       {route.params.myPhotos ? (
@@ -88,7 +210,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
               color: "white",
             }}
           >
-            {title}
+            Exhibition Title
           </Text>
           <TextInput
             cursorColor={"#FFA800"}
@@ -98,6 +220,8 @@ const NewExhibition: React.FC = ({ route }: any) => {
               textAlign: "center",
               height: 35,
             }}
+            value={title}
+            onChangeText={(text) => setTitle(text)}
           />
 
           <Text
@@ -108,7 +232,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
               color: "white",
             }}
           >
-            {description}
+            Exhibition Description
           </Text>
           <TextInput
             cursorColor={"#FFA800"}
@@ -118,6 +242,8 @@ const NewExhibition: React.FC = ({ route }: any) => {
               textAlign: "center",
               height: 100,
             }}
+            value={description}
+            onChangeText={(text) => setDescription(text)}
           />
 
           <View
