@@ -40,6 +40,7 @@ import MyGallery from "./pages/MyGallery/myGallery";
 import AllSupportingPG from "./pages/MyGallery/allSupportingPG";
 import EditProfile from "./pages/MyGallery/editProfile";
 import NewExhibition from "./pages/MyGallery/newExhibition";
+import RoomList from "./pages/MyGallery/addRoom";
 
 //Redux
 import { Provider } from "react-redux";
@@ -185,6 +186,13 @@ export default function App() {
               <Stack.Screen
                 name="NewExhibition"
                 component={NewExhibition}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+              <Stack.Screen
+                name="RoomList"
+                component={RoomList}
                 options={{
                   header: () => <CustomHeader2 />,
                 }}
