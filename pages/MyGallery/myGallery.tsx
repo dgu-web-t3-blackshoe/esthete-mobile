@@ -1,5 +1,5 @@
 //6-1 6-2 6-3
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 //요소
 import {
@@ -15,6 +15,7 @@ import {
   ScrollView,
   View,
   TextInput,
+  ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
@@ -26,6 +27,10 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
+//api
+import { SERVER_IP } from "../../components/utils";
+import axios from "axios";
 
 type RootStackParamList = {
   Gallery: {
@@ -50,8 +55,12 @@ type RootStackParamList = {
     genres: Array<string>;
     equipments: Array<string>;
   };
+  NewExhibition: {
+    myPhotos: Array<object>;
+  };
   Photo: {
     photo_id: string;
+    nickname: string;
   };
   AllSupportingPG: undefined;
 };
@@ -65,10 +74,29 @@ const MyGallery: React.FC = () => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
 
+  useEffect(() => {
+    getMySupporting();
+    getMyProfile();
+    getMyPhotos();
+    getMyExhibitions();
+  }, []);
+
   //전체 후원 작가 조회 API
   //URL:
   //users/{user_id}/supports/new
   //user_id = userId
+  const [mySupporting, setMySupporting] = useState<any>(null);
+  const getMySupporting = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
+      );
+      setMySupporting(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   //DUMMY:
   const supportsDummy = [
     {
@@ -118,6 +146,19 @@ const MyGallery: React.FC = () => {
   //내 프로필 조회--------------------------------------
   //URL:
   //users/{user_id}/profile
+  const [userData, setUserData] = useState<any | null>(null);
+
+  const getMyProfile = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`
+      );
+      setUserData(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   //Dummy:
   const userDummy = {
     user_id: "asdf",
@@ -134,6 +175,20 @@ const MyGallery: React.FC = () => {
   //내 사진 목록 조회
   //URL:
   //users/{user_id}/photos
+  const [myPhotoData, setMyPhotoData] = useState<any>(null);
+
+  const getMyPhotos = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
+      );
+      setMyPhotoData(response.data);
+      console.log("at photos", response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   //응답:
   const MyPhoto = {
     content: [
@@ -185,12 +240,13 @@ const MyGallery: React.FC = () => {
         onPress={() => {
           navigation.navigate("Photo", {
             photo_id: item.photo_id,
+            nickname: userData.nickname,
           });
         }}
       >
         <ImageBackground
           // source={{ uri: item.story }}
-          source={item.photo}
+          source={{ uri: item.photo_url }}
           style={{ width: "100%", height: "100%" }}
         />
       </TouchableOpacity>
@@ -200,6 +256,20 @@ const MyGallery: React.FC = () => {
   //내 전시 목록 조회-------------------------------------------------
   //URL:
   //users/{user_id}/exhibitions
+  const getMyExhibitions = async () => {
+    console.log(
+      `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
+    );
+
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
+      );
+      console.log("내 전시회 가져오기 응답 : ", response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   //DUMMY
   const ExhibitionDummy = {
     content: [
@@ -277,365 +347,406 @@ const MyGallery: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView style={{ flex: 1 }}>
-        {/* 후원중인 사진가 타이틀 시작 */}
-        <View
-          style={{
-            ...GlobalStyles.rowSpaceBetweenContainer,
-            paddingHorizontal: 20,
-            alignItems: "flex-end",
-          }}
-        >
-          <Text style={GlobalStyles.bigFont}>Supporting Photographers</Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("AllSupportingPG");
-            }}
-          >
-            <Text>See All</Text>
-          </TouchableOpacity>
-        </View>
-        {/* 후원중인 사진가 타이틀 끝 */}
-
-        {/* 후원중인 작가 수평 스크롤뷰 시작 */}
-        <ScrollView
-          horizontal
-          contentContainerStyle={{
-            gap: 15,
-            paddingHorizontal: 20,
-            marginVertical: 7.5,
-          }}
-          showsHorizontalScrollIndicator={false}
-        >
-          {[...supportsDummy]
-            .sort((a, b) => (a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1))
-            .map((e, i) => {
-              const displayedName =
-                e.nickname.length > 6
-                  ? `${e.nickname.substring(0, 6)}...`
-                  : e.nickname;
-              return (
-                <TouchableOpacity
-                  key={i}
-                  style={{
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onPress={() => {
-                    navigation.push("Gallery", {
-                      user_id: e.photographer_id,
-                      profile_img: e.profile_img,
-                      nickname: e.nickname,
-                    });
-                  }}
-                >
-                  <Image
-                    source={e.profile_img}
-                    style={{
-                      width: e.has_new ? 75 : 70,
-                      height: e.has_new ? 75 : 70,
-                      borderRadius: 50,
-                      borderWidth: e.has_new ? 3 : 0,
-                      borderColor: "#FFA800",
-                    }}
-                  />
-                  <Text>{displayedName}</Text>
-                </TouchableOpacity>
-              );
-            })}
-        </ScrollView>
-        {/* 후원중인 작가 수평 스크롤뷰 끝 */}
-
-        <View style={{ backgroundColor: "black" }}>
-          {/* 프로필 타이틀, edit 버튼 뷰 시작 */}
+    <SafeAreaView style={{ flex: 1 }}>
+      {userData ? (
+        <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+          {/* 후원중인 사진가 타이틀 시작 */}
           <View
             style={{
               ...GlobalStyles.rowSpaceBetweenContainer,
               paddingHorizontal: 20,
-              marginTop: 5,
               alignItems: "flex-end",
+              backgroundColor: "white",
             }}
           >
-            <Text style={{ fontSize: 20, fontWeight: "500", color: "white" }}>
-              My Profile
-            </Text>
+            <Text style={GlobalStyles.bigFont}>Supporting Photographers</Text>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("EditProfile", {
-                  user_id: userDummy.user_id,
-                  profile_img: userDummy.profile_img,
-                  nickname: userDummy.nickname,
-                  biography: userDummy.biography,
-                  genres: userDummy.genres,
-                  equipments: userDummy.equipments,
-                })
-              }
+              onPress={() => {
+                navigation.navigate("AllSupportingPG");
+              }}
             >
-              <Text style={{ color: "white" }}>Edit</Text>
+              <Text>See All</Text>
             </TouchableOpacity>
           </View>
-          {/* 프로필 타이틀, edit 버튼 뷰 끝 */}
+          {/* 후원중인 사진가 타이틀 끝 */}
 
-          {/* 프로필 사진, 작가 이름, 작가 설명 시작 */}
-          <View
-            style={{
-              flexDirection: "row",
+          {/* 후원중인 작가 수평 스크롤뷰 시작 */}
+          <ScrollView
+            horizontal
+            contentContainerStyle={{
+              gap: 15,
               paddingHorizontal: 20,
-              gap: 25,
-              marginTop: 10,
-              backgroundColor: "black",
+              paddingVertical: 7.5,
+              width: "100%",
+              backgroundColor: "white",
             }}
+            showsHorizontalScrollIndicator={false}
           >
-            <Image
-              source={userDummy.profile_img}
-              style={{ width: 150, height: 150 }}
-            />
+            {mySupporting ? (
+              [...mySupporting]
+                .sort((a, b) =>
+                  a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1
+                )
+                .map((e, i) => {
+                  const displayedName =
+                    e.nickname.length > 6
+                      ? `${e.nickname.substring(0, 6)}...`
+                      : e.nickname;
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      onPress={() => {
+                        navigation.push("Gallery", {
+                          user_id: e.photographer_id,
+                          profile_img: e.profile_img,
+                          nickname: e.nickname,
+                        });
+                      }}
+                    >
+                      <Image
+                        source={e.profile_img}
+                        style={{
+                          width: e.has_new ? 75 : 70,
+                          height: e.has_new ? 75 : 70,
+                          borderRadius: 50,
+                          borderWidth: e.has_new ? 3 : 0,
+                          borderColor: "#FFA800",
+                        }}
+                      />
+                      <Text>{displayedName}</Text>
+                    </TouchableOpacity>
+                  );
+                })
+            ) : (
+              <Text>후원 중인 작가가 없습니다.</Text>
+            )}
+          </ScrollView>
+          {/* 후원중인 작가 수평 스크롤뷰 끝 */}
+
+          <View style={{ backgroundColor: "black" }}>
+            {/* 프로필 타이틀, edit 버튼 뷰 시작 */}
             <View
               style={{
-                width: 140,
-                gap: 10,
-                justifyContent: "center",
+                ...GlobalStyles.rowSpaceBetweenContainer,
+                paddingHorizontal: 20,
+                marginTop: 5,
+                alignItems: "flex-end",
               }}
             >
-              <Text style={{ fontSize: 20, color: "white", fontWeight: "500" }}>
-                {userDummy.nickname}
+              <Text style={{ fontSize: 20, fontWeight: "500", color: "white" }}>
+                My Profile
               </Text>
-              <Text style={{ fontSize: 16, color: "white" }}>
-                {userDummy.biography}
-              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("EditProfile", {
+                    user_id: userData.user_id,
+                    profile_img: userData.profile_img,
+                    nickname: userData.nickname,
+                    biography: userData.biography,
+                    genres: userData.genres,
+                    equipments: userData.equipments,
+                  })
+                }
+              >
+                <Text style={{ color: "white" }}>Edit</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-          {/* 프로필 사진, 작가 이름, 작가 설명 끝 */}
+            {/* 프로필 타이틀, edit 버튼 뷰 끝 */}
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: 10,
-              marginVertical: 15,
-            }}
-          >
-            {userDummy.genres.map((e, i) => {
-              return (
-                <Text
-                  style={{ color: "white", marginHorizontal: 10, fontSize: 16 }}
-                  key={i}
-                >
-                  {e}
-                </Text>
-              );
-            })}
-          </ScrollView>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: 10,
-              marginBottom: 15,
-            }}
-          >
-            {userDummy.equipments.map((e, i) => {
-              return (
-                <Text
-                  style={{ color: "white", marginHorizontal: 10, fontSize: 16 }}
-                  key={i}
-                >
-                  {e}
-                </Text>
-              );
-            })}
-          </ScrollView>
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginBottom: 20,
-              paddingLeft: 5,
-            }}
-          >
-            <TouchableOpacity
-              style={styles.tabBox}
-              onPress={() => setSelectedOption("Photographs")}
-            >
-              <Text
-                style={{
-                  ...styles.tapText,
-                  textDecorationLine:
-                    selectedOption === "Photographs" ? "underline" : "none",
-                }}
-              >
-                Photographs
-              </Text>
-              {selectedOption === "Photographs" ? (
-                <Text style={{ color: "#FFA800" }}>
-                  {MyPhoto.totalElements}
-                </Text>
-              ) : (
-                <Text>{"  "}</Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tabBox}
-              onPress={() => setSelectedOption("Exhibitions")}
-            >
-              <Text
-                style={{
-                  ...styles.tapText,
-                  textDecorationLine:
-                    selectedOption === "Exhibitions" ? "underline" : "none",
-                }}
-              >
-                Exhibitions
-              </Text>
-              {selectedOption === "Exhibitions" ? (
-                <Text style={{ color: "#FFA800" }}>
-                  {ExhibitionDummy.totalElements}
-                </Text>
-              ) : (
-                <Text>{"  "}</Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tabBox}
-              onPress={() => setSelectedOption("GuestBook")}
-            >
-              <Text
-                style={{
-                  ...styles.tapText,
-                  textDecorationLine:
-                    selectedOption === "GuestBook" ? "underline" : "none",
-                }}
-              >
-                GuestBook
-              </Text>
-              {selectedOption === "GuestBook" ? (
-                <Text style={{ color: "#FFA800" }}>
-                  {GuestBookDummy.totalElements}
-                </Text>
-              ) : (
-                <Text>{"  "}</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-          {selectedOption === "Photographs" ? (
-            // 내 사진 확인 시작
-            <FlatList
-              scrollEnabled={false}
-              data={MyPhoto.content}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.photo_id}
-              numColumns={3}
-              // columnWrapperStyle={{ marginBottom: 5 }}
+            {/* 프로필 사진, 작가 이름, 작가 설명 시작 */}
+            <View
               style={{
-                flex: 1,
+                flexDirection: "row",
+                paddingHorizontal: 20,
+                gap: 25,
+                marginTop: 10,
                 backgroundColor: "black",
-                marginBottom: 20,
               }}
-              // onEndReached={loadMoreData}
-            />
-          ) : // 내 사진 확인 끝
-          selectedOption === "Exhibitions" ? (
-            <View style={{ paddingBottom: 20 }}>
+            >
+              <Image
+                source={{ uri: userData.profile_img }}
+                style={{ width: 150, height: 150 }}
+              />
               <View
                 style={{
-                  width: "100%",
+                  width: 140,
+                  gap: 10,
                   justifyContent: "center",
-                  alignItems: "flex-end",
-                  paddingHorizontal: 20,
                 }}
               >
-                <TouchableOpacity>
-                  <Text style={{ color: "white" }}>New Exhibition</Text>
-                </TouchableOpacity>
+                <Text
+                  style={{ fontSize: 20, color: "white", fontWeight: "500" }}
+                >
+                  {userData.nickname}
+                </Text>
+                <Text style={{ fontSize: 16, color: "white" }}>
+                  {userData.biography}
+                </Text>
               </View>
+            </View>
+            {/* 프로필 사진, 작가 이름, 작가 설명 끝 */}
 
-              {ExhibitionDummy.content.map((e, i) => {
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                marginVertical: 15,
+              }}
+            >
+              {userData.genres.map((e: string, i: number) => {
                 return (
-                  <TouchableOpacity
-                    key={i}
+                  <Text
                     style={{
-                      flexDirection: "row",
-                      marginHorizontal: 20,
-                      paddingVertical: 10,
-                      borderBottomWidth: 0.5,
-                      borderBottomColor: "white",
-                      gap: 20,
+                      color: "white",
+                      marginHorizontal: 10,
+                      fontSize: 16,
                     }}
-                    onPress={() => {
-                      navigation.navigate("Exhibition", {
-                        exhibition_id: e.exhibition_id,
-                        exhibition_title: e.title,
-                        exhibition_discription: e.description,
-                        exhibition_thumbnail: e.thumnail,
-                        user_id: userId,
-                        profile_img: userDummy.profile_img,
-                        nickname: userDummy.nickname,
-                      });
-                    }}
+                    key={i}
                   >
-                    <Image
-                      source={e.thumnail}
-                      style={{ width: 80, height: 80 }}
-                    />
-                    <View style={{ gap: 5 }}>
-                      <Text style={{ color: "white", fontSize: 20 }}>
-                        {e.title}
-                      </Text>
-                      <Text style={{ color: "white" }}>{e.description}</Text>
-                    </View>
-                  </TouchableOpacity>
+                    {e}
+                  </Text>
                 );
               })}
-            </View>
-          ) : (
-            <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
-              {GuestBookDummy.content.map((e, i) => {
+            </ScrollView>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                marginBottom: 15,
+              }}
+            >
+              {userData.equipments.map((e: string, i: number) => {
                 return (
-                  <View
-                    key={i}
+                  <Text
                     style={{
-                      flexDirection: "row",
-                      borderBottomWidth: 0.5,
-                      alignItems: "center",
-                      paddingVertical: 10,
-                      gap: 20,
-                      borderBottomColor: "white",
+                      color: "white",
+                      marginHorizontal: 10,
+                      fontSize: 16,
                     }}
+                    key={i}
                   >
-                    <Image
-                      source={e.profile_img}
-                      style={{ width: 50, height: 50, borderRadius: 50 }}
-                    />
-                    <View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "flex-end",
-                          gap: 10,
-                        }}
-                      >
-                        <Text style={{ fontWeight: "500", color: "white" }}>
-                          {e.nickname}
+                    {e}
+                  </Text>
+                );
+              })}
+            </ScrollView>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+                marginBottom: 20,
+                paddingLeft: 5,
+              }}
+            >
+              <TouchableOpacity
+                style={styles.tabBox}
+                onPress={() => setSelectedOption("Photographs")}
+              >
+                <Text
+                  style={{
+                    ...styles.tapText,
+                    textDecorationLine:
+                      selectedOption === "Photographs" ? "underline" : "none",
+                  }}
+                >
+                  Photographs
+                </Text>
+                {selectedOption === "Photographs" && myPhotoData ? (
+                  <Text style={{ color: "#FFA800" }}>
+                    {myPhotoData.totalElements}
+                  </Text>
+                ) : (
+                  <Text>{"  "}</Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.tabBox}
+                onPress={() => setSelectedOption("Exhibitions")}
+              >
+                <Text
+                  style={{
+                    ...styles.tapText,
+                    textDecorationLine:
+                      selectedOption === "Exhibitions" ? "underline" : "none",
+                  }}
+                >
+                  Exhibitions
+                </Text>
+                {selectedOption === "Exhibitions" ? (
+                  <Text style={{ color: "#FFA800" }}>
+                    {ExhibitionDummy.totalElements}
+                  </Text>
+                ) : (
+                  <Text>{"  "}</Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.tabBox}
+                onPress={() => setSelectedOption("GuestBook")}
+              >
+                <Text
+                  style={{
+                    ...styles.tapText,
+                    textDecorationLine:
+                      selectedOption === "GuestBook" ? "underline" : "none",
+                  }}
+                >
+                  GuestBook
+                </Text>
+                {selectedOption === "GuestBook" ? (
+                  <Text style={{ color: "#FFA800" }}>
+                    {GuestBookDummy.totalElements}
+                  </Text>
+                ) : (
+                  <Text>{"  "}</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            {selectedOption === "Photographs" ? (
+              // 내 사진 확인 시작
+              <FlatList
+                scrollEnabled={false}
+                data={myPhotoData?.content}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.photo_id}
+                numColumns={3}
+                // columnWrapperStyle={{ marginBottom: 5 }}
+                style={{
+                  flex: 1,
+                  backgroundColor: "black",
+                  marginBottom: 20,
+                }}
+                // onEndReached={loadMoreData}
+              />
+            ) : // 내 사진 확인 끝
+            selectedOption === "Exhibitions" ? (
+              <View style={{ paddingBottom: 20 }}>
+                <View
+                  style={{
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "flex-end",
+                    paddingHorizontal: 20,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("NewExhibition", {
+                        myPhotos: myPhotoData.content,
+                      })
+                    }
+                  >
+                    <Text style={{ color: "white" }}>New Exhibition</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {ExhibitionDummy.content.map((e, i) => {
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      style={{
+                        flexDirection: "row",
+                        marginHorizontal: 20,
+                        paddingVertical: 10,
+                        borderBottomWidth: 0.5,
+                        borderBottomColor: "white",
+                        gap: 20,
+                      }}
+                      onPress={() => {
+                        navigation.navigate("Exhibition", {
+                          exhibition_id: e.exhibition_id,
+                          exhibition_title: e.title,
+                          exhibition_discription: e.description,
+                          exhibition_thumbnail: e.thumnail,
+                          user_id: userId,
+                          profile_img: userDummy.profile_img,
+                          nickname: userDummy.nickname,
+                        });
+                      }}
+                    >
+                      <Image
+                        source={e.thumnail}
+                        style={{ width: 80, height: 80 }}
+                      />
+                      <View style={{ gap: 5 }}>
+                        <Text style={{ color: "white", fontSize: 20 }}>
+                          {e.title}
                         </Text>
-                        <Text style={{ fontSize: 12, color: "white" }}>
-                          {e.created_at}
+                        <Text style={{ color: "white" }}>{e.description}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
+                {GuestBookDummy.content.map((e, i) => {
+                  return (
+                    <View
+                      key={i}
+                      style={{
+                        flexDirection: "row",
+                        borderBottomWidth: 0.5,
+                        alignItems: "center",
+                        paddingVertical: 10,
+                        gap: 20,
+                        borderBottomColor: "white",
+                      }}
+                    >
+                      <Image
+                        source={e.profile_img}
+                        style={{ width: 50, height: 50, borderRadius: 50 }}
+                      />
+                      <View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "flex-end",
+                            gap: 10,
+                          }}
+                        >
+                          <Text style={{ fontWeight: "500", color: "white" }}>
+                            {e.nickname}
+                          </Text>
+                          <Text style={{ fontSize: 12, color: "white" }}>
+                            {e.created_at}
+                          </Text>
+                        </View>
+                        <Text
+                          style={{ fontSize: 14, width: 260, color: "white" }}
+                        >
+                          {e.content}
                         </Text>
                       </View>
-                      <Text
-                        style={{ fontSize: 14, width: 260, color: "white" }}
-                      >
-                        {e.content}
-                      </Text>
                     </View>
-                  </View>
-                );
-              })}
-            </View>
-          )}
+                  );
+                })}
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "black",
+          }}
+        >
+          <Spinner size="large" color="white" />
         </View>
-      </ScrollView>
+      )}
 
       <NavBar type={SvgType.MyGallery} />
     </SafeAreaView>

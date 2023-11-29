@@ -149,6 +149,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
                 //   );
                 // }
               } else {
+                
                 navigation.navigate("MyGallery");
                 // if (userId === null) {
                 //   Alert.alert(

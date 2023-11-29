@@ -22,6 +22,8 @@ export const Logo: React.FC = () => {
 
   return <SvgImage />;
 };
+
+
 export const GuestBook: React.FC = () => {
   const svgMarkup = `
   <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 

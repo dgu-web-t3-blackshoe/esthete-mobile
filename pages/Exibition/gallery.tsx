@@ -15,6 +15,8 @@ import {
   ScrollView,
   View,
   TextInput,
+  PanResponder,
+  Animated,
 } from "react-native";
 
 //libs
@@ -47,19 +49,39 @@ type RootStackParamList = {
     profile_img: string;
     nickname: string;
   };
+  DarkRoom: undefined;
 };
 
 //FunctionComponents
 const Gallery: React.FC = ({ route }: any) => {
-  //라우트.파람스가 있는지 봐서 데이터 확인
+  //로딩
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  // //좌우 제스처
+  // const rotate = useRef(new Animated.Value(0)).current; // 회전 상태
+  // const rotateInterpolate = rotate.interpolate({
+  //   inputRange: [-1, 1],
+  //   outputRange: ["-360deg", "360deg"],
+  // });
+
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onMoveShouldSetPanResponder: (evt, gestureState) => {
+  //       return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+  //     },
+  //     onPanResponderMove: (evt, gestureState) => {
+  //       // 스와이프에 따라 회전값 조정
+  //       rotate.setValue(gestureState.dx / 1000); // 회전 속도 조정
+  //     },
+  //     onPanResponderRelease: () => {},
+  //   })
+  // ).current;
   //방명록 모달
   const GuestBookModal = useRef<Modalize>(null);
   const openModal = () => GuestBookModal.current?.open();
-  const closeModal = () => GuestBookModal.current?.close();
 
   //추천 전시회 기본 정보 조회
   //URL
@@ -108,9 +130,9 @@ const Gallery: React.FC = ({ route }: any) => {
   //   }
   const currentExibitionDummy = {
     exhibition_id: "asdf",
-    exhibition_title: "Memory",
-    exhibition_discription: "2023-10 ~ 2023-11 Memories",
-    exhibition_thumbnail: require("../../assets/currentExibition.jpg"),
+    exhibition_title: "유럽 여행기",
+    exhibition_discription: "2022-07 ~ 2022-09 Memories",
+    exhibition_thumbnail: require("../../assets/dummy/4.jpg"),
   };
 
   // 전시회 사진 받아오기
@@ -352,6 +374,13 @@ const Gallery: React.FC = ({ route }: any) => {
     // (API연결시 랜더링 전 data 있는지 체크 후 랜더링 로직 추가)
     <SafeAreaView style={{ flex: 1 }}>
       {/* 1-1 맨 위 A's Gallery, Support Button 시작*/}
+      {/* <Animated.View
+        {...panResponder.panHandlers}
+        style={{
+          flex: 1,
+          transform: [{ perspective: 1000 }, { rotateY: rotateInterpolate }],
+        }}
+      > */}
       <View
         style={{
           ...GlobalStyles.rowSpaceBetweenContainer,
@@ -359,9 +388,7 @@ const Gallery: React.FC = ({ route }: any) => {
           paddingHorizontal: 20,
         }}
       >
-        <Text
-          style={GlobalStyles.bigFont}
-        >
+        <Text style={GlobalStyles.bigFont}>
           {userDataDummy.nickname}'s Gallery
         </Text>
         <TouchableOpacity
@@ -379,6 +406,7 @@ const Gallery: React.FC = ({ route }: any) => {
         </TouchableOpacity>
       </View>
       {/* 1-1 맨 위 A's Gallery, Support Button 끝*/}
+
       <ScrollView
         style={{ ...GlobalStyles.container, backgroundColor: "black" }}
       >
@@ -482,6 +510,7 @@ const Gallery: React.FC = ({ route }: any) => {
           // onEndReached={loadMoreData}
         />
       </ScrollView>
+      {/* </Animated.View> */}
       <NavBar type={SvgType.Exibition} />
       <Modalize
         ref={GuestBookModal}
