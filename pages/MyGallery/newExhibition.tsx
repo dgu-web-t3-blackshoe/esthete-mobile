@@ -33,13 +33,20 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import { SERVER_IP } from "../../components/utils";
 
+type RootStackParamList = {
+  AddRoom: {
+    exhibition_id: string;
+  };
+};
+
 //넓이 계산
 const size = Dimensions.get("window").width;
 
 const NewExhibition: React.FC = ({ route }: any) => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
-  console.log("at newExhibition: ", route.params);
   //input Data,
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -94,6 +101,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
   };
 
   //전시회 등록
+  const [spinner, setSpinner] = useState<boolean>(false);
 
   const publishExhibition = async () => {
     if (title.length === 0) {
@@ -134,24 +142,13 @@ const NewExhibition: React.FC = ({ route }: any) => {
       return;
     } else {
       try {
-        console.log(
-          `${SERVER_IP}core/exhibitions/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69`
-        );
-        console.log(title);
-        console.log(description);
-        console.log(selectedImage);
-
-        const response = await axios.post(
-          `${SERVER_IP}core/exhibitions/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69`,
-          {
-            user_id: "aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69",
-            title: title,
-            description: description,
-            thumbnail: selectedImage,
-          }
-        );
-        console.log(response);
-
+        setSpinner(true);
+        const reponse = await axios.post(`${SERVER_IP}core/exhibitions`, {
+          user_id: "aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69",
+          title: title,
+          description: description,
+          thumbnail: selectedImage,
+        });
         Alert.alert(
           "완료",
           "전시회가 등록되었습니다.",
@@ -162,11 +159,29 @@ const NewExhibition: React.FC = ({ route }: any) => {
           ],
           { cancelable: true }
         );
+        console.log(reponse.data);
+        // navigation.navigate("AddRoom",{
+        //   exhibition_id: reponse.data
+
+        // })
         setTitle("");
         setDescription("");
         setSelectedImage(null);
+        setSpinner(false);
+
         return;
       } catch (e) {
+        Alert.alert(
+          "오류",
+          "네트워크 연결을 확인하세요.",
+          [
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+        setSpinner(false);
         console.log(e);
       }
     }
@@ -195,7 +210,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
           }}
           onPress={publishExhibition}
         >
-          <Text style={{ color: "white", fontSize: 17 }}>Publish</Text>
+          <Text style={{ color: "white", fontSize: 17 }}>Add Room</Text>
         </TouchableOpacity>
       </View>
       {route.params.myPhotos ? (

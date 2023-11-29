@@ -130,7 +130,6 @@ const DarkRoom: React.FC = () => {
       allowsEditing: true,
       exif: true,
     });
-    console.log(result);
     if (!result.canceled && result.assets && result.assets[0].uri) {
       setSelectedImage(result.assets[0].uri);
       closeModal();
@@ -190,11 +189,12 @@ const DarkRoom: React.FC = () => {
       type: mime.getType(selectedImage),
       name: selectedImage.split("/").pop(),
     });
+
     const imageData = {
       title: title,
       description: description,
-      longitude: locationInfo[1],
-      latitude: locationInfo[0],
+      latitude: locationInfo[1],
+      longitude: locationInfo[0],
       is_public: "string",
       state: locationInfo[2],
       city: locationInfo[3],
@@ -205,10 +205,8 @@ const DarkRoom: React.FC = () => {
     };
 
     const jsonData = JSON.stringify(imageData);
-    console.log("jsonData: ", jsonData);
 
     formData.append("photo_upload_request", jsonData);
-    console.log(formData);
 
     try {
       await fetch(
@@ -341,7 +339,6 @@ const DarkRoom: React.FC = () => {
     const genreIds = genreOption.map((option: any) =>
       getGenreValueByKey(option)
     );
-    console.log(genreIds); // 선택된 장르 ID 출력
     toggleGenreModal();
   };
 
@@ -360,7 +357,6 @@ const DarkRoom: React.FC = () => {
     const calculatedHeight = (windowWidth - 90) * aspectRatio;
     setImageHeight(calculatedHeight);
   };
-  console.log(genreOption);
 
   return (
     <KeyboardAvoidingView

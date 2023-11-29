@@ -23,7 +23,6 @@ import axios from "axios";
 import { SERVER_IP } from "../components/utils";
 
 const Photo: React.FC = ({ route }: any) => {
-  console.log(route.params);
   //스위퍼 이동 시키는거
   let swiperRef: any = null;
   const goNext = () => {
@@ -44,7 +43,7 @@ const Photo: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/photos/${route.params.photo_id}`
       );
-      console.log(response.data);
+      console.log("at photo page", response.data);
       setPhotoData(response.data);
     } catch (e) {
       console.log(e);
@@ -81,7 +80,7 @@ const Photo: React.FC = ({ route }: any) => {
     town: "ebisu-3chome",
     time: "2023년 11월 1일 12시 20분",
     equipments: [],
-    genre_ids: [],
+    genre_ids: ["asdfasdf"],
   };
   //---------------------------------------------
 
@@ -248,8 +247,11 @@ const Photo: React.FC = ({ route }: any) => {
                     height: 50,
                   }}
                 >
-                  {photoData.genre_ids.map((e: string, i: any) => {
+                  {/* {photoData.genre_ids.map((e: string, i: any) => {
                     return getGenreKeyByValue(e) + ", ";
+                  })} */}
+                  {photoData.genres.map((e: any, i: any) => {
+                    return `${e.genre_name}, `;
                   })}
                 </Text>
                 <Text style={{ fontSize: 16, fontWeight: "500" }}>

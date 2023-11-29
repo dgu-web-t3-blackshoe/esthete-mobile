@@ -14,11 +14,11 @@ import {
   ImageBackground,
   ScrollView,
   View,
-  TextInput,
   ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
+import { useFocusEffect } from "@react-navigation/native";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -74,12 +74,16 @@ const MyGallery: React.FC = () => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
 
-  useEffect(() => {
-    getMySupporting();
-    getMyProfile();
-    getMyPhotos();
-    getMyExhibitions();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getMySupporting();
+      getMyProfile();
+      getMyPhotos();
+      getMyExhibitions();
+    }, [])
+  );
+
+  useEffect(() => {}, []);
 
   //전체 후원 작가 조회 API
   //URL:
@@ -89,7 +93,7 @@ const MyGallery: React.FC = () => {
   const getMySupporting = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/supports/new`
       );
       setMySupporting(response.data);
     } catch (e) {
@@ -159,16 +163,6 @@ const MyGallery: React.FC = () => {
     }
   };
 
-  //Dummy:
-  const userDummy = {
-    user_id: "asdf",
-    profile_img: require("../../assets/photodummy4.jpg"),
-    nickname: "Jekoo",
-    biography: "나랏말싸미 동국에 달아 사맛디 아니할세",
-    genres: ["Portrait", "Sports"],
-    equipments: ["갤럭시", "아이폰"],
-  };
-
   //탭 이동 시 사용할 상태
   const [selectedOption, setSelectedOption] = useState<string>("Photographs");
 
@@ -182,50 +176,11 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
       );
+      console.log("at Photo : ", response.data);
       setMyPhotoData(response.data);
-      console.log("at photos", response.data);
     } catch (e) {
       console.log(e);
     }
-  };
-
-  //응답:
-  const MyPhoto = {
-    content: [
-      {
-        photo_id: "1",
-        title: "",
-        photo: require("../../assets/photodummy1.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "2",
-        title: "",
-        photo: require("../../assets/photodummy2.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "3",
-        title: "",
-        photo: require("../../assets/photodummy3.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "4",
-        title: "",
-        photo: require("../../assets/photodummy4.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-    ],
-    totalElements: 4,
   };
 
   //사진 나열
@@ -256,54 +211,37 @@ const MyGallery: React.FC = () => {
   //내 전시 목록 조회-------------------------------------------------
   //URL:
   //users/{user_id}/exhibitions
-  const getMyExhibitions = async () => {
-    console.log(
-      `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
-    );
+  const [myExhibitions, setMyExhibitions] = useState<any>(null);
 
+  const getMyExhibitions = async () => {
     try {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
       );
-      console.log("내 전시회 가져오기 응답 : ", response.data);
+      console.log(response.data);
+      setMyExhibitions(response.data);
     } catch (e) {
       console.log(e);
     }
-  };
-  //DUMMY
-  const ExhibitionDummy = {
-    content: [
-      {
-        exhibition_id: "1",
-        title: "전시1",
-        description: "전시 설명1",
-        thumnail: require("../../assets/photodummy1.jpg"),
-      },
-      {
-        exhibition_id: "2",
-        title: "전시2",
-        description: "전시 설명2",
-        thumnail: require("../../assets/photodummy2.jpg"),
-      },
-      {
-        exhibition_id: "3",
-        title: "전시3",
-        description: "전시 설명3",
-        thumnail: require("../../assets/photodummy3.jpg"),
-      },
-      {
-        exhibition_id: "4",
-        title: "전시3",
-        description: "전시 설명4",
-        thumnail: require("../../assets/photodummy4.jpg"),
-      },
-    ],
-    totalElements: 4,
   };
 
   //내 갤러리 방명록 조회
   //URL:
   //users/{user_id}/guest-books
+
+  const [myGuestBook, setMyGuestBook] = useState<any>(null);
+  const getMyGuestBook = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
+      );
+      setMySupporting(response.data);
+      console.log("hi");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const GuestBookDummy = {
     content: [
       {
@@ -581,7 +519,7 @@ const MyGallery: React.FC = () => {
                 </Text>
                 {selectedOption === "Exhibitions" ? (
                   <Text style={{ color: "#FFA800" }}>
-                    {ExhibitionDummy.totalElements}
+                    {myExhibitions.totalElements}
                   </Text>
                 ) : (
                   <Text>{"  "}</Text>
@@ -648,7 +586,7 @@ const MyGallery: React.FC = () => {
                   </TouchableOpacity>
                 </View>
 
-                {ExhibitionDummy.content.map((e, i) => {
+                {myExhibitions.content.map((e: any, i: any) => {
                   return (
                     <TouchableOpacity
                       key={i}
@@ -667,13 +605,13 @@ const MyGallery: React.FC = () => {
                           exhibition_discription: e.description,
                           exhibition_thumbnail: e.thumnail,
                           user_id: userId,
-                          profile_img: userDummy.profile_img,
-                          nickname: userDummy.nickname,
+                          profile_img: userData.profile_img,
+                          nickname: userData.nickname,
                         });
                       }}
                     >
                       <Image
-                        source={e.thumnail}
+                        source={{ uri: e.thumbnail }}
                         style={{ width: 80, height: 80 }}
                       />
                       <View style={{ gap: 5 }}>
