@@ -18,6 +18,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ActivityIndicator as Spinner,
+  BackHandler,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavBar, SvgType } from "../../components/navbar";
@@ -28,14 +29,16 @@ import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
 //페이지 이동 타입
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import { SERVER_IP } from "../../components/utils";
 
 type RootStackParamList = {
   AddRoom: {
-    exhibition_id: string;
+    title: string;
+    description: string;
+    thumbnail: string;
   };
 };
 
@@ -44,6 +47,34 @@ const size = Dimensions.get("window").width;
 
 const NewExhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          "경고",
+          "화면을 나가시면 전시회가 등록되지 않습니다.",
+          [
+            {
+              text: "취소",
+              onPress: () => null,
+              style: "cancel",
+            },
+            { text: "확인", onPress: () => navigation.goBack() },
+          ],
+          { cancelable: false }
+        );
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [navigation])
+  );
 
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
@@ -101,7 +132,6 @@ const NewExhibition: React.FC = ({ route }: any) => {
   };
 
   //전시회 등록
-  const [spinner, setSpinner] = useState<boolean>(false);
 
   const publishExhibition = async () => {
     if (title.length === 0) {
@@ -141,49 +171,12 @@ const NewExhibition: React.FC = ({ route }: any) => {
       );
       return;
     } else {
-      try {
-        setSpinner(true);
-        const reponse = await axios.post(`${SERVER_IP}core/exhibitions`, {
-          user_id: "aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69",
-          title: title,
-          description: description,
-          thumbnail: selectedImage,
-        });
-        Alert.alert(
-          "완료",
-          "전시회가 등록되었습니다.",
-          [
-            {
-              text: "OK",
-            },
-          ],
-          { cancelable: true }
-        );
-        console.log(reponse.data);
-        // navigation.navigate("AddRoom",{
-        //   exhibition_id: reponse.data
-
-        // })
-        setTitle("");
-        setDescription("");
-        setSelectedImage(null);
-        setSpinner(false);
-
-        return;
-      } catch (e) {
-        Alert.alert(
-          "오류",
-          "네트워크 연결을 확인하세요.",
-          [
-            {
-              text: "OK",
-            },
-          ],
-          { cancelable: true }
-        );
-        setSpinner(false);
-        console.log(e);
-      }
+      navigation.navigate("AddRoom", {
+        title: title,
+        description: description,
+        thumbnail: selectedImage,
+      });
+      return;
     }
   };
 
@@ -315,7 +308,6 @@ const NewExhibition: React.FC = ({ route }: any) => {
           <Spinner size="large" color="white" />
         </View>
       )}
-      <NavBar type={SvgType.MyGallery} />
     </KeyboardAvoidingView>
   );
 };

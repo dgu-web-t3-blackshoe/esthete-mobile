@@ -93,59 +93,14 @@ const MyGallery: React.FC = () => {
   const getMySupporting = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/supports/new`
+        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/supports/all`
       );
-      setMySupporting(response.data);
+      console.log("at supports: ", response.data);
+      setMySupporting(response.data.content);
     } catch (e) {
       console.log(e);
     }
   };
-
-  //DUMMY:
-  const supportsDummy = [
-    {
-      photographer_id: "ph1",
-      profile_img: require("../../assets/photodummy1.jpg"),
-      nickname: "Photographer One",
-      has_new: true,
-      updated_at: "2023-10-01",
-    },
-    {
-      photographer_id: "ph2",
-      profile_img: require("../../assets/photodummy2.jpg"),
-      nickname: "Photographer Two",
-      has_new: false,
-      updated_at: "2023-10-02",
-    },
-    {
-      photographer_id: "ph3",
-      profile_img: require("../../assets/photodummy3.jpg"),
-      nickname: "Photographer Three",
-      has_new: true,
-      updated_at: "2023-10-03",
-    },
-    {
-      photographer_id: "ph4",
-      profile_img: require("../../assets/photodummy4.jpg"),
-      nickname: "Photographer Four",
-      has_new: false,
-      updated_at: "2023-10-04",
-    },
-    {
-      photographer_id: "ph5",
-      profile_img: require("../../assets/photodummy5.jpg"),
-      nickname: "Photographer Five",
-      has_new: true,
-      updated_at: "2023-10-05",
-    },
-    {
-      photographer_id: "ph6",
-      profile_img: require("../../assets/photodummy6.jpg"),
-      nickname: "Photographer Six",
-      has_new: true,
-      updated_at: "2023-10-06",
-    },
-  ];
 
   //내 프로필 조회--------------------------------------
   //URL:
@@ -157,6 +112,7 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`
       );
+      console.log("at user: ", response.data);
       setUserData(response.data);
     } catch (e) {
       console.log(e);
@@ -176,7 +132,7 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
       );
-      console.log("at Photo : ", response.data);
+
       setMyPhotoData(response.data);
     } catch (e) {
       console.log(e);
@@ -218,11 +174,17 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
       );
-      console.log(response.data);
+
       setMyExhibitions(response.data);
     } catch (e) {
       console.log(e);
     }
+  };
+
+  //전시실 방 조회 ---------------------------------------
+
+  const getExhibitonRooms = async (exhibition_id: any) => {
+    const response = await axios.get(``);
   };
 
   //내 갤러리 방명록 조회
@@ -235,8 +197,7 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
       );
-      setMySupporting(response.data);
-      console.log("hi");
+      setMySupporting(response.data.content);
     } catch (e) {
       console.log(e);
     }
