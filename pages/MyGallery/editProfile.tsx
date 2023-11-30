@@ -90,7 +90,6 @@ const EditProfile: React.FC = ({ route }: any) => {
   const [selectedImage, setSelectedImage] = useState<string>(
     route.params.profile_img
   );
-  console.log(route.params.profile_img);
 
   //카메라 접근 권한 허용
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(
@@ -128,7 +127,6 @@ const EditProfile: React.FC = ({ route }: any) => {
       aspect: [1, 1],
       exif: true,
     });
-    console.log(result);
     if (!result.canceled && result.assets && result.assets[0].uri) {
       setSelectedImage(result.assets[0].uri);
       closeModal();

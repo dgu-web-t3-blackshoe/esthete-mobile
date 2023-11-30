@@ -21,7 +21,6 @@ import {
   BackHandler,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 
 //Redux
@@ -31,8 +30,6 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios from "axios";
-import { SERVER_IP } from "../../components/utils";
 
 type RootStackParamList = {
   AddRoom: {

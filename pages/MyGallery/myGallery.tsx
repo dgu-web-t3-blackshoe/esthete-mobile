@@ -86,9 +86,6 @@ const MyGallery: React.FC = () => {
   useEffect(() => {}, []);
 
   //전체 후원 작가 조회 API
-  //URL:
-  //users/{user_id}/supports/new
-  //user_id = userId
   const [mySupporting, setMySupporting] = useState<any>(null);
   const getMySupporting = async () => {
     try {
@@ -103,8 +100,6 @@ const MyGallery: React.FC = () => {
   };
 
   //내 프로필 조회--------------------------------------
-  //URL:
-  //users/{user_id}/profile
   const [userData, setUserData] = useState<any | null>(null);
 
   const getMyProfile = async () => {
@@ -123,8 +118,6 @@ const MyGallery: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>("Photographs");
 
   //내 사진 목록 조회
-  //URL:
-  //users/{user_id}/photos
   const [myPhotoData, setMyPhotoData] = useState<any>(null);
 
   const getMyPhotos = async () => {
@@ -165,8 +158,6 @@ const MyGallery: React.FC = () => {
   };
 
   //내 전시 목록 조회-------------------------------------------------
-  //URL:
-  //users/{user_id}/exhibitions
   const [myExhibitions, setMyExhibitions] = useState<any>(null);
 
   const getMyExhibitions = async () => {
@@ -537,11 +528,24 @@ const MyGallery: React.FC = () => {
                   }}
                 >
                   <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("NewExhibition", {
-                        myPhotos: myPhotoData.content,
-                      })
-                    }
+                    onPress={() => {
+                      if (myPhotoData?.content.length === 0) {
+                        Alert.alert(
+                          "알림",
+                          "먼저 Dark Room을 통해 사진을 등록해주세요.",
+                          [
+                            {
+                              text: "OK",
+                            },
+                          ],
+                          { cancelable: true }
+                        );
+                      } else {
+                        navigation.navigate("NewExhibition", {
+                          myPhotos: myPhotoData.content,
+                        });
+                      }
+                    }}
                   >
                     <Text style={{ color: "white" }}>New Exhibition</Text>
                   </TouchableOpacity>

@@ -20,7 +20,6 @@ export const Step3 = ({
   const [showDate, setShowDate] = useState<boolean>(false);
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    console.log(selectedDate);
     if (selectedDate) {
       setDate(selectedDate);
     }
@@ -31,7 +30,6 @@ export const Step3 = ({
     }
   };
 
-  console.log(date);
   return (
     <View style={{ width: 300 }}>
       {/* 날짜 시작 */}
