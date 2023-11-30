@@ -22,7 +22,7 @@ import {
 import {} from "@react-navigation/native";
 
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../../components/navbar";
+import { NavBar, SvgType } from "../navbar";
 import GlobalStyles from "../../assets/styles";
 
 //Redux
@@ -33,17 +33,10 @@ import { State } from "../../storage/reducers";
 const size = Dimensions.get("window").width;
 
 export const AddPhoto = ({
-  roomTitle,
-  setRoomTitle,
-  roomDescription,
-  setRoomDescription,
-  roomThumbnail,
-  setRoomThumbnail,
+  selectedPhotos,
+  setSelectedPhotos,
   myPhotoData,
 }: any) => {
-  console.log("MYpHPTO : ", myPhotoData);
-  //사진 나열
-
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
@@ -53,14 +46,16 @@ export const AddPhoto = ({
           aspectRatio: 1,
         }}
         onPress={() => {
-          if (roomThumbnail) {
-            if (roomThumbnail === item.photo_id) {
-              setRoomThumbnail(null);
+          if (selectedPhotos.length !== 0) {
+            if (selectedPhotos.includes(item.photo_id)) {
+              setSelectedPhotos((prev: any[]) =>
+                prev.filter((id: any) => id !== item.photo_id)
+              );
             } else {
-              setRoomThumbnail(item.photo_id);
+              setSelectedPhotos((prev: any) => [...prev, item.photo_id]);
             }
           } else {
-            setRoomThumbnail(item.photo_id);
+            setSelectedPhotos((prev: any) => [...prev, item.photo_id]);
           }
         }}
       >
@@ -74,15 +69,14 @@ export const AddPhoto = ({
               flex: 1,
               ...StyleSheet.absoluteFillObject,
 
-              backgroundColor:
-                roomThumbnail === item.photo_id
-                  ? "rgba(0, 0, 0, 0.5)"
-                  : "rgba(0,0,0,0)",
+              backgroundColor: selectedPhotos.includes(item.photo_id)
+                ? "rgba(0, 0, 0, 0.5)"
+                : "rgba(0,0,0,0)",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            {roomThumbnail === item.photo_id ? (
+            {selectedPhotos.includes(item.photo_id) ? (
               <Icon name="checkmark" size={27} color={"white"} />
             ) : null}
           </View>
@@ -92,93 +86,46 @@ export const AddPhoto = ({
   };
 
   return (
-    <>
-      {/* 전시회 이름 끝 */}
-      <ScrollView
-        style={{ backgroundColor: "black", flex: 1, paddingHorizontal: 20 }}
+    <ScrollView style={{ backgroundColor: "black", paddingHorizontal: 20 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "flex-end",
+          marginVertical: 15,
+          gap: 10,
+        }}
       >
         <Text
           style={{
             fontSize: 17,
             fontWeight: "500",
-            marginVertical: 15,
+
             color: "white",
           }}
         >
-          Room Title
+          Photographs
         </Text>
-        <TextInput
-          cursorColor={"#FFA800"}
-          placeholder="전시실 제목을 입력하세요."
-          style={{
-            backgroundColor: "white",
-            textAlign: "center",
-            height: 35,
-          }}
-          value={roomTitle}
-          onChangeText={(text) => setRoomTitle(text)}
-        />
-
         <Text
           style={{
-            fontSize: 17,
-            fontWeight: "500",
-            marginVertical: 15,
-            color: "white",
+            fontSize: 12,
+            color: "#c9c9c9",
           }}
         >
-          Room Description
+          전시실 대표 이미지를 선택하세요.
         </Text>
-        <TextInput
-          cursorColor={"#FFA800"}
-          placeholder="전시회 설명을 입력하세요."
-          style={{
-            backgroundColor: "white",
-            textAlign: "center",
-            height: 100,
-          }}
-          value={roomDescription}
-          onChangeText={(text) => setRoomDescription(text)}
-        />
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "flex-end",
-            marginVertical: 15,
-            gap: 10,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: "500",
-
-              color: "white",
-            }}
-          >
-            Photographs
-          </Text>
-          <Text
-            style={{
-              fontSize: 12,
-              color: "#c9c9c9",
-            }}
-          ></Text>
-        </View>
-        <FlatList
-          scrollEnabled={false}
-          data={myPhotoData.content}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.photo_id}
-          numColumns={3}
-          style={{
-            flex: 1,
-            backgroundColor: "black",
-            marginBottom: 20,
-          }}
-        />
-      </ScrollView>
-    </>
+      </View>
+      <FlatList
+        scrollEnabled={false}
+        data={myPhotoData.content}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.photo_id}
+        numColumns={3}
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+          marginBottom: 20,
+        }}
+      />
+    </ScrollView>
   );
 };

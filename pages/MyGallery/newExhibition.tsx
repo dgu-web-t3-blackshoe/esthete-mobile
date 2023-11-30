@@ -311,16 +311,3 @@ const NewExhibition: React.FC = ({ route }: any) => {
 
 export default NewExhibition;
 
-const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    borderRadius: 5,
-    paddingVertical: 5,
-  },
-  buttonText: {
-    color: "black",
-    fontWeight: "600",
-    fontSize: 18,
-    letterSpacing: 3,
-  },
-});

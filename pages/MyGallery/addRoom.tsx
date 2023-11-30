@@ -22,6 +22,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
+import { RoomInfo } from "../../components/newRoom/roomInfo";
 import { AddPhoto } from "../../components/newRoom/addPhoto";
 
 //Redux
@@ -47,6 +48,34 @@ const size = Dimensions.get("window").width;
 
 const AddRoom: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (showCompo === 0) {
+          navigation.goBack();
+          return true;
+        } else if (showCompo === 1) {
+          setRoomTitle("");
+          setRoomDescription("");
+          setRoomThumbnail("");
+          setShowCompo(0);
+          return true;
+        } else {
+          setSelectedPhotos([]);
+          setShowCompo(1);
+          return true;
+        }
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [navigation])
+  );
 
   useEffect(() => {
     getMyPhotos();
@@ -151,57 +180,38 @@ const AddRoom: React.FC = ({ route }: any) => {
           { cancelable: true }
         );
       }
+    } else {
+      if (selectedPhotos.length > 0) {
+        setRooms((prev) => [
+          ...prev,
+          {
+            roomTitle: roomTitle,
+            roomDescription: roomDescription,
+            roomThumbnail: roomThumbnail,
+            roomPhotos: selectedPhotos,
+          },
+        ]);
+        setRoomTitle("");
+        setRoomDescription("");
+        setRoomThumbnail("");
+        setSelectedPhotos([]);
+        setShowCompo(0);
+      } else {
+        Alert.alert(
+          "알림",
+          "하나 이상의 사진을 선택하세요.",
+          [
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+      }
     }
   };
 
   //사진 나열
-  const renderItem = ({ item }: any): React.JSX.Element => {
-    return (
-      <TouchableOpacity
-        style={{
-          width: (size - 40) / 3,
-          height: (size - 40) / 3,
-          aspectRatio: 1,
-        }}
-        onPress={() => {
-          if (selectedPhotos.length !== 0) {
-            if (selectedPhotos.includes(item.photo_id)) {
-              setSelectedPhotos((prev) =>
-                prev.filter((id) => id !== item.photo_id)
-              );
-            } else {
-              setSelectedPhotos((prev) => [...prev, item.photo_id]);
-            }
-          } else {
-            setSelectedPhotos((prev) => [...prev, item.photo_id]);
-          }
-        }}
-      >
-        <ImageBackground
-          // source={{ uri: item.story }}
-          source={{ uri: item.photo_url }}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <View
-            style={{
-              flex: 1,
-              ...StyleSheet.absoluteFillObject,
-
-              backgroundColor: selectedPhotos.includes(item.photo_id)
-                ? "rgba(0, 0, 0, 0.5)"
-                : "rgba(0,0,0,0)",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {selectedPhotos.includes(item.photo_id) ? (
-              <Icon name="checkmark" size={27} color={"white"} />
-            ) : null}
-          </View>
-        </ImageBackground>
-      </TouchableOpacity>
-    );
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -212,7 +222,13 @@ const AddRoom: React.FC = ({ route }: any) => {
           paddingHorizontal: 20,
         }}
       >
-        <Text style={GlobalStyles.bigFont}>New Exhibition</Text>
+        <Text style={GlobalStyles.bigFont}>
+          {showCompo === 0
+            ? "New Exhibition"
+            : showCompo === 1
+            ? "Add Room"
+            : "Add Photo"}
+        </Text>
         <TouchableOpacity
           style={{
             paddingVertical: 3,
@@ -222,7 +238,8 @@ const AddRoom: React.FC = ({ route }: any) => {
               (showCompo === 1 &&
                 roomTitle.length > 0 &&
                 roomDescription.length > 0 &&
-                roomThumbnail.length > 0)
+                roomThumbnail.length > 0) ||
+              (showCompo === 2 && selectedPhotos.length > 0)
                 ? "black"
                 : "#c9c9c9",
           }}
@@ -285,7 +302,7 @@ const AddRoom: React.FC = ({ route }: any) => {
           </TouchableOpacity>
         </ScrollView>
       ) : showCompo === 1 ? (
-        <AddPhoto
+        <RoomInfo
           roomTitle={roomTitle}
           setRoomTitle={setRoomTitle}
           roomDescription={roomDescription}
@@ -294,7 +311,13 @@ const AddRoom: React.FC = ({ route }: any) => {
           setRoomThumbnail={setRoomThumbnail}
           myPhotoData={myPhotoData}
         />
-      ) : null}
+      ) : (
+        <AddPhoto
+          selectedPhotos={selectedPhotos}
+          setSelectedPhotos={setSelectedPhotos}
+          myPhotoData={myPhotoData}
+        />
+      )}
     </SafeAreaView>
   );
 };
