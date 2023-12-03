@@ -114,7 +114,7 @@ const Room: React.FC = ({ route }: any) => {
               }}
             >
               <Image
-                source={route.params.room_thumbnail}
+                source={{ uri: route.params.room_thumbnail }}
                 style={{ width: 100, height: 100 }}
               />
               <View

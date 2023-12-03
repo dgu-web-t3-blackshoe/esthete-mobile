@@ -14,6 +14,7 @@ import {
   ImageBackground,
   ScrollView,
   View,
+  RefreshControl,
   ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
@@ -75,13 +76,32 @@ const MyGallery: React.FC = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      setPhotoPage(0);
+      setExhibitionPage(0);
+      setGuestBookPage(0);
+
       getMyProfile();
       getMySupporting();
-      getMyPhotos();
-      getMyExhibitions();
-      getMyGuestBook();
+      getMyPhotos(0);
+      getMyExhibitions(0);
+      getMyGuestBook(0);
     }, [])
   );
+
+  //pages
+  const [photoPage, setPhotoPage] = useState<number>(0);
+  const [exhibitonPage, setExhibitionPage] = useState<number>(0);
+  const [guestbookPage, setGuestBookPage] = useState<number>(0);
+  useEffect(() => {
+    if (photoPage !== 0) {
+      getMyPhotos(photoPage);
+    }
+  }, [photoPage]);
+  useEffect(() => {
+    if (exhibitonPage !== 0) {
+      getMyExhibitions(exhibitonPage);
+    }
+  }, [exhibitonPage]);
 
   //전체 후원 작가 조회 API
   const [mySupporting, setMySupporting] = useState<any>(null);
@@ -116,13 +136,16 @@ const MyGallery: React.FC = () => {
   //내 사진 목록 조회
   const [myPhotoData, setMyPhotoData] = useState<any>(null);
 
-  const getMyPhotos = async () => {
+  const getMyPhotos = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos?size=10&page=${page}`
       );
-
-      setMyPhotoData(response.data);
+      if (page !== 0) {
+        setMyPhotoData([...myPhotoData, ...response.data.content]);
+      } else {
+        setMyPhotoData(response.data.content);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -156,41 +179,93 @@ const MyGallery: React.FC = () => {
   //내 전시 목록 조회-------------------------------------------------
   const [myExhibitions, setMyExhibitions] = useState<any>(null);
 
-  const getMyExhibitions = async () => {
+  const getMyExhibitions = async (page: number) => {
     try {
+      console.log("hey");
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/exhibitions`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/exhibitions?size=5&page=${page}`
       );
-
-      setMyExhibitions(response.data);
+      console.log("at get my Exhibition fx : ", response.data.content);
+      if (page !== 0) {
+        setMyExhibitions([...myExhibitions, ...response.data.content]);
+      } else {
+        setMyExhibitions(response.data.content);
+      }
     } catch (e) {
       console.log(e);
     }
-  };
-
-  //전시실 방 조회 ---------------------------------------
-
-  const getExhibitonRooms = async (exhibition_id: any) => {
-    const response = await axios.get(``);
   };
 
   const [myGuestBook, setMyGuestBook] = useState<any>(null);
-  const getMyGuestBook = async () => {
+  const getMyGuestBook = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/guest-books`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/guest-books?size=10&page=${page}`
       );
-
-      setMyGuestBook(response.data);
+      if (page !== 0) {
+        setMyGuestBook([...myGuestBook, response.data]);
+      } else {
+        setMyGuestBook(response.data);
+      }
     } catch (e) {
       console.log(e);
     }
+  };
+
+  //새로고침 로직
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    setPhotoPage(0);
+    setExhibitionPage(0);
+    setGuestBookPage(0);
+    getMyProfile();
+    getMySupporting();
+    getMyPhotos(0);
+    getMyExhibitions(0);
+    getMyGuestBook(0);
+    setSelectedOption("Photographs");
+    setRefreshing(false);
+  };
+
+  //페이징 처리
+  const loadMoreData = () => {
+    if (selectedOption === "Photographs") {
+      setPhotoPage((prev) => prev + 1);
+    } else if (selectedOption === "Exhibitions") {
+      setExhibitionPage((prev) => prev + 1);
+    } else {
+      setGuestBookPage((prev) => prev + 1);
+    }
+  };
+
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }: any) => {
+    const paddingToBottom = 20;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {userData ? (
-        <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+        <ScrollView
+          style={{ flex: 1, backgroundColor: "black" }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          onScroll={({ nativeEvent }) => {
+            if (isCloseToBottom(nativeEvent)) {
+              loadMoreData();
+            }
+          }}
+          scrollEventThrottle={400}
+        >
           {/* 후원중인 사진가 타이틀 시작 */}
           <View
             style={{
@@ -356,7 +431,7 @@ const MyGallery: React.FC = () => {
                 marginVertical: 15,
               }}
             >
-              {userData.genres.map((e: string, i: number) => {
+              {userData.genres.map((e: any, i: number) => {
                 return (
                   <Text
                     style={{
@@ -366,7 +441,7 @@ const MyGallery: React.FC = () => {
                     }}
                     key={i}
                   >
-                    {e}
+                    {e.genre}
                   </Text>
                 );
               })}
@@ -418,7 +493,7 @@ const MyGallery: React.FC = () => {
                 </Text>
                 {selectedOption === "Photographs" && myPhotoData ? (
                   <Text style={{ color: "#FFA800" }}>
-                    {myPhotoData.totalElements}
+                    {myPhotoData?.length}
                   </Text>
                 ) : (
                   <Text>{"  "}</Text>
@@ -439,7 +514,7 @@ const MyGallery: React.FC = () => {
                 </Text>
                 {selectedOption === "Exhibitions" && myExhibitions ? (
                   <Text style={{ color: "#FFA800" }}>
-                    {myExhibitions.totalElements}
+                    {myExhibitions?.length}
                   </Text>
                 ) : (
                   <Text>{"  "}</Text>
@@ -470,11 +545,11 @@ const MyGallery: React.FC = () => {
 
             {selectedOption === "Photographs" &&
             myPhotoData &&
-            myPhotoData?.content.length > 0 ? (
+            myPhotoData?.length > 0 ? (
               // 내 사진 확인 시작
               <FlatList
                 scrollEnabled={false}
-                data={myPhotoData?.content}
+                data={myPhotoData}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.photo_id}
                 numColumns={3}
@@ -533,8 +608,8 @@ const MyGallery: React.FC = () => {
                     <Text style={{ color: "white" }}>New Exhibition</Text>
                   </TouchableOpacity>
                 </View>
-                {myExhibitions && myExhibitions.content.length > 0 ? (
-                  myExhibitions.content.map((e: any, i: any) => {
+                {myExhibitions && myExhibitions.length > 0 ? (
+                  myExhibitions.map((e: any, i: any) => {
                     return (
                       <TouchableOpacity
                         key={i}

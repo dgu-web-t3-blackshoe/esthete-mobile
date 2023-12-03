@@ -111,7 +111,7 @@ export const AddPhoto = ({
             color: "#c9c9c9",
           }}
         >
-          전시실 대표 이미지를 선택하세요.
+          전시할 사진을 선택하세요.
         </Text>
       </View>
       <FlatList
