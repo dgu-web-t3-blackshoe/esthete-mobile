@@ -43,7 +43,6 @@ type RootStackParamList = {
     exhibition_title: string;
     exhibition_discription: string;
     exhibition_thumbnail: string;
-    user_id: string;
     profile_img: string;
     nickname: string;
   };
@@ -76,24 +75,22 @@ const MyGallery: React.FC = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      getMySupporting();
       getMyProfile();
+      getMySupporting();
       getMyPhotos();
       getMyExhibitions();
+      getMyGuestBook();
     }, [])
   );
-
-  useEffect(() => {}, []);
 
   //전체 후원 작가 조회 API
   const [mySupporting, setMySupporting] = useState<any>(null);
   const getMySupporting = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/supports/all`
+        `${SERVER_IP}core/new-works/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4`
       );
-      console.log("at supports: ", response.data);
-      setMySupporting(response.data.content);
+      setMySupporting(response.data);
     } catch (e) {
       console.log(e);
     }
@@ -105,9 +102,8 @@ const MyGallery: React.FC = () => {
   const getMyProfile = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`
       );
-      console.log("at user: ", response.data);
       setUserData(response.data);
     } catch (e) {
       console.log(e);
@@ -123,7 +119,7 @@ const MyGallery: React.FC = () => {
   const getMyPhotos = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos`
       );
 
       setMyPhotoData(response.data);
@@ -163,7 +159,7 @@ const MyGallery: React.FC = () => {
   const getMyExhibitions = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/exhibitions`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/exhibitions`
       );
 
       setMyExhibitions(response.data);
@@ -178,62 +174,17 @@ const MyGallery: React.FC = () => {
     const response = await axios.get(``);
   };
 
-  //내 갤러리 방명록 조회
-  //URL:
-  //users/{user_id}/guest-books
-
   const [myGuestBook, setMyGuestBook] = useState<any>(null);
   const getMyGuestBook = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/guest-books`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/guest-books`
       );
-      setMySupporting(response.data.content);
+
+      setMyGuestBook(response.data);
     } catch (e) {
       console.log(e);
     }
-  };
-
-  const GuestBookDummy = {
-    content: [
-      {
-        guest_book_id: "1",
-        photographer_id: "1",
-        user_id: "1",
-        nickname: "ph1",
-        content: "댓글1 댓글1 댓글1 댓글1 댓글1 댓글1 댓글1 댓글1",
-        created_at: "2023-11-09",
-        profile_img: require("../../assets/photodummy1.jpg"),
-      },
-      {
-        guest_book_id: "2",
-        photographer_id: "2",
-        user_id: "2",
-        nickname: "ph2",
-        content: "댓글2 댓글2 댓글2 댓글2 댓글2 댓글2 댓글2 댓글2",
-        created_at: "2023-11-09",
-        profile_img: require("../../assets/photodummy2.jpg"),
-      },
-      {
-        guest_book_id: "3",
-        photographer_id: "3",
-        user_id: "3",
-        nickname: "ph3",
-        content: "댓글3 댓글3 댓글3 댓글3 댓글3 댓글3 댓글3 댓글3 ",
-        created_at: "2023-11-09",
-        profile_img: require("../../assets/photodummy3.jpg"),
-      },
-      {
-        guest_book_id: "4",
-        photographer_id: "4",
-        user_id: "4",
-        nickname: "ph4",
-        content: "댓글4 댓글4 댓글4 댓글4 댓글4 댓글4 댓글4 댓글4 ",
-        created_at: "2023-11-09",
-        profile_img: require("../../assets/photodummy4.jpg"),
-      },
-    ],
-    totalElements: 4,
   };
 
   return (
@@ -272,7 +223,7 @@ const MyGallery: React.FC = () => {
             }}
             showsHorizontalScrollIndicator={false}
           >
-            {mySupporting ? (
+            {mySupporting && mySupporting?.length > 0 ? (
               [...mySupporting]
                 .sort((a, b) =>
                   a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1
@@ -312,7 +263,16 @@ const MyGallery: React.FC = () => {
                   );
                 })
             ) : (
-              <Text>후원 중인 작가가 없습니다.</Text>
+              <Text
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  fontWeight: "500",
+                  paddingBottom: 5,
+                }}
+              >
+                후원 중인 작가가 없습니다.
+              </Text>
             )}
           </ScrollView>
           {/* 후원중인 작가 수평 스크롤뷰 끝 */}
@@ -357,10 +317,18 @@ const MyGallery: React.FC = () => {
                 backgroundColor: "black",
               }}
             >
-              <Image
-                source={{ uri: userData.profile_img }}
-                style={{ width: 150, height: 150 }}
-              />
+              {userData.profile_img === "" ? (
+                <Image
+                  source={require("../../assets/default_profile.jpg")}
+                  style={{ width: 150, height: 150 }}
+                />
+              ) : (
+                <Image
+                  source={{ uri: userData.profile_img }}
+                  style={{ width: 150, height: 150 }}
+                />
+              )}
+
               <View
                 style={{
                   width: 140,
@@ -469,7 +437,7 @@ const MyGallery: React.FC = () => {
                 >
                   Exhibitions
                 </Text>
-                {selectedOption === "Exhibitions" ? (
+                {selectedOption === "Exhibitions" && myExhibitions ? (
                   <Text style={{ color: "#FFA800" }}>
                     {myExhibitions.totalElements}
                   </Text>
@@ -490,9 +458,9 @@ const MyGallery: React.FC = () => {
                 >
                   GuestBook
                 </Text>
-                {selectedOption === "GuestBook" ? (
+                {selectedOption === "GuestBook" && myGuestBook ? (
                   <Text style={{ color: "#FFA800" }}>
-                    {GuestBookDummy.totalElements}
+                    {myGuestBook?.totalElements}
                   </Text>
                 ) : (
                   <Text>{"  "}</Text>
@@ -500,7 +468,9 @@ const MyGallery: React.FC = () => {
               </TouchableOpacity>
             </View>
 
-            {selectedOption === "Photographs" ? (
+            {selectedOption === "Photographs" &&
+            myPhotoData &&
+            myPhotoData?.content.length > 0 ? (
               // 내 사진 확인 시작
               <FlatList
                 scrollEnabled={false}
@@ -516,6 +486,19 @@ const MyGallery: React.FC = () => {
                 }}
                 // onEndReached={loadMoreData}
               />
+            ) : selectedOption === "Photographs" &&
+              myPhotoData?.content.length === 0 ? (
+              <Text
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  fontSize: 18,
+                  color: "white",
+                  marginTop: 20,
+                }}
+              >
+                등록된 사진이 없습니다.
+              </Text>
             ) : // 내 사진 확인 끝
             selectedOption === "Exhibitions" ? (
               <View style={{ paddingBottom: 20 }}>
@@ -550,88 +533,120 @@ const MyGallery: React.FC = () => {
                     <Text style={{ color: "white" }}>New Exhibition</Text>
                   </TouchableOpacity>
                 </View>
-
-                {myExhibitions.content.map((e: any, i: any) => {
-                  return (
-                    <TouchableOpacity
-                      key={i}
-                      style={{
-                        flexDirection: "row",
-                        marginHorizontal: 20,
-                        paddingVertical: 10,
-                        borderBottomWidth: 0.5,
-                        borderBottomColor: "white",
-                        gap: 20,
-                      }}
-                      onPress={() => {
-                        navigation.navigate("Exhibition", {
-                          exhibition_id: e.exhibition_id,
-                          exhibition_title: e.title,
-                          exhibition_discription: e.description,
-                          exhibition_thumbnail: e.thumnail,
-                          user_id: userId,
-                          profile_img: userData.profile_img,
-                          nickname: userData.nickname,
-                        });
-                      }}
-                    >
-                      <Image
-                        source={{ uri: e.thumbnail }}
-                        style={{ width: 80, height: 80 }}
-                      />
-                      <View style={{ gap: 5 }}>
-                        <Text style={{ color: "white", fontSize: 20 }}>
-                          {e.title}
-                        </Text>
-                        <Text style={{ color: "white" }}>{e.description}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
+                {myExhibitions && myExhibitions.content.length > 0 ? (
+                  myExhibitions.content.map((e: any, i: any) => {
+                    return (
+                      <TouchableOpacity
+                        key={i}
+                        style={{
+                          flexDirection: "row",
+                          marginHorizontal: 20,
+                          paddingVertical: 10,
+                          borderBottomWidth: 0.5,
+                          borderBottomColor: "white",
+                          gap: 20,
+                        }}
+                        onPress={() => {
+                          navigation.navigate("Exhibition", {
+                            exhibition_id: e.exhibition_id,
+                            exhibition_title: e.title,
+                            exhibition_discription: e.description,
+                            exhibition_thumbnail: e.thumbnail,
+                            profile_img: userData.profile_img,
+                            nickname: userData.nickname,
+                          });
+                        }}
+                      >
+                        <Image
+                          source={{ uri: e.thumbnail }}
+                          style={{ width: 80, height: 80 }}
+                        />
+                        <View style={{ gap: 5 }}>
+                          <Text style={{ color: "white", fontSize: 20 }}>
+                            {e.title}
+                          </Text>
+                          <Text style={{ color: "white" }}>
+                            {e.description}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })
+                ) : (
+                  <Text
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      fontSize: 18,
+                      color: "white",
+                      marginTop: 20,
+                    }}
+                  >
+                    등록된 전시회가 없습니다.
+                  </Text>
+                )}
               </View>
             ) : (
               <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
-                {GuestBookDummy.content.map((e, i) => {
-                  return (
-                    <View
-                      key={i}
-                      style={{
-                        flexDirection: "row",
-                        borderBottomWidth: 0.5,
-                        alignItems: "center",
-                        paddingVertical: 10,
-                        gap: 20,
-                        borderBottomColor: "white",
-                      }}
-                    >
-                      <Image
-                        source={e.profile_img}
-                        style={{ width: 50, height: 50, borderRadius: 50 }}
-                      />
-                      <View>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "flex-end",
-                            gap: 10,
-                          }}
-                        >
-                          <Text style={{ fontWeight: "500", color: "white" }}>
-                            {e.nickname}
-                          </Text>
-                          <Text style={{ fontSize: 12, color: "white" }}>
-                            {e.created_at}
+                {myGuestBook && myGuestBook?.content?.length > 0 ? (
+                  myGuestBook.content.map((e: any, i: any) => {
+                    return (
+                      <View
+                        key={i}
+                        style={{
+                          flexDirection: "row",
+                          borderBottomWidth: 0.5,
+                          alignItems: "center",
+                          paddingVertical: 10,
+                          gap: 20,
+                          borderBottomColor: "white",
+                        }}
+                      >
+                        <Image
+                          source={e.profile_img}
+                          style={{ width: 50, height: 50, borderRadius: 50 }}
+                        />
+                        <View>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "flex-end",
+                              gap: 10,
+                            }}
+                          >
+                            <Text style={{ fontWeight: "500", color: "white" }}>
+                              {e.nickname}
+                            </Text>
+                            <Text style={{ fontSize: 12, color: "white" }}>
+                              {e.created_at}
+                            </Text>
+                          </View>
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              width: 260,
+                              color: "white",
+                            }}
+                          >
+                            {e.content}
                           </Text>
                         </View>
-                        <Text
-                          style={{ fontSize: 14, width: 260, color: "white" }}
-                        >
-                          {e.content}
-                        </Text>
                       </View>
-                    </View>
-                  );
-                })}
+                    );
+                  })
+                ) : (
+                  <Text
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      fontSize: 18,
+                      color: "white",
+                      marginTop: 20,
+                    }}
+                  >
+                    등록된 방명록이 없습니다.
+                  </Text>
+                )}
               </View>
             )}
           </View>

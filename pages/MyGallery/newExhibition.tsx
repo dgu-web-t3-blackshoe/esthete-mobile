@@ -1,5 +1,5 @@
 //6-7 ~
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 //요소
 import {
@@ -30,6 +30,9 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
+import axios from "axios";
+import { SERVER_IP } from "../../components/utils";
 
 type RootStackParamList = {
   AddRoom: {
@@ -72,6 +75,24 @@ const NewExhibition: React.FC = ({ route }: any) => {
       return () => backHandler.remove();
     }, [navigation])
   );
+
+  useEffect(() => {
+    getMyPhotos();
+  }, []);
+
+  const [myPhotoData, setMyPhotoData] = useState<any>(null);
+
+  const getMyPhotos = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos`
+      );
+      console.log(response.data);
+      setMyPhotoData(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
@@ -203,7 +224,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
           <Text style={{ color: "white", fontSize: 17 }}>Add Room</Text>
         </TouchableOpacity>
       </View>
-      {route.params.myPhotos ? (
+      {myPhotoData ? (
         <ScrollView
           style={{ backgroundColor: "black", flex: 1, paddingHorizontal: 20 }}
         >
@@ -280,7 +301,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
           </View>
           <FlatList
             scrollEnabled={false}
-            data={route.params.myPhotos}
+            data={myPhotoData.content}
             renderItem={renderItem}
             keyExtractor={(item) => item.photo_id}
             numColumns={3}
@@ -310,4 +331,3 @@ const NewExhibition: React.FC = ({ route }: any) => {
 };
 
 export default NewExhibition;
-

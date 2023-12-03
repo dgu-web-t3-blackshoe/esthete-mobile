@@ -126,6 +126,7 @@ export const Step3 = ({
           height: 80,
           backgroundColor: "white",
         }}
+        multiline
         value={equipments}
         placeholder="사진 찍을 때 사용한 장비를 입력하세요."
         onChangeText={(text) => setEquipments(text)}

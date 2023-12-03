@@ -148,12 +148,7 @@ const DarkRoom: React.FC = () => {
     });
 
     if (!result.canceled && result.assets && result.assets[0].uri) {
-      setSelectedImage({
-        uri: result.assets[0].uri,
-        width: result.assets[0].width,
-        height: result.assets[0].height,
-        imageDate: result.assets[0].exif?.DateTime,
-      });
+      setSelectedImage(result.assets[0].uri);
       closeModal();
     }
   };
@@ -203,6 +198,7 @@ const DarkRoom: React.FC = () => {
       equipments: [`${equipments}`],
       genre_ids: genreOption.map((e: string, i: any) => getGenreValueByKey(e)),
     };
+    console.log(imageData);
 
     const jsonData = JSON.stringify(imageData);
 
@@ -210,7 +206,7 @@ const DarkRoom: React.FC = () => {
 
     try {
       await fetch(
-        `${SERVER_IP}core/photos/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69`,
+        `${SERVER_IP}core/photos/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4`,
         {
           method: "post",
           headers: {
@@ -230,6 +226,7 @@ const DarkRoom: React.FC = () => {
         ],
         { cancelable: false }
       );
+      navigation.replace("MyGallery");
     } catch (e) {
       console.log(e);
     }
@@ -686,39 +683,40 @@ const DarkRoom: React.FC = () => {
         <TouchableWithoutFeedback onPress={toggleGenreModal}>
           <View
             style={{
-              flex: 1,
               justifyContent: "center",
               alignItems: "center",
               marginTop: 22,
+              width: "100%",
+              height: "100%",
 
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
           >
-            <ScrollView
+            <View
               style={{
                 backgroundColor: "white",
-                paddingVertical: 30,
-                paddingHorizontal: 40,
+                paddingTop: 30,
+                paddingBottom: 10,
                 width: 280,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <View>
-                {GenreArray.map((e, i) => {
-                  return (
-                    <TouchableOpacity
-                      key={i}
-                      style={styles.modalTextContainer}
-                      onPress={() => handleGenreSelection(e)}
-                    >
-                      <Text style={styles.modalText}>{e}</Text>
-                      {genreOption.includes(e) ? (
-                        <Icon name="check" size={27} color={"black"} />
-                      ) : null}
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
+              {GenreArray.map((e, i) => {
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={styles.modalTextContainer}
+                    onPress={() => handleGenreSelection(e)}
+                  >
+                    <Text style={styles.modalText}>{e}</Text>
+                    {genreOption.includes(e) ? (
+                      <Icon name="check" size={27} color={"black"} />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
             <View
               style={{
@@ -726,12 +724,26 @@ const DarkRoom: React.FC = () => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 paddingHorizontal: 10,
+                backgroundColor: "white",
+                width: 280,
               }}
             >
-              <TouchableOpacity style={{}} onPress={cancelSelection}>
+              <TouchableOpacity
+                style={{
+                  paddingHorizontal: 35,
+                  paddingVertical: 15,
+                }}
+                onPress={cancelSelection}
+              >
                 <Text style={{ fontSize: 20, fontWeight: "500" }}>취소</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{}} onPress={confirmSelection}>
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 15,
+                  paddingHorizontal: 35,
+                }}
+                onPress={confirmSelection}
+              >
                 <Text style={{ fontSize: 20, fontWeight: "500" }}>확인</Text>
               </TouchableOpacity>
             </View>
@@ -803,6 +815,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    paddingHorizontal: 40,
+    paddingVertical: 5,
   },
   button: {
     alignItems: "center",

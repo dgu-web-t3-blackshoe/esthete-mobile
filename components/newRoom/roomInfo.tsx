@@ -138,6 +138,7 @@ export const RoomInfo = ({
             height: 100,
           }}
           value={roomDescription}
+          multiline
           onChangeText={(text) => setRoomDescription(text)}
         />
 

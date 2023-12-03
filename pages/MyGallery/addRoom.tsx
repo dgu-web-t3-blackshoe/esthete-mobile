@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 //요소
 import {
@@ -35,94 +35,18 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import { SERVER_IP } from "../../components/utils";
 
-type RootStackParamList = {
-  AddPhoto: {
-    exhibitionTitle: string;
-    exhibitionDescription: string;
-    exhibitionThumbnail: string;
-  };
-};
-
 //넓이 계산
 const size = Dimensions.get("window").width;
 
+type RootStackParamList = {
+  MyGallery: undefined;
+};
 const AddRoom: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        if (showCompo === 0) {
-          navigation.goBack();
-          return true;
-        } else if (showCompo === 1) {
-          setRoomTitle("");
-          setRoomDescription("");
-          setRoomThumbnail("");
-          setShowCompo(0);
-          return true;
-        } else {
-          setSelectedPhotos([]);
-          setShowCompo(1);
-          return true;
-        }
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress
-      );
-
-      return () => backHandler.remove();
-    }, [navigation])
-  );
 
   useEffect(() => {
     getMyPhotos();
   }, []);
-
-  // try {
-  //   setSpinner(true);
-  //   const reponse = await axios.post(`${SERVER_IP}core/exhibitions`, {
-  //     user_id: "aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69",
-  //     title: title,
-  //     description: description,
-  //     thumbnail: selectedImage,
-  //   });
-  //   Alert.alert(
-  //     "완료",
-  //     "전시회가 등록되었습니다.",
-  //     [
-  //       {
-  //         text: "OK",
-  //       },
-  //     ],
-  //     { cancelable: true }
-  //   );
-  //   console.log(reponse.data);
-  //   navigation.replace("AddRoom", {
-  //     exhibition_id: reponse.data.exhibition_id,
-  //   });
-  //   setTitle("");
-  //   setDescription("");
-  //   setSelectedImage(null);
-  //   setSpinner(false);
-
-  //   return;
-  // } catch (e) {
-  //   Alert.alert(
-  //     "오류",
-  //     "네트워크 연결을 확인하세요.",
-  //     [
-  //       {
-  //         text: "OK",
-  //       },
-  //     ],
-  //     { cancelable: true }
-  //   );
-  //   setSpinner(false);
-  //   console.log(e);
-  // }
 
   //내 사진 목록 불러오기
   //내 사진 목록 조회
@@ -131,7 +55,7 @@ const AddRoom: React.FC = ({ route }: any) => {
   const getMyPhotos = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/photos`
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos`
       );
 
       setMyPhotoData(response.data);
@@ -158,9 +82,104 @@ const AddRoom: React.FC = ({ route }: any) => {
   //선택한 사진
   const [selectedPhotos, setSelectedPhotos] = useState<Array<string>>([]);
 
+  const [exhibitionID, setExhibitionID] = useState<any>(null);
+  const submit = async () => {
+    try {
+      if (exhibitionID === null) {
+
+        const response = await axios.post(`${SERVER_IP}core/exhibitions`, {
+          user_id: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
+          title: route.params.title,
+          description: route.params.description,
+          thumbnail: route.params.thumbnail,
+        });
+        setExhibitionID(response.data.exhibition_id);
+        await axios.post(
+          `${SERVER_IP}core/exhibitions/${response.data.exhibition_id}/rooms`,
+          {
+            description: roomDescription,
+            photos: selectedPhotos,
+            thumbnail: roomThumbnail,
+            title: roomTitle,
+          }
+        );
+      } else {
+        await axios.post(
+          `${SERVER_IP}core/exhibitions/${exhibitionID}/rooms`,
+          {
+            description: roomDescription,
+            photos: selectedPhotos,
+            thumbnail: roomThumbnail,
+            title: roomTitle,
+          }
+        );
+      }
+      Alert.alert(
+        "완료",
+        "전시실이 등록되었습니다.",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      setRooms((prev) => [
+        ...prev,
+        {
+          roomTitle: roomTitle,
+          roomDescription: roomDescription,
+          roomThumbnail: roomThumbnail,
+          roomPhotos: selectedPhotos,
+        },
+      ]);
+      setRoomTitle("");
+      setRoomDescription("");
+      setRoomThumbnail("");
+      setSelectedPhotos([]);
+      setShowCompo(0);
+    } catch (e) {
+      Alert.alert(
+        "오류",
+        "네트워크 연결을 확인하세요.",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      console.log(e);
+    }
+  };
+
   //반응형 버튼 onPress
   const Press = () => {
     if (showCompo === 0) {
+      if (rooms.length > 0) {
+        Alert.alert(
+          "알림",
+          "전시회가 등록되었습니다.",
+          [
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+        navigation.navigate("MyGallery");
+      } else {
+        Alert.alert(
+          "알림",
+          "전시실을 등록해주세요.",
+          [
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+      }
     } else if (showCompo === 1) {
       if (
         roomTitle.length > 0 &&
@@ -182,20 +201,7 @@ const AddRoom: React.FC = ({ route }: any) => {
       }
     } else {
       if (selectedPhotos.length > 0) {
-        setRooms((prev) => [
-          ...prev,
-          {
-            roomTitle: roomTitle,
-            roomDescription: roomDescription,
-            roomThumbnail: roomThumbnail,
-            roomPhotos: selectedPhotos,
-          },
-        ]);
-        setRoomTitle("");
-        setRoomDescription("");
-        setRoomThumbnail("");
-        setSelectedPhotos([]);
-        setShowCompo(0);
+        submit();
       } else {
         Alert.alert(
           "알림",
@@ -212,6 +218,65 @@ const AddRoom: React.FC = ({ route }: any) => {
   };
 
   //사진 나열
+  console.log(showCompo);
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (showCompo === 0) {
+          if (rooms.length === 0) {
+            navigation.goBack();
+            return true;
+          } else {
+            Alert.alert(
+              "경고",
+              "전시회 등록을 종료하시겠습니까?",
+              [
+                {
+                  text: "취소",
+                  onPress: () => null,
+                  style: "cancel",
+                },
+                {
+                  text: "확인",
+                  onPress: () => navigation.navigate("MyGallery"),
+                },
+              ],
+              { cancelable: false }
+            );
+            return true;
+          }
+        } else if (showCompo === 1) {
+          setRoomTitle("");
+          setRoomDescription("");
+          setRoomThumbnail("");
+          setShowCompo(0);
+          return true;
+        } else {
+          setSelectedPhotos([]);
+          setShowCompo(1);
+          return true;
+        }
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [navigation, showCompo, rooms])
+  );
+
+  function findPhotoUrl(array: any, value: any) {
+    return array.find((e: any) => e.photo_id === value);
+  }
+  function truncateText(text: any, maxLength: any) {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    } else {
+      return text;
+    }
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -220,15 +285,32 @@ const AddRoom: React.FC = ({ route }: any) => {
         style={{
           ...GlobalStyles.rowSpaceBetweenContainer,
           paddingHorizontal: 20,
+          borderBottomWidth: 0.4,
         }}
       >
-        <Text style={GlobalStyles.bigFont}>
-          {showCompo === 0
-            ? "New Exhibition"
-            : showCompo === 1
-            ? "Add Room"
-            : "Add Photo"}
-        </Text>
+        <View>
+          <Text style={GlobalStyles.bigFont}>
+            {showCompo === 0
+              ? "New Exhibition"
+              : showCompo === 1
+              ? "Add Room"
+              : "Add Photo"}
+          </Text>
+
+          {/* 전시회 이름 시작 */}
+          {route.params.title.length > 0 && (
+            <View
+              style={{
+                width: "100%",
+              }}
+            >
+              <Text style={{ fontSize: 15, color: "black" }}>
+                {route.params.title}
+              </Text>
+            </View>
+          )}
+          {/* 전시회 이름 끝 */}
+        </View>
         <TouchableOpacity
           style={{
             paddingVertical: 3,
@@ -256,22 +338,6 @@ const AddRoom: React.FC = ({ route }: any) => {
       </View>
       {/* 맨 위 제목과 Add Photo버튼 뷰 끝 */}
 
-      {/* 전시회 이름 시작 */}
-      {route.params.title.length > 0 && (
-        <View
-          style={{
-            width: "100%",
-            paddingHorizontal: 30,
-            paddingVertical: 5,
-            backgroundColor: "#c9c9c9",
-          }}
-        >
-          <Text style={{ fontSize: 18, color: "black" }}>
-            {route.params.title}
-          </Text>
-        </View>
-      )}
-      {/* 전시회 이름 끝 */}
       {showCompo === 0 ? (
         <ScrollView style={{ flex: 1, backgroundColor: "#DEDEDE" }}>
           {rooms.length === 0 ? (
@@ -281,7 +347,6 @@ const AddRoom: React.FC = ({ route }: any) => {
                 paddingHorizontal: 20,
                 alignItems: "center",
                 marginBottom: 15,
-                backgroundColor: "white",
                 paddingVertical: 10,
               }}
             >
@@ -289,12 +354,50 @@ const AddRoom: React.FC = ({ route }: any) => {
                 아직 방이 없습니다. 방을 추가해보세요.
               </Text>
             </View>
-          ) : null}
+          ) : (
+            rooms.map((e, i) => {
+              return (
+                <TouchableOpacity
+                  key={i}
+                  style={{
+                    flexDirection: "row",
+                    paddingHorizontal: 20,
+                    paddingVertical: 12,
+                    backgroundColor: "white",
+                  }}
+                >
+                  <Image
+                    source={{
+                      uri: findPhotoUrl(myPhotoData.content, e.roomThumbnail)
+                        .photo_url,
+                    }}
+                    style={{ width: 80, height: 80 }}
+                  />
+                  <View
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 30,
+                      gap: 5,
+                      width: "100%",
+                    }}
+                  >
+                    <Text style={{ fontWeight: "500", fontSize: 18 }}>
+                      {e.roomTitle}
+                    </Text>
+                    <Text style={{ width: "100%" }}>
+                      {truncateText(e.roomDescription, 20)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
+          )}
 
           <TouchableOpacity
             style={{
               justifyContent: "center",
               alignItems: "center",
+              marginTop: 10,
             }}
             onPress={() => setShowCompo(1)}
           >

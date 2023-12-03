@@ -61,6 +61,7 @@ export const Step1 = ({
             backgroundColor: "white",
             textAlign: "center",
           }}
+          multiline
           value={description}
           placeholder="사진 설명을 입력하세요."
           onChangeText={(text) => setDescription(text)}

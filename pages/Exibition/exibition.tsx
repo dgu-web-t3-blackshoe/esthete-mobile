@@ -1,5 +1,5 @@
 //3-1
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   Text,
@@ -11,12 +11,15 @@ import {
   ScrollView,
   ImageBackground,
   View,
+  Alert,
 } from "react-native";
-
+import Icon from "react-native-vector-icons/Ionicons";
 import { NavBar, SvgType } from "../../components/navbar";
 
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
+import { SERVER_IP } from "../../components/utils";
 
 type RootStackParamList = {
   Gallery: undefined;
@@ -27,7 +30,9 @@ type RootStackParamList = {
     room_thumbnail: string;
     room_title: string;
     room_description: string;
+    nickname: string;
   };
+  MyGallery: undefined;
 };
 
 const numColumns = 2;
@@ -36,49 +41,43 @@ const size = (Dimensions.get("window").width - 56) / numColumns;
 const Exhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  //전시회 룸 목록 조회
-  //URL: exhibitions/{exhibition_id}/rooms
-  //응답:
-  // {
-  //   rooms: [
-  //     {
-  //       room_id: "",
-  //       title: "",
-  //       description: "",
-  //       thumnail: "",
-  //     },
-  //     {
-  //       room_id: "",
-  //       title: "",
-  //       description: "",
-  //       thumnail: "",
-  //     },
-  //   ],
-  // };
+  const [exhibitionData, setExhibitionData] = useState<any>(null);
 
-  const RoomDummy = {
-    rooms: [
-      {
-        room_id: "1",
-        title: "영국",
-        description:
-          "2022-07, London",
-        thumnail: require("../../assets/dummy/1.jpg"),
-      },
-      {
-        room_id: "2",
-        title: "프랑스",
-        description:
-          "2022-07, Paris",
-          thumnail: require("../../assets/dummy/2.jpg"),
-        },
-      {
-        room_id: "3",
-        title: "독일",
-        description: "2022-08, Berlin",
-        thumnail: require("../../assets/dummy/3.jpg"),
-      },
-    ],
+  useEffect(() => {
+    getRooms();
+  }, []);
+
+  const getRandom = async () => {
+    try {
+      const response = await axios.get(`${SERVER_IP}core/exhibitions/random`);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [roomData, setRoomData] = useState<any>(null);
+  const getRooms = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/exhibitions/${route.params.exhibition_id}/rooms`
+      );
+      console.log("at getRooms func : ", response.data);
+      setRoomData(response.data.rooms);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const deleteExhibition = async () => {
+    try {
+      console.log(route.params.exhibition_id);
+      await axios.delete(
+        `${SERVER_IP}core/exhibitions/${route.params.exhibition_id}`
+      );
+      navigation.navigate("MyGallery");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const renderItem = ({ item }: any): React.JSX.Element => {
@@ -95,15 +94,15 @@ const Exhibition: React.FC = ({ route }: any) => {
             exhibition_id: route.params.exhibition_id,
             exhibition_title: route.params.exhibition_title,
             room_id: item.room_id,
-            room_thumbnail: item.thumnail,
+            room_thumbnail: item.thumbnail,
             room_title: item.title,
             room_description: item.description,
+            nickname: route.params.nickname,
           });
         }}
       >
         <ImageBackground
-          // source={{ uri: item.story }}
-          source={item.thumnail}
+          source={{ uri: item.thumbnail }}
           style={{ width: "100%", height: "100%" }}
         >
           <View
@@ -141,7 +140,7 @@ const Exhibition: React.FC = ({ route }: any) => {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
         <ImageBackground
-          source={route.params.exhibition_thumbnail}
+          source={{ uri: route.params.exhibition_thumbnail }}
           style={{ width: "100%", height: 350 }}
         >
           <View
@@ -168,6 +167,32 @@ const Exhibition: React.FC = ({ route }: any) => {
                   {route.params.exhibition_discription}
                 </Text>
               </View>
+              <TouchableOpacity
+                style={{
+                  marginRight: 5,
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  Alert.alert(
+                    "확인",
+                    "전시회를 삭제하시겠습니까?",
+                    [
+                      {
+                        text: "취소",
+                        onPress: () => null,
+                        style: "cancel",
+                      },
+                      {
+                        text: "확인",
+                        onPress: () => deleteExhibition(),
+                      },
+                    ],
+                    { cancelable: false }
+                  );
+                }}
+              >
+                <Icon name="trash-outline" size={25} color={"#fff"} />
+              </TouchableOpacity>
               <TouchableOpacity
                 style={{
                   borderWidth: 1,
@@ -201,10 +226,17 @@ const Exhibition: React.FC = ({ route }: any) => {
                 }}
                 onPress={() => navigation.navigate("Gallery")}
               >
-                <Image
-                  source={route.params.profile_img}
-                  style={{ width: 50, height: 50, borderRadius: 50 }}
-                />
+                {route.params.profile_img === "" ? (
+                  <Image
+                    source={require("../../assets/default_profile.jpg")}
+                    style={{ width: 50, height: 50, borderRadius: 50 }}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: route.params.profile_img }}
+                    style={{ width: 50, height: 50, borderRadius: 50 }}
+                  />
+                )}
 
                 <Text
                   style={{ fontSize: 22, fontWeight: "500", color: "white" }}
@@ -228,7 +260,7 @@ const Exhibition: React.FC = ({ route }: any) => {
             Explore the exhibition room by room
           </Text>
           <FlatList
-            data={RoomDummy.rooms}
+            data={roomData}
             renderItem={renderItem}
             keyExtractor={(item) => item.room_id}
             numColumns={2}

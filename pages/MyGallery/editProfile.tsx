@@ -161,7 +161,7 @@ const EditProfile: React.FC = ({ route }: any) => {
 
     try {
       const response = await fetch(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`,
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`,
         {
           method: "post",
           headers: {
@@ -230,10 +230,17 @@ const EditProfile: React.FC = ({ route }: any) => {
           }}
         >
           <TouchableOpacity onPress={openModal}>
-            <Image
-              source={{ uri: selectedImage }}
-              style={{ width: 150, height: 150 }}
-            />
+            {selectedImage === "" ? (
+              <Image
+                source={require("../../assets/default_profile.jpg")}
+                style={{ width: 150, height: 150 }}
+              />
+            ) : (
+              <Image
+                source={{ uri: selectedImage }}
+                style={{ width: 150, height: 150 }}
+              />
+            )}
           </TouchableOpacity>
           <View style={{ gap: 15, width: size - 200 }}>
             <TextInput

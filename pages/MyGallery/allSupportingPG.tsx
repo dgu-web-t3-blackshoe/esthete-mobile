@@ -49,10 +49,9 @@ const AllSupportingPG: React.FC = () => {
   const getAllSupporting = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/supports/all?nickname={}&sort={}&genres={a,b,c}&size={}&page={}`
-
-      )
-
+        `${SERVER_IP}users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/supports/all`
+      );
+      console.log("at all supporting author page : ", response.data);
     } catch (e) {
       console.log(e);
     }
