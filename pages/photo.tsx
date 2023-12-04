@@ -77,11 +77,7 @@ const Photo: React.FC = ({ route }: any) => {
   //   "profile_img" : "",
   //   "name" : ""
   //   }
-  const UserDummy = {
-    user_id: "",
-    profile_img: "",
-    nickname: "Jekoo",
-  };
+
   //------------------------------------------------
 
   const [imageWidth, setImageWidth] = useState<number>(

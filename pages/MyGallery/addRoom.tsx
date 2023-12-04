@@ -86,7 +86,6 @@ const AddRoom: React.FC = ({ route }: any) => {
   const submit = async () => {
     try {
       if (exhibitionID === null) {
-
         const response = await axios.post(`${SERVER_IP}core/exhibitions`, {
           user_id: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
           title: route.params.title,

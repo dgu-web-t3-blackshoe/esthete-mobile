@@ -198,7 +198,6 @@ const DarkRoom: React.FC = () => {
       equipments: [`${equipments}`],
       genre_ids: genreOption.map((e: string, i: any) => getGenreValueByKey(e)),
     };
-    console.log(imageData);
 
     const jsonData = JSON.stringify(imageData);
 

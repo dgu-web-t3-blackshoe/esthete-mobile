@@ -41,9 +41,9 @@ type RootStackParamList = {
   };
   Exhibition: {
     exhibition_id: string;
-    exhibition_title: string;
-    exhibition_discription: string;
-    exhibition_thumbnail: string;
+    title: string;
+    description: string;
+    thumbnail: string;
     profile_img: string;
     nickname: string;
   };
@@ -624,9 +624,9 @@ const MyGallery: React.FC = () => {
                         onPress={() => {
                           navigation.navigate("Exhibition", {
                             exhibition_id: e.exhibition_id,
-                            exhibition_title: e.title,
-                            exhibition_discription: e.description,
-                            exhibition_thumbnail: e.thumbnail,
+                            title: e.title,
+                            description: e.description,
+                            thumbnail: e.thumbnail,
                             profile_img: userData.profile_img,
                             nickname: userData.nickname,
                           });

@@ -12,6 +12,7 @@ import {
   ImageBackground,
   View,
   Alert,
+  ActivityIndicator as Spinner,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavBar, SvgType } from "../../components/navbar";
@@ -40,16 +41,29 @@ const size = (Dimensions.get("window").width - 56) / numColumns;
 
 const Exhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  console.log("at Exhibitions routes : ", route.params);
 
   const [exhibitionData, setExhibitionData] = useState<any>(null);
 
   useEffect(() => {
-    getRooms();
+    if (route.params) {
+      setExhibitionData(route.params);
+    } else {
+      getRandom();
+      console.log("hi");
+    }
   }, []);
+
+  useEffect(() => {
+    if (exhibitionData !== null) {
+      getRooms();
+    }
+  }, [exhibitionData]);
 
   const getRandom = async () => {
     try {
       const response = await axios.get(`${SERVER_IP}core/exhibitions/random`);
+      setExhibitionData(response.data);
     } catch (e) {
       console.log(e);
     }
@@ -59,7 +73,7 @@ const Exhibition: React.FC = ({ route }: any) => {
   const getRooms = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/exhibitions/${route.params.exhibition_id}/rooms`
+        `${SERVER_IP}core/exhibitions/${exhibitionData.exhibition_id}/rooms`
       );
       console.log("at getRooms func : ", response.data);
       setRoomData(response.data.rooms);
@@ -70,9 +84,9 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   const deleteExhibition = async () => {
     try {
-      console.log(route.params.exhibition_id);
+      console.log(exhibitionData.exhibition_id);
       await axios.delete(
-        `${SERVER_IP}core/exhibitions/${route.params.exhibition_id}`
+        `${SERVER_IP}core/exhibitions/${exhibitionData.exhibition_id}`
       );
       navigation.navigate("MyGallery");
     } catch (e) {
@@ -91,13 +105,13 @@ const Exhibition: React.FC = ({ route }: any) => {
         }}
         onPress={() => {
           navigation.navigate("Room", {
-            exhibition_id: route.params.exhibition_id,
-            exhibition_title: route.params.exhibition_title,
+            exhibition_id: exhibitionData.exhibition_id,
+            exhibition_title: exhibitionData.exhibition_title,
             room_id: item.room_id,
             room_thumbnail: item.thumbnail,
             room_title: item.title,
             room_description: item.description,
-            nickname: route.params.nickname,
+            nickname: exhibitionData.nickname,
           });
         }}
       >
@@ -138,139 +152,157 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
-        <ImageBackground
-          source={{ uri: route.params.exhibition_thumbnail }}
-          style={{ width: "100%", height: 350 }}
-        >
-          <View
-            style={{
-              flex: 1,
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              paddingHorizontal: 20,
-              paddingVertical: 20,
-              justifyContent: "space-between",
-            }}
+      {exhibitionData ? (
+        <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+          <ImageBackground
+            source={{ uri: exhibitionData.thumbnail }}
+            style={{ width: "100%", height: 350 }}
           >
-            {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 시작 */}
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View style={{ gap: 20 }}>
-                <Text
-                  style={{ fontSize: 30, fontWeight: "600", color: "white" }}
-                >
-                  {route.params.exhibition_title}
-                </Text>
-                <Text style={{ fontSize: 18, width: 200, color: "white" }}>
-                  {route.params.exhibition_discription}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={{
-                  marginRight: 5,
-                  alignItems: "center",
-                }}
-                onPress={() => {
-                  Alert.alert(
-                    "확인",
-                    "전시회를 삭제하시겠습니까?",
-                    [
-                      {
-                        text: "취소",
-                        onPress: () => null,
-                        style: "cancel",
-                      },
-                      {
-                        text: "확인",
-                        onPress: () => deleteExhibition(),
-                      },
-                    ],
-                    { cancelable: false }
-                  );
-                }}
-              >
-                <Icon name="trash-outline" size={25} color={"#fff"} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  borderWidth: 1,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 12,
-                  height: 30,
-                  backgroundColor: "black",
-                }}
-              >
-                <Text style={{ fontSize: 14, color: "white" }}>
-                  Download Pdf
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 끝 */}
-
-            {/* 이미지 백그라운드 내 아래쪽 프로필 시작 */}
             <View
               style={{
-                width: "100%",
-                alignItems: "flex-end",
+                flex: 1,
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                paddingHorizontal: 20,
+                paddingVertical: 20,
+                justifyContent: "space-between",
               }}
             >
-              <TouchableOpacity
+              {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 시작 */}
+              <View
                 style={{
                   flexDirection: "row",
-                  justifyContent: "flex-end",
-                  alignItems: "flex-end",
-                  gap: 10,
+                  justifyContent: "space-between",
                 }}
-                onPress={() => navigation.navigate("Gallery")}
               >
-                {route.params.profile_img === "" ? (
-                  <Image
-                    source={require("../../assets/default_profile.jpg")}
-                    style={{ width: 50, height: 50, borderRadius: 50 }}
-                  />
-                ) : (
-                  <Image
-                    source={{ uri: route.params.profile_img }}
-                    style={{ width: 50, height: 50, borderRadius: 50 }}
-                  />
-                )}
-
-                <Text
-                  style={{ fontSize: 22, fontWeight: "500", color: "white" }}
+                <View style={{ gap: 20 }}>
+                  <Text
+                    style={{ fontSize: 30, fontWeight: "600", color: "white" }}
+                  >
+                    {exhibitionData.title}
+                  </Text>
+                  <Text style={{ fontSize: 18, width: 200, color: "white" }}>
+                    {exhibitionData.description}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={{
+                    marginRight: 5,
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    Alert.alert(
+                      "확인",
+                      "전시회를 삭제하시겠습니까?",
+                      [
+                        {
+                          text: "취소",
+                          onPress: () => null,
+                          style: "cancel",
+                        },
+                        {
+                          text: "확인",
+                          onPress: () => deleteExhibition(),
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }}
                 >
-                  {route.params.nickname}
-                </Text>
-              </TouchableOpacity>
+                  <Icon name="trash-outline" size={25} color={"#fff"} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 12,
+                    height: 30,
+                    backgroundColor: "black",
+                  }}
+                >
+                  <Text style={{ fontSize: 14, color: "white" }}>
+                    Download Pdf
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 끝 */}
+
+              {/* 이미지 백그라운드 내 아래쪽 프로필 시작 */}
+              <View
+                style={{
+                  width: "100%",
+                  alignItems: "flex-end",
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: "flex-end",
+                    gap: 10,
+                  }}
+                  onPress={() => navigation.navigate("Gallery")}
+                >
+                  {exhibitionData.profile_img === "" ? (
+                    <Image
+                      source={require("../../assets/default_profile.jpg")}
+                      style={{ width: 50, height: 50, borderRadius: 50 }}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: exhibitionData.profile_img }}
+                      style={{ width: 50, height: 50, borderRadius: 50 }}
+                    />
+                  )}
+
+                  <Text
+                    style={{ fontSize: 22, fontWeight: "500", color: "white" }}
+                  >
+                    {exhibitionData.nickname}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {/* 이미지 백그라운드 내 아래쪽 프로필 끝 */}
             </View>
-            {/* 이미지 백그라운드 내 아래쪽 프로필 끝 */}
+          </ImageBackground>
+          <View style={{ paddingHorizontal: 20 }}>
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "500",
+                color: "white",
+                marginVertical: 15,
+              }}
+            >
+              Explore the exhibition room by room
+            </Text>
+            <FlatList
+              data={roomData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.room_id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ gap: 16 }}
+              style={{ marginBottom: 30 }}
+              // onEndReached={loadMoreData}
+            />
           </View>
-        </ImageBackground>
-        <View style={{ paddingHorizontal: 20 }}>
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: "500",
-              color: "white",
-              marginVertical: 15,
-            }}
-          >
-            Explore the exhibition room by room
-          </Text>
-          <FlatList
-            data={roomData}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.room_id}
-            numColumns={2}
-            scrollEnabled={false}
-            columnWrapperStyle={{ gap: 16 }}
-            style={{ marginBottom: 30 }}
-            // onEndReached={loadMoreData}
-          />
+        </ScrollView>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "black",
+          }}
+        >
+          <Spinner size="large" color="white" />
         </View>
-      </ScrollView>
+      )}
       <NavBar type={SvgType.Exibition} />
     </SafeAreaView>
   );

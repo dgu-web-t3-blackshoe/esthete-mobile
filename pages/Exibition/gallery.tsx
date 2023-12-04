@@ -60,6 +60,17 @@ const Gallery: React.FC = ({ route }: any) => {
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  const [randomData, setRandomData] = useState<any>(null);
+
+  useEffect(()=>{
+
+  },[])
+
+  const getRandomData = async() =>{
+
+    
+  }
+
   // //좌우 제스처
   // const rotate = useRef(new Animated.Value(0)).current; // 회전 상태
   // const rotateInterpolate = rotate.interpolate({
