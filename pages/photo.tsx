@@ -66,22 +66,7 @@ const Photo: React.FC = ({ route }: any) => {
   //   "equipments" : [],
   //   "genre_ids" : []
   //   }
-  const PhotoDummy = {
-    photo_id: "",
-    user_id: "",
-    photo: require("../assets/photodummy2.jpg"),
-    title: "Memory at Seoul",
-    dicription:
-      "복무 신조 우리의 결의 하나 나는 국가와 국민에 충성을 다하는 대한민국 국민이다. 둘 까먹음",
-    longitude: 139.698212,
-    latitude: 35.664035,
-    state: "Tokyo-to",
-    city: "Shibuya-ku",
-    town: "ebisu-3chome",
-    time: "2023년 11월 1일 12시 20분",
-    equipments: [],
-    genre_ids: ["asdfasdf"],
-  };
+
   //---------------------------------------------
 
   //userId로 유저 정보 조회 api---------------------
@@ -233,7 +218,7 @@ const Photo: React.FC = ({ route }: any) => {
               <View style={GlobalStyles.rowSpaceBetweenContainer}>
                 <Text style={{ fontSize: 16, fontWeight: "500" }}>Time</Text>
                 <View style={{ width: 230, borderBottomWidth: 0.8 }}>
-                  <Text style={{ fontSize: 14 }}>{PhotoDummy.time} </Text>
+                  <Text style={{ fontSize: 14 }}>{photoData.time} </Text>
                 </View>
               </View>
               <View>
@@ -266,7 +251,7 @@ const Photo: React.FC = ({ route }: any) => {
                     height: 50,
                   }}
                 >
-                  {PhotoDummy.genre_ids}
+                  {photoData.equipments}
                 </Text>
               </View>
             </View>

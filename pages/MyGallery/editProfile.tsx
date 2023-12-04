@@ -22,6 +22,10 @@ import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 import { GenreArray } from "../../components/constants";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import {
+  getGenreValueByKey,
+  getGenreKeyByValue,
+} from "../../components/constants";
 
 //라이브러리
 import { Modalize } from "react-native-modalize";
@@ -40,6 +44,7 @@ import { SERVER_IP } from "../../components/utils";
 const size = Dimensions.get("window").width;
 
 const EditProfile: React.FC = ({ route }: any) => {
+  console.log("at edit profile : ", route.params);
   //모달
   const modalRef = useRef<Modalize>(null);
   const openModal = () => modalRef.current?.open();
@@ -59,8 +64,11 @@ const EditProfile: React.FC = ({ route }: any) => {
   //장르--------------------------------------------------------------------
   //장르 선택 상태
   const [checkedItems, setCheckedItems] = useState<Array<string>>(
-    route.params.genres
+    route.params.genres.map((e: { genre: string }, i: any) => {
+      return e.genre;
+    })
   );
+  console.log("at edit profile : ", checkedItems);
 
   //장르 선택 함수
   const handleCheck = (item: string) => {
@@ -87,10 +95,11 @@ const EditProfile: React.FC = ({ route }: any) => {
   // }
 
   //사진 등록 관련 시작---------------------------------------------------
+  const [isImgChange, setImgChange] = useState<boolean>(false);
+
   const [selectedImage, setSelectedImage] = useState<string>(
     route.params.profile_img
   );
-  console.log(route.params.profile_img);
 
   //카메라 접근 권한 허용
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(
@@ -128,7 +137,6 @@ const EditProfile: React.FC = ({ route }: any) => {
       aspect: [1, 1],
       exif: true,
     });
-    console.log(result);
     if (!result.canceled && result.assets && result.assets[0].uri) {
       setSelectedImage(result.assets[0].uri);
       closeModal();
@@ -161,11 +169,22 @@ const EditProfile: React.FC = ({ route }: any) => {
       name: selectedImage.split("/").pop(),
     });
 
+    const profileData = {
+      biography: biography,
+      equipments: [`${equipments}`],
+      genres: checkedItems.map((e, i) => getGenreValueByKey(e)),
+      nickname: nickname,
+    };
+    console.log("profileData : ", profileData);
+
+    const jsonData = JSON.stringify(profileData);
+    formData.append("userUpdateProfileRequest", jsonData);
+
     try {
       const response = await fetch(
-        `${SERVER_IP}core/users/aab7e8a5-fe79-494a-9d9c-6a5b71aa2c69/profile`,
+        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`,
         {
-          method: "post",
+          method: "put",
           headers: {
             "content-Type": "multipart/form-data; ",
             // Authorization: `Bearer ${token}`,
@@ -205,8 +224,38 @@ const EditProfile: React.FC = ({ route }: any) => {
       >
         <Text style={GlobalStyles.bigFont}>Edit Profile</Text>
         <TouchableOpacity
-          style={GlobalStyles.backgroundBlackBox}
+          style={{
+            ...GlobalStyles.backgroundBlackBox,
+            backgroundColor:
+              nickname !== route.params.nickname ||
+              biography !== route.params.biography ||
+              equipments !== route.params.equipments[0] ||
+              !(
+                route.params.genres.map((e: { genre: any }) => e.genre)
+                  .length === checkedItems.length &&
+                route.params.genres
+                  ?.map((e: { genre: any }) => e.genre)
+                  .every((element: string) => checkedItems.includes(element))
+              ) || isImgChange
+                ? "black"
+                : "#c9c9c9",
+          }}
           onPress={submitSupport}
+          disabled={
+            !(
+              nickname !== route.params.nickname ||
+              biography !== route.params.biography ||
+              equipments !== route.params.equipments[0] ||
+              !(
+                route.params.genres.map((e: { genre: any }) => e.genre)
+                  .length === checkedItems.length &&
+                route.params.genres
+                  ?.map((e: { genre: any }) => e.genre)
+                  .every((element: string) => checkedItems.includes(element))
+              ) ||
+              isImgChange
+            )
+          }
         >
           <Text style={{ color: "white", fontSize: 17 }}>save</Text>
         </TouchableOpacity>
@@ -232,10 +281,17 @@ const EditProfile: React.FC = ({ route }: any) => {
           }}
         >
           <TouchableOpacity onPress={openModal}>
-            <Image
-              source={{ uri: selectedImage }}
-              style={{ width: 150, height: 150 }}
-            />
+            {selectedImage === "" ? (
+              <Image
+                source={require("../../assets/default_profile.jpg")}
+                style={{ width: 150, height: 150 }}
+              />
+            ) : (
+              <Image
+                source={{ uri: selectedImage }}
+                style={{ width: 150, height: 150 }}
+              />
+            )}
           </TouchableOpacity>
           <View style={{ gap: 15, width: size - 200 }}>
             <TextInput
@@ -302,6 +358,8 @@ const EditProfile: React.FC = ({ route }: any) => {
           cursorColor={"#FFA800"}
           value={equipments}
           style={styles.bigTextInput}
+          multiline
+          onChangeText={(text) => setEquipments(text)}
         />
         {/* 장비 부분 끝 */}
       </ScrollView>
@@ -316,7 +374,10 @@ const EditProfile: React.FC = ({ route }: any) => {
           </View>
           <TouchableOpacity
             style={{ ...styles.modal_button, backgroundColor: "#363538" }}
-            onPress={pickImageFromLibrary}
+            onPress={() => {
+              setImgChange(true);
+              pickImageFromLibrary;
+            }}
           >
             <Icon
               name="image"
@@ -330,7 +391,10 @@ const EditProfile: React.FC = ({ route }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ ...styles.modal_button, backgroundColor: "#363538" }}
-            onPress={takePhotoWithCamera}
+            onPress={() => {
+              setImgChange(true);
+              takePhotoWithCamera();
+            }}
           >
             <Icon
               name="camera"

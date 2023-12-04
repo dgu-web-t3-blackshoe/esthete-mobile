@@ -26,6 +26,8 @@ import { State } from "../../storage/reducers";
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
+import { SERVER_IP } from "../../components/utils";
 
 type RootStackParamList = {
   Gallery: {
@@ -44,6 +46,17 @@ const AllSupportingPG: React.FC = () => {
   //전체 후원 작가 조회
   //URL:
   //users/{user_id}/supports/all?nickname={}&sort={}&genres={a,b,c}&size={}&page={}
+  const getAllSupporting = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/supports/all`
+      );
+      console.log("at all supporting author page : ", response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const MySupportDummy = {
     content: [
       {
