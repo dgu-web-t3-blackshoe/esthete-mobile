@@ -16,6 +16,7 @@ import {
   View,
   TextInput,
   ActivityIndicator as Spinner,
+  RefreshControl,
   PanResponder,
   Animated,
 } from "react-native";
@@ -32,6 +33,10 @@ import GlobalStyles from "../assets/styles";
 //사진 랜더링 시 필요한 width 계산
 const numColumns = 3;
 const size = (Dimensions.get("window").width - 40) / numColumns;
+
+//Redux
+import { useSelector } from "react-redux";
+import { State } from "../storage/reducers";
 
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
@@ -60,10 +65,17 @@ type RootStackParamList = {
 const Gallery: React.FC = ({ route }: any) => {
   //화면 이동(사진 조회)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  //리덕스 유저 아이디 가져오기
+  const userId = useSelector((state: State) => state.USER);
+  console.log("at gallery: ", route.params);
 
   useEffect(() => {
     getUserData();
     getCurrentExhibition();
+    getGuestBook(0);
+    if (userId !== route.params.user_id) {
+      checkSupport();
+    }
   }, []);
 
   //유저 데이터 가져오기
@@ -86,8 +98,32 @@ const Gallery: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${route.params.user_id}/exhibitions/current`
       );
-      console.log("at get current : ", response.data);
       setCurrentExhibition(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  //페이징
+  const [page, setPage] = useState<number>(0);
+  useEffect(() => {
+    getPhotos(page);
+  }, [page]);
+
+  //사진 가져오기
+  const [photos, setPhotos] = useState<any>(null);
+
+  const getPhotos = async (page: number) => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/${route.params.user_id}/photos?size=10&page=${page}`
+      );
+      console.log("at photo : ", response.data.content);
+      if (page === 0) {
+        setPhotos(response.data.content);
+      } else {
+        setPhotos([...photos, ...response.data.content]);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -96,93 +132,8 @@ const Gallery: React.FC = ({ route }: any) => {
   //방명록 모달
   const GuestBookModal = useRef<Modalize>(null);
   const openModal = () => GuestBookModal.current?.open();
+  const closeModal = () => GuestBookModal.current?.close();
 
-  // 업로더 현재 전시회 정보 조회
-  //URL: users/{gallery_user_id}/exhibition/current (get)
-  //gallery_user_id는 RecommendedData.user_id
-  //응답:
-  // {
-  //   "exhibition_id" : "",
-  //   "exhibition_title" : "",
-  //   "exhibition_discription" : "",
-  //   "exhibition_thumbnail" : ""
-  //   }
-  const currentExibitionDummy = {
-    exhibition_id: "asdf",
-    exhibition_title: "유럽 여행기",
-    exhibition_discription: "2022-07 ~ 2022-09 Memories",
-    exhibition_thumbnail: require("../assets/dummy/4.jpg"),
-  };
-
-  // 전시회 사진 받아오기
-  //URL:  users/{gallery_user_id}/photos (get)
-  //gallery_user_id는 RecommendedData.user_id
-  //응답:
-  // {
-  //   "content": [
-  //   {
-  //   "photo_id" : "",
-  //   "title" : "",
-  //   "photo" : "",
-  //   "user_id" : "",
-  //   "nickname" : "",
-  //   "created_at" : ""
-  //   },
-  //   {
-  //   "photo_id" : "",
-  //   "title" : "",
-  //   "photo" : "",
-  //   "user_id" : "",
-  //   "nickname" : "",
-  //   "created_at" : ""
-  //   }
-  //   ]
-  //   }
-  //더미:
-  const photoListDummy = {
-    content: [
-      {
-        photo_id: "1",
-        title: "Love",
-        photo: require("../assets/photodummy1.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "2",
-        title: "",
-        photo: require("../assets/photodummy2.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "3",
-        title: "",
-        photo: require("../assets/photodummy3.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "4",
-        title: "",
-        photo: require("../assets/photodummy4.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "5",
-        title: "",
-        photo: require("../assets/photodummy5.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-    ],
-  };
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
@@ -199,36 +150,118 @@ const Gallery: React.FC = ({ route }: any) => {
       >
         <ImageBackground
           // source={{ uri: item.story }}
-          source={item.photo}
+          source={{ uri: item.photo_url }}
           style={{ width: "100%", height: "100%" }}
-        >
-          {/* <View
-            style={{
-              flex: 1,
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          /> */}
-        </ImageBackground>
+        />
       </TouchableOpacity>
     );
   };
 
-  //구독 완료 전송 함수
-  const submitSupport = () => {
-    Alert.alert(
-      "완료",
-      "구독을 완료하였습니다.",
-      [
-        {
-          text: "cancel",
-        },
-        {
-          text: "OK",
-        },
-      ],
-      { cancelable: true }
-    );
+  //구독 완료 함수
+  const submitSupport = async () => {
+    try {
+      if (isSupporting) {
+        Alert.alert(
+          "알림",
+          "구독을 삭제하시겠습니까?",
+          [
+            {
+              text: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: () => deleteSupport(),
+            },
+          ],
+          { cancelable: true }
+        );
+      } else {
+        await axios.post(`${SERVER_IP}core/users/${userId}/supports`, {
+          photographer_id: route.params.user_id,
+        });
+        Alert.alert(
+          "완료",
+          "구독을 완료하였습니다.",
+          [
+            {
+              text: "cancel",
+            },
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+        checkSupport();
+      }
+    } catch (e) {
+      Alert.alert(
+        "실패",
+        "네트워크 환경을 확인하세요.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      console.log(e);
+    }
+  };
+
+  //구독 삭제 함수
+  const deleteSupport = async () => {
+    try {
+      await axios.delete(
+        `${SERVER_IP}core/users/${userId}/supports/${route.params.user_id}`
+      );
+      Alert.alert(
+        "완료",
+        "구독을 삭제하였습니다.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      checkSupport();
+    } catch (e) {
+      Alert.alert(
+        "실패",
+        "네트워크 환경을 확인하세요.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      console.log(e);
+    }
+  };
+
+  //구독 여부 확인
+  const [isSupporting, setIsSupporting] = useState<boolean>(false);
+
+  const checkSupport = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/${userId}/supports/${route.params.user_id}`
+      );
+      setIsSupporting(response.data.supported);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   //Guest Book Modal Header-----------------------------------------------
@@ -274,9 +307,38 @@ const Gallery: React.FC = ({ route }: any) => {
       </View>
     );
   };
+
   //Guest Book Modal Header 끝-----------------------------------------------
 
   //방명록 조회
+  const [guestBookPage, setGuestBookPage] = useState<number>(0);
+  const [guestBook, setGuestBook] = useState<any>(null);
+  const getGuestBook = async (page: number) => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=10&page${page}`
+      );
+      setGuestBook(response.data.content);
+      console.log("at getGuestBook fx : ", response.data);
+    } catch (e) {
+      Alert.alert(
+        "실패",
+        "네트워크 환경을 확인하세요.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+
+      console.log(e);
+    }
+  };
+
   //URL:
   //users/{gallery_user_id}/guest-books
   //gallery_user_id는 RecommendedData.user_id
@@ -349,8 +411,36 @@ const Gallery: React.FC = ({ route }: any) => {
     ],
   };
 
+  //새로고침 로직
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    setUserData(null);
+    setCurrentExhibition(null);
+    getUserData();
+    getCurrentExhibition();
+    setPage(0);
+    setRefreshing(false);
+  };
+
+  //페이징 처리
+  const loadMoreData = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }: any) => {
+    const paddingToBottom = 20;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+
   return (
-    // (API연결시 랜더링 전 data 있는지 체크 후 랜더링 로직 추가)
     <SafeAreaView style={{ flex: 1 }}>
       {/* 1-1 맨 위 A's Gallery, Support Button 시작*/}
       {userData ? (
@@ -367,7 +457,14 @@ const Gallery: React.FC = ({ route }: any) => {
             </Text>
             <TouchableOpacity
               onPress={submitSupport}
-              style={GlobalStyles.backgroundBlackBox}
+              style={{
+                ...GlobalStyles.backgroundBlackBox,
+                backgroundColor:
+                  userId === route.params.user_id || isSupporting
+                    ? "#c9c9c9"
+                    : "black",
+              }}
+              disabled={userId === route.params.user_id}
             >
               <Text
                 style={{
@@ -383,6 +480,15 @@ const Gallery: React.FC = ({ route }: any) => {
 
           <ScrollView
             style={{ ...GlobalStyles.container, backgroundColor: "black" }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            onScroll={({ nativeEvent }) => {
+              if (isCloseToBottom(nativeEvent)) {
+                loadMoreData();
+              }
+            }}
+            scrollEventThrottle={400}
           >
             {/* 1-1 프로필 사진, Biography, 방명록 아이콘 시작*/}
             <View
@@ -394,7 +500,7 @@ const Gallery: React.FC = ({ route }: any) => {
             >
               {userData.profile_img === "" ? (
                 <Image
-                  source={require("../assets/default_profile.jpg")}
+                  source={require("../assets/default_profile.png")}
                   style={{ width: 160, height: 160 }}
                 />
               ) : (
@@ -487,7 +593,7 @@ const Gallery: React.FC = ({ route }: any) => {
                   }}
                 >
                   <Image
-                    source={currentExhibition.thumbnail}
+                    source={{ uri: currentExhibition.thumbnail }}
                     style={{ width: 120, height: 120 }}
                   />
                   <View style={{ width: 120, marginLeft: 15 }}>
@@ -529,7 +635,7 @@ const Gallery: React.FC = ({ route }: any) => {
               Photographs
             </Text>
             <FlatList
-              data={photoListDummy.content}
+              data={photos}
               renderItem={renderItem}
               keyExtractor={(item) => item.photo_id}
               numColumns={3}
@@ -558,15 +664,17 @@ const Gallery: React.FC = ({ route }: any) => {
       {/* </Animated.View> */}
       <NavBar type={SvgType.Exibition} />
       <Modalize
+        onOverlayPress={closeModal}
         ref={GuestBookModal}
         avoidKeyboardLikeIOS={true}
         // adjustToContentHeight={true}
         keyboardAvoidingBehavior="height"
-        modalHeight={600}
+        modalHeight={550}
         modalStyle={{
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
         }}
+        handleStyle={{ backgroundColor: "black", marginTop: 20 }}
         HeaderComponent={GuestBooKModalHeader()}
       >
         <View style={{ paddingHorizontal: 20 }}>

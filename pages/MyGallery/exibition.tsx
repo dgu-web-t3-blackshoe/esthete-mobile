@@ -12,6 +12,7 @@ import {
   ImageBackground,
   View,
   Alert,
+  RefreshControl,
   ActivityIndicator as Spinner,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -158,11 +159,24 @@ const Exhibition: React.FC = ({ route }: any) => {
       </TouchableOpacity>
     );
   };
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    setRoomData(null);
+    getRooms();
+
+    setRefreshing(false);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {exhibitionData ? (
-        <ScrollView style={{ flex: 1, backgroundColor: "black" }}>
+        <ScrollView
+          style={{ flex: 1, backgroundColor: "black" }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           <ImageBackground
             source={{ uri: exhibitionData.thumbnail }}
             style={{ width: "100%", height: 350 }}
@@ -263,7 +277,7 @@ const Exhibition: React.FC = ({ route }: any) => {
                 >
                   {exhibitionData.profile_img === "" ? (
                     <Image
-                      source={require("../../assets/default_profile.jpg")}
+                      source={require("../../assets/default_profile.png")}
                       style={{ width: 50, height: 50, borderRadius: 50 }}
                     />
                   ) : (
@@ -294,16 +308,30 @@ const Exhibition: React.FC = ({ route }: any) => {
             >
               Explore the exhibition room by room
             </Text>
-            <FlatList
-              data={roomData}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.room_id}
-              numColumns={2}
-              scrollEnabled={false}
-              columnWrapperStyle={{ gap: 16 }}
-              style={{ marginBottom: 30 }}
-              // onEndReached={loadMoreData}
-            />
+            {roomData ? (
+              <FlatList
+                data={roomData}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.room_id}
+                numColumns={2}
+                scrollEnabled={false}
+                columnWrapperStyle={{ gap: 16 }}
+                style={{ marginBottom: 30 }}
+              />
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "black",
+                }}
+              >
+                <Spinner size="large" color="white" />
+              </View>
+            )}
           </View>
         </ScrollView>
       ) : (

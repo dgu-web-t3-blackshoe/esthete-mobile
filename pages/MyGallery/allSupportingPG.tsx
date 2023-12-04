@@ -43,13 +43,17 @@ const AllSupportingPG: React.FC = () => {
   //유저아이디
   const userId = useSelector((state: State) => state.USER);
 
+  useEffect(() => {
+    getAllSupporting();
+  }, []);
+
   //전체 후원 작가 조회
   //URL:
   //users/{user_id}/supports/all?nickname={}&sort={}&genres={a,b,c}&size={}&page={}
   const getAllSupporting = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}users/${userId}/supports/all`
+        `${SERVER_IP}core/users/${userId}/supports/all`
       );
       console.log("at all supporting author page : ", response.data);
     } catch (e) {

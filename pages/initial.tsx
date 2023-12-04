@@ -24,6 +24,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 type RootStackParamList = {
   Gallery: undefined;
   Box: undefined;
+  Exhibition:undefined;
 };
 
 // 앱이 시작하면 현재 위치를 전역 상태로 관리할 생각
@@ -49,7 +50,7 @@ const InitialPage: React.FC = () => {
         })
       );
 
-      navigation.navigate("Box");
+      navigation.navigate("Exhibition");
     })();
   }, []);
 
@@ -61,7 +62,7 @@ const InitialPage: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
       }}
-      onPress={() => navigation.navigate("Box")}
+      onPress={() => navigation.navigate("Exhibition")}
     >
       <Text>hhi</Text>
     </TouchableOpacity>

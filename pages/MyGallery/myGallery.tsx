@@ -201,10 +201,11 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/guest-books?size=10&page=${page}`
       );
+      console.log("at getMyGuestBook : ", response.data.content);
       if (page !== 0) {
-        setMyGuestBook([...myGuestBook, response.data]);
+        setMyGuestBook([...myGuestBook, response.data.content]);
       } else {
-        setMyGuestBook(response.data);
+        setMyGuestBook(response.data.content);
       }
     } catch (e) {
       console.log(e);
@@ -393,8 +394,9 @@ const MyGallery: React.FC = () => {
             >
               {userData.profile_img === "" ? (
                 <Image
-                  source={require("../../assets/default_profile.jpg")}
+                  source={require("../../assets/default_profile.png")}
                   style={{ width: 150, height: 150 }}
+                  resizeMode="contain"
                 />
               ) : (
                 <Image
@@ -534,7 +536,7 @@ const MyGallery: React.FC = () => {
                 </Text>
                 {selectedOption === "GuestBook" && myGuestBook ? (
                   <Text style={{ color: "#FFA800" }}>
-                    {myGuestBook?.totalElements}
+                    {myGuestBook?.length}
                   </Text>
                 ) : (
                   <Text>{"  "}</Text>
@@ -561,7 +563,7 @@ const MyGallery: React.FC = () => {
                 // onEndReached={loadMoreData}
               />
             ) : selectedOption === "Photographs" &&
-              myPhotoData?.content.length === 0 ? (
+              myPhotoData?.length === 0 ? (
               <Text
                 style={{
                   width: "100%",
@@ -586,7 +588,7 @@ const MyGallery: React.FC = () => {
                 >
                   <TouchableOpacity
                     onPress={() => {
-                      if (myPhotoData?.content.length === 0) {
+                      if (myPhotoData?.length === 0) {
                         Alert.alert(
                           "알림",
                           "먼저 Dark Room을 통해 사진을 등록해주세요.",
@@ -663,8 +665,8 @@ const MyGallery: React.FC = () => {
               </View>
             ) : (
               <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
-                {myGuestBook && myGuestBook?.content?.length > 0 ? (
-                  myGuestBook.content.map((e: any, i: any) => {
+                {myGuestBook && myGuestBook.length > 0 ? (
+                  myGuestBook.map((e: any, i: any) => {
                     return (
                       <View
                         key={i}
@@ -693,7 +695,7 @@ const MyGallery: React.FC = () => {
                               {e.nickname}
                             </Text>
                             <Text style={{ fontSize: 12, color: "white" }}>
-                              {e.created_at}
+                              {e.created_at.split("T")[0]}
                             </Text>
                           </View>
                           <Text
