@@ -140,6 +140,7 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
+      console.log(response.data.content);
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -623,7 +624,7 @@ const MyGallery: React.FC = () => {
                           gap: 20,
                         }}
                         onPress={() => {
-                          navigation.navigate("Exhibition", {
+                          navigation.push("Exhibition", {
                             exhibition_id: e.exhibition_id,
                             title: e.title,
                             description: e.description,

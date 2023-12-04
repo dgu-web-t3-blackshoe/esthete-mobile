@@ -1,5 +1,5 @@
 //4-3
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 //요소
 import {
@@ -13,6 +13,7 @@ import {
   View,
   Modal,
   TouchableWithoutFeedback,
+  ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
@@ -27,14 +28,23 @@ const size = (Dimensions.get("window").width - 40) / numColumns;
 //네비게이션
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
+import axios from "axios";
+import { SERVER_IP } from "../../components/utils";
+
 type RootStackParamList = {
   Photo: {
     photo_id: string;
+    nickname: string;
   };
 };
 
 const LightMapList: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   //정렬 방식 모달 시작-------------------------------------------
   const [isSortModalVisible, setSortModalVisible] = useState<boolean>(false);
@@ -48,47 +58,25 @@ const LightMapList: React.FC = ({ route }: any) => {
     setSortOption(option);
     toggleSortModal();
   };
+
+  const [photoData, setPhotoData] = useState<any>(null);
+
+  const getData = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_IP}core/photos/locations?state=서울특별시&city=중구&page=0&size=10&sort=recent`
+      );
+      setPhotoData(response.data.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   //정렬 방식 모달 끝------------------------------------------------
 
   //동별 사진 조회
   //URL: photos?town={동 이름}&sort={}&size={}&page={}
   //응답 :
-  const photoDummy = {
-    content: [
-      {
-        photo_id: "1",
-        title: "",
-        photo: require("../../assets/photodummy4.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "2",
-        title: "",
-        photo: require("../../assets/photodummy3.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "3",
-        title: "",
-        photo: require("../../assets/photodummy2.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-      {
-        photo_id: "4",
-        title: "",
-        photo: require("../../assets/photodummy1.jpg"),
-        user_id: "",
-        nickname: "",
-        created_at: "",
-      },
-    ],
-  };
 
   //사진 나열
   const renderItem = ({ item }: any): React.JSX.Element => {
@@ -102,12 +90,12 @@ const LightMapList: React.FC = ({ route }: any) => {
         onPress={() => {
           navigation.navigate("Photo", {
             photo_id: item.photo_id,
+            nickname: item.nickname,
           });
         }}
       >
         <ImageBackground
-          // source={{ uri: item.story }}
-          source={item.photo}
+          source={{ uri: item.photo_url }}
           style={{ width: "100%", height: "100%" }}
         />
       </TouchableOpacity>
@@ -134,31 +122,47 @@ const LightMapList: React.FC = ({ route }: any) => {
       {/* 위쪽 위치 정보랑 정렬 모달 아이콘 뷰 끝 */}
 
       {/* 사진 나열 시작 */}
-      <FlatList
-        data={photoDummy.content}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.photo_id}
-        ListHeaderComponent={
-          <Text
-            style={{
-              fontSize: 18,
-              color: "white",
-              fontWeight: "600",
-              marginVertical: 20,
-            }}
-          >
-            Photographs
-          </Text>
-        }
-        numColumns={3}
-        // columnWrapperStyle={{ marginBottom: 5 }}
-        style={{
-          flex: 1,
-          paddingHorizontal: 20,
-          backgroundColor: "black",
-        }}
-        // onEndReached={loadMoreData}
-      />
+      {photoData ? (
+        <FlatList
+          data={photoData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.photo_id}
+          ListHeaderComponent={
+            <Text
+              style={{
+                fontSize: 18,
+                color: "white",
+                fontWeight: "600",
+                marginVertical: 20,
+              }}
+            >
+              Photographs
+            </Text>
+          }
+          numColumns={3}
+          // columnWrapperStyle={{ marginBottom: 5 }}
+          style={{
+            flex: 1,
+            paddingHorizontal: 20,
+            backgroundColor: "black",
+          }}
+          // onEndReached={loadMoreData}
+        />
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "black",
+          }}
+        >
+          <Spinner size="large" color="white" />
+        </View>
+      )}
+
       {/* 사진 나열 끝 */}
 
       {/* 정렬 모달 시작 */}

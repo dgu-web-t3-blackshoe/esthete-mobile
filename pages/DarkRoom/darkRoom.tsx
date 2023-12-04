@@ -198,22 +198,20 @@ const DarkRoom: React.FC = () => {
       equipments: [`${equipments}`],
       genre_ids: genreOption.map((e: string, i: any) => getGenreValueByKey(e)),
     };
-
+    console.log(imageData);
     const jsonData = JSON.stringify(imageData);
 
     formData.append("photo_upload_request", jsonData);
 
     try {
-      await fetch(
-        `${SERVER_IP}core/photos/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4`,
-        {
-          method: "post",
-          headers: {
-            "content-Type": "multipart/form-data; ",
-          },
-          body: formData,
-        }
-      );
+      console.log(userId);
+      await fetch(`${SERVER_IP}core/photos/${userId}`, {
+        method: "post",
+        headers: {
+          "content-Type": "multipart/form-data; ",
+        },
+        body: formData,
+      });
       Alert.alert(
         "게시 완료",
         "사진을 게시하였습니다.",
