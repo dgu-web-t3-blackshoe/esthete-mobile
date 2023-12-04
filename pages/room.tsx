@@ -17,13 +17,13 @@ import {
   Animated,
   ActivityIndicator as Spinner,
 } from "react-native";
-import { NavBar, SvgType } from "../../components/navbar";
+import { NavBar, SvgType } from "../components/navbar";
 
 //페이지 이동 타입
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
-import { SERVER_IP } from "../../components/utils";
+import { SERVER_IP } from "../components/utils";
 
 type RootStackParamList = {
   Photo: {
@@ -82,6 +82,7 @@ const Room: React.FC = ({ route }: any) => {
       console.log(e);
     }
   };
+  console.log("at rooms : ", route.params);
 
   //전시회 개별 전시실 조회 API----------------------------------------------
   return (

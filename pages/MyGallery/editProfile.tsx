@@ -44,7 +44,9 @@ import { SERVER_IP } from "../../components/utils";
 const size = Dimensions.get("window").width;
 
 const EditProfile: React.FC = ({ route }: any) => {
-  console.log("at edit profile : ", route.params);
+  //리덕스 유저 아이디 가져오기
+  const userId = useSelector((state: State) => state.USER);
+
   //모달
   const modalRef = useRef<Modalize>(null);
   const openModal = () => modalRef.current?.open();
@@ -181,17 +183,14 @@ const EditProfile: React.FC = ({ route }: any) => {
     formData.append("userUpdateProfileRequest", jsonData);
 
     try {
-      const response = await fetch(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`,
-        {
-          method: "put",
-          headers: {
-            "content-Type": "multipart/form-data; ",
-            // Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(`${SERVER_IP}core/users/${userId}/profile`, {
+        method: "put",
+        headers: {
+          "content-Type": "multipart/form-data; ",
+          // Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
       Alert.alert(
         "완료",
         "저장하였습니다.",
@@ -236,7 +235,8 @@ const EditProfile: React.FC = ({ route }: any) => {
                 route.params.genres
                   ?.map((e: { genre: any }) => e.genre)
                   .every((element: string) => checkedItems.includes(element))
-              ) || isImgChange
+              ) ||
+              isImgChange
                 ? "black"
                 : "#c9c9c9",
           }}
@@ -297,6 +297,7 @@ const EditProfile: React.FC = ({ route }: any) => {
             <TextInput
               cursorColor={"#FFA800"}
               value={nickname}
+              maxLength={7}
               onChangeText={(text) => setNickname(text)}
               style={{ ...styles.text, fontSize: 18, height: 25 }}
             />

@@ -42,6 +42,8 @@ type RootStackParamList = {
   MyGallery: undefined;
 };
 const AddRoom: React.FC = ({ route }: any) => {
+  //리덕스 유저 아이디 가져오기
+  const userId = useSelector((state: State) => state.USER);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const AddRoom: React.FC = ({ route }: any) => {
   const getMyPhotos = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos`
+        `${SERVER_IP}core/users/${userId}/photos`
       );
 
       setMyPhotoData(response.data);
@@ -87,7 +89,7 @@ const AddRoom: React.FC = ({ route }: any) => {
     try {
       if (exhibitionID === null) {
         const response = await axios.post(`${SERVER_IP}core/exhibitions`, {
-          user_id: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
+          user_id: userId,
           title: route.params.title,
           description: route.params.description,
           thumbnail: route.params.thumbnail,
@@ -103,15 +105,12 @@ const AddRoom: React.FC = ({ route }: any) => {
           }
         );
       } else {
-        await axios.post(
-          `${SERVER_IP}core/exhibitions/${exhibitionID}/rooms`,
-          {
-            description: roomDescription,
-            photos: selectedPhotos,
-            thumbnail: roomThumbnail,
-            title: roomTitle,
-          }
-        );
+        await axios.post(`${SERVER_IP}core/exhibitions/${exhibitionID}/rooms`, {
+          description: roomDescription,
+          photos: selectedPhotos,
+          thumbnail: roomThumbnail,
+          title: roomTitle,
+        });
       }
       Alert.alert(
         "완료",

@@ -17,13 +17,22 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavBar, SvgType } from "../../components/navbar";
 
+//Redux
+import { useSelector } from "react-redux";
+import { State } from "../../storage/reducers";
+
+//navigation
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
+//api
 import axios from "axios";
 import { SERVER_IP } from "../../components/utils";
 
 type RootStackParamList = {
-  Gallery: undefined;
+  Gallery: {
+    user_id: string;
+  };
   Room: {
     exhibition_id: string;
     exhibition_title: string;
@@ -41,16 +50,17 @@ const size = (Dimensions.get("window").width - 56) / numColumns;
 
 const Exhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  console.log("at Exhibitions routes : ", route.params);
 
   const [exhibitionData, setExhibitionData] = useState<any>(null);
+
+  //리덕스 유저 아이디 가져오기
+  const userId = useSelector((state: State) => state.USER);
 
   useEffect(() => {
     if (route.params) {
       setExhibitionData(route.params);
     } else {
       getRandom();
-      console.log("hi");
     }
   }, []);
 
@@ -75,7 +85,6 @@ const Exhibition: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/exhibitions/${exhibitionData.exhibition_id}/rooms`
       );
-      console.log("at getRooms func : ", response.data);
       setRoomData(response.data.rooms);
     } catch (e) {
       console.log(e);
@@ -106,7 +115,7 @@ const Exhibition: React.FC = ({ route }: any) => {
         onPress={() => {
           navigation.navigate("Room", {
             exhibition_id: exhibitionData.exhibition_id,
-            exhibition_title: exhibitionData.exhibition_title,
+            exhibition_title: exhibitionData.title,
             room_id: item.room_id,
             room_thumbnail: item.thumbnail,
             room_title: item.title,
@@ -185,46 +194,50 @@ const Exhibition: React.FC = ({ route }: any) => {
                     {exhibitionData.description}
                   </Text>
                 </View>
-                <TouchableOpacity
-                  style={{
-                    marginRight: 5,
-                    alignItems: "center",
-                  }}
-                  onPress={() => {
-                    Alert.alert(
-                      "확인",
-                      "전시회를 삭제하시겠습니까?",
-                      [
-                        {
-                          text: "취소",
-                          onPress: () => null,
-                          style: "cancel",
-                        },
-                        {
-                          text: "확인",
-                          onPress: () => deleteExhibition(),
-                        },
-                      ],
-                      { cancelable: false }
-                    );
-                  }}
-                >
-                  <Icon name="trash-outline" size={25} color={"#fff"} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    borderWidth: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingHorizontal: 12,
-                    height: 30,
-                    backgroundColor: "black",
-                  }}
-                >
-                  <Text style={{ fontSize: 14, color: "white" }}>
-                    Download Pdf
-                  </Text>
-                </TouchableOpacity>
+                {exhibitionData && userId === exhibitionData.user_id ? (
+                  <>
+                    <TouchableOpacity
+                      style={{
+                        marginRight: 5,
+                        alignItems: "center",
+                      }}
+                      onPress={() => {
+                        Alert.alert(
+                          "확인",
+                          "전시회를 삭제하시겠습니까?",
+                          [
+                            {
+                              text: "취소",
+                              onPress: () => null,
+                              style: "cancel",
+                            },
+                            {
+                              text: "확인",
+                              onPress: () => deleteExhibition(),
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }}
+                    >
+                      <Icon name="trash-outline" size={25} color={"#fff"} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        borderWidth: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 12,
+                        height: 30,
+                        backgroundColor: "black",
+                      }}
+                    >
+                      <Text style={{ fontSize: 14, color: "white" }}>
+                        Download Pdf
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                ) : null}
               </View>
               {/* 맨위 제목이랑 pdf다운로드 버튼 포함 수평 뷰 끝 */}
 
@@ -242,7 +255,11 @@ const Exhibition: React.FC = ({ route }: any) => {
                     alignItems: "flex-end",
                     gap: 10,
                   }}
-                  onPress={() => navigation.navigate("Gallery")}
+                  onPress={() =>
+                    navigation.navigate("Gallery", {
+                      user_id: exhibitionData.user_id,
+                    })
+                  }
                 >
                   {exhibitionData.profile_img === "" ? (
                     <Image

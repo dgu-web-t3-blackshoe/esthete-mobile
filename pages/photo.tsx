@@ -40,6 +40,7 @@ const Photo: React.FC = ({ route }: any) => {
   const [photoData, setPhotoData] = useState<any>(null);
   const getPhotoData = async () => {
     try {
+      console.log(route.params.photo_id);
       const response = await axios.get(
         `${SERVER_IP}core/photos/${route.params.photo_id}`
       );

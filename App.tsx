@@ -27,9 +27,9 @@ import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 
 import Box from "./pages/Exibition/box";
-import Gallery from "./pages/Exibition/gallery";
-import Exhibition from "./pages/Exibition/exibition";
-import Room from "./pages/Exibition/room";
+import Gallery from "./pages/gallery";
+import Exhibition from "./pages/MyGallery/exibition";
+import Room from "./pages/room";
 
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";

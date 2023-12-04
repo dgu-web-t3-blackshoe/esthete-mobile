@@ -46,6 +46,7 @@ type RootStackParamList = {
     thumbnail: string;
     profile_img: string;
     nickname: string;
+    user_id: string;
   };
   EditProfile: {
     user_id: string;
@@ -107,9 +108,7 @@ const MyGallery: React.FC = () => {
   const [mySupporting, setMySupporting] = useState<any>(null);
   const getMySupporting = async () => {
     try {
-      const response = await axios.get(
-        `${SERVER_IP}core/new-works/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4`
-      );
+      const response = await axios.get(`${SERVER_IP}core/new-works/${userId}`);
       setMySupporting(response.data);
     } catch (e) {
       console.log(e);
@@ -122,7 +121,7 @@ const MyGallery: React.FC = () => {
   const getMyProfile = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`
+        `${SERVER_IP}core/users/${userId}/profile`
       );
       setUserData(response.data);
     } catch (e) {
@@ -139,7 +138,7 @@ const MyGallery: React.FC = () => {
   const getMyPhotos = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos?size=10&page=${page}`
+        `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
@@ -183,7 +182,7 @@ const MyGallery: React.FC = () => {
     try {
       console.log("hey");
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/exhibitions?size=5&page=${page}`
+        `${SERVER_IP}core/users/${userId}/exhibitions?size=5&page=${page}`
       );
       console.log("at get my Exhibition fx : ", response.data.content);
       if (page !== 0) {
@@ -200,7 +199,7 @@ const MyGallery: React.FC = () => {
   const getMyGuestBook = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/guest-books?size=10&page=${page}`
+        `${SERVER_IP}core/users/${userId}/guest-books?size=10&page=${page}`
       );
       if (page !== 0) {
         setMyGuestBook([...myGuestBook, response.data]);
@@ -629,6 +628,7 @@ const MyGallery: React.FC = () => {
                             thumbnail: e.thumbnail,
                             profile_img: userData.profile_img,
                             nickname: userData.nickname,
+                            user_id: userId,
                           });
                         }}
                       >
