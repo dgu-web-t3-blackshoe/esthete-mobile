@@ -171,8 +171,6 @@ const EditProfile: React.FC = ({ route }: any) => {
       genres: checkedItems.map((e, i) => getGenreValueByKey(e)),
       nickname: nickname,
     };
-    console.log(userId);
-    console.log(profileData);
 
     const jsonData = JSON.stringify(profileData);
     formData.append("userUpdateProfileRequest", jsonData);

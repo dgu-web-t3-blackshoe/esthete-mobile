@@ -17,9 +17,8 @@ import {
   TextInput,
   ActivityIndicator as Spinner,
   RefreshControl,
-  PanResponder,
-  Animated,
 } from "react-native";
+import GlobalStyles from "../assets/styles";
 
 //libs
 import Icon from "react-native-vector-icons/Ionicons";
@@ -27,8 +26,6 @@ import { Modalize } from "react-native-modalize";
 import { NavBar, SvgType } from "../components/navbar";
 
 //assets
-import { ProfilePhoto } from "../assets/svg";
-import GlobalStyles from "../assets/styles";
 
 //사진 랜더링 시 필요한 width 계산
 const numColumns = 3;
@@ -39,7 +36,7 @@ import { useSelector } from "react-redux";
 import { State } from "../storage/reducers";
 
 //페이지 이동 타입
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 //api
@@ -67,16 +64,17 @@ const Gallery: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
-  console.log("at gallery: ", route.params);
 
-  useEffect(() => {
-    getUserData();
-    getCurrentExhibition();
-    getGuestBook(0);
-    if (userId !== route.params.user_id) {
-      checkSupport();
-    }
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getUserData();
+      getCurrentExhibition();
+      getGuestBook(0);
+      if (userId !== route.params.user_id) {
+        checkSupport();
+      }
+    }, [])
+  );
 
   //유저 데이터 가져오기
   const [userData, setUserData] = useState<any>(null);
@@ -118,7 +116,6 @@ const Gallery: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${route.params.user_id}/photos?size=10&page=${page}`
       );
-      console.log("at photo : ", response.data.content);
       if (page === 0) {
         setPhotos(response.data.content);
       } else {
@@ -319,7 +316,6 @@ const Gallery: React.FC = ({ route }: any) => {
         `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=10&page${page}`
       );
       setGuestBook(response.data.content);
-      console.log("at getGuestBook fx : ", response.data);
     } catch (e) {
       Alert.alert(
         "실패",
@@ -339,76 +335,38 @@ const Gallery: React.FC = ({ route }: any) => {
     }
   };
 
-  //URL:
-  //users/{gallery_user_id}/guest-books
-  //gallery_user_id는 RecommendedData.user_id
-  //더미:
-  const GuestBookDummy = {
-    content: [
-      {
-        guest_book_id: "1",
-        photographer_id: "1",
-        user_id: "",
-        nickname: "Rio",
-        content: "오하요~~",
-        created_at: "2024-01-01",
-        profile_img: require("../assets/photodummy1.jpg"),
-      },
-      {
-        guest_book_id: "2",
-        photographer_id: "2",
-        user_id: "",
-        nickname: "HK",
-        content: "안녕",
-        created_at: "2023-10-11",
-        profile_img: require("../assets/photodummy2.jpg"),
-      },
-      {
-        guest_book_id: "3",
-        photographer_id: "3",
-        user_id: "",
-        nickname: "Lina",
-        content: "좋은 사진 감사해요!",
-        created_at: "2023-10-10",
-        profile_img: require("../assets/photodummy3.jpg"),
-      },
-      {
-        guest_book_id: "4",
-        photographer_id: "4",
-        user_id: "",
-        nickname: "Jun",
-        content: "멋진 경험이었습니다!",
-        created_at: "2023-10-09",
-        profile_img: require("../assets/photodummy4.jpg"),
-      },
-      {
-        guest_book_id: "5",
-        photographer_id: "5",
-        user_id: "",
-        nickname: "Chris",
-        content: "다음에 또 올게요.",
-        created_at: "2023-10-08",
-        profile_img: require("../assets/photodummy5.jpg"),
-      },
-      {
-        guest_book_id: "6",
-        photographer_id: "1",
-        user_id: "",
-        nickname: "Alex",
-        content: "정말 기억에 남는 시간이었어요.",
-        created_at: "2023-10-07",
-        profile_img: require("../assets/photodummy6.jpg"),
-      },
-      {
-        guest_book_id: "7",
-        photographer_id: "2",
-        user_id: "",
-        nickname: "Sam",
-        content: "훌륭한 서비스에 감동받았습니다.",
-        created_at: "2023-10-06",
-        profile_img: require("../assets/photodummy2.jpg"),
-      },
-    ],
+  const renderGuestBook = ({ item }: any): React.JSX.Element => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          borderBottomWidth: 0.8,
+          alignItems: "center",
+          paddingVertical: 10,
+          gap: 20,
+        }}
+      >
+        <Image
+          source={item.profile_img}
+          style={{ width: 50, height: 50, borderRadius: 50 }}
+        />
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-end",
+              gap: 10,
+            }}
+          >
+            <Text style={{ fontWeight: "500" }}>{item.nickname}</Text>
+            <Text style={{ fontSize: 12 }}>
+              {item.created_at.split("T")[0]}
+            </Text>
+          </View>
+          <Text style={{ fontSize: 17 }}>{item.content}</Text>
+        </View>
+      </View>
+    );
   };
 
   //새로고침 로직
@@ -676,8 +634,17 @@ const Gallery: React.FC = ({ route }: any) => {
         }}
         handleStyle={{ backgroundColor: "black", marginTop: 20 }}
         HeaderComponent={GuestBooKModalHeader()}
+        flatListProps={
+          guestBook?.length > 0
+            ? {
+                data: guestBook,
+                renderItem: renderGuestBook,
+                keyExtractor: (item) => item.guestbook_id,
+              }
+            : undefined
+        }
       >
-        <View style={{ paddingHorizontal: 20 }}>
+        {/* <View style={{ paddingHorizontal: 20 }}>
           {GuestBookDummy.content.map((e, i) => {
             return (
               <View
@@ -710,7 +677,7 @@ const Gallery: React.FC = ({ route }: any) => {
               </View>
             );
           })}
-        </View>
+        </View> */}
       </Modalize>
     </SafeAreaView>
   );

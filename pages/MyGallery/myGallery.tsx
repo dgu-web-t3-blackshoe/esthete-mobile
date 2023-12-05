@@ -140,7 +140,6 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
-      console.log(response.data.content);
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -181,11 +180,9 @@ const MyGallery: React.FC = () => {
 
   const getMyExhibitions = async (page: number) => {
     try {
-      console.log("hey");
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/exhibitions?size=5&page=${page}`
       );
-      console.log("at get my Exhibition fx : ", response.data.content);
       if (page !== 0) {
         setMyExhibitions([...myExhibitions, ...response.data.content]);
       } else {
@@ -202,7 +199,6 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/guest-books?size=10&page=${page}`
       );
-      console.log("at getMyGuestBook : ", response.data.content);
       if (page !== 0) {
         setMyGuestBook([...myGuestBook, response.data.content]);
       } else {
@@ -317,7 +313,7 @@ const MyGallery: React.FC = () => {
                         justifyContent: "center",
                       }}
                       onPress={() => {
-                        navigation.push("Gallery", {
+                        navigation.navigate("Gallery", {
                           user_id: e.photographer_id,
                           profile_img: e.profile_img,
                           nickname: e.nickname,
@@ -624,7 +620,7 @@ const MyGallery: React.FC = () => {
                           gap: 20,
                         }}
                         onPress={() => {
-                          navigation.push("Exhibition", {
+                          navigation.navigate("Exhibition", {
                             exhibition_id: e.exhibition_id,
                             title: e.title,
                             description: e.description,

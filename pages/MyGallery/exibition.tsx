@@ -25,6 +25,7 @@ import { State } from "../../storage/reducers";
 //navigation
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useFocusEffect } from "@react-navigation/native";
 
 //api
 import axios from "axios";
@@ -57,13 +58,15 @@ const Exhibition: React.FC = ({ route }: any) => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
 
-  useEffect(() => {
-    if (route.params) {
-      setExhibitionData(route.params);
-    } else {
-      getRandom();
-    }
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params) {
+        setExhibitionData(route.params);
+      } else {
+        getRandom();
+      }
+    }, [])
+  );
 
   useEffect(() => {
     if (exhibitionData !== null) {
@@ -94,7 +97,6 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   const deleteExhibition = async () => {
     try {
-      console.log(exhibitionData.exhibition_id);
       await axios.delete(
         `${SERVER_IP}core/exhibitions/${exhibitionData.exhibition_id}`
       );

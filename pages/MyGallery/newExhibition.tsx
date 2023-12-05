@@ -89,7 +89,6 @@ const NewExhibition: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos`
       );
-      console.log(response.data);
       setMyPhotoData(response.data);
     } catch (e) {
       console.log(e);

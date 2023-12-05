@@ -110,7 +110,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
             key={i}
             onPress={() => {
               if (i === 0) {
-                navigation.push("Exhibition");
+                navigation.navigate("Exhibition");
               } else if (i === 1) {
                 navigation.navigate("LightMap");
                 // if (userId === null) {
