@@ -26,7 +26,6 @@ import { Logo } from "./assets/svg";
 import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 
-import Box from "./pages/Exibition/box";
 import Gallery from "./pages/gallery";
 import Exhibition from "./pages/MyGallery/exibition";
 import Room from "./pages/room";
@@ -101,13 +100,7 @@ export default function App() {
                   header: () => <CustomHeader />,
                 }}
               />
-              <Stack.Screen
-                name="Box"
-                component={Box}
-                options={{
-                  header: () => <CustomHeader />,
-                }}
-              />
+
               <Stack.Screen
                 name="InitialPage"
                 component={InitialPage}

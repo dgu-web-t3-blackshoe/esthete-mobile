@@ -57,7 +57,7 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
-
+  console.log("at Exhibition: ", exhibitionData);
   useEffect(() => {
     if (route.params) {
       setExhibitionData(route.params);
