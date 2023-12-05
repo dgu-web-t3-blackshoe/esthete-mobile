@@ -70,7 +70,6 @@ const Gallery: React.FC = ({ route }: any) => {
     React.useCallback(() => {
       getUserData();
       getCurrentExhibition();
-      getGuestBook(0);
       if (userId !== route.params.user_id) {
         checkSupport();
       }
@@ -347,13 +346,13 @@ const Gallery: React.FC = ({ route }: any) => {
 
   //방명록 조회
   const [guestBookInput, setGuestBookInput] = useState<string>("");
-  const [guestBookPage, setGuestBookPage] = useState<number>(0);
   const [guestBook, setGuestBook] = useState<any>(null);
   const getGuestBook = async (page: number) => {
     try {
       const response = await axios.get(
         `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=10&page${page}`
       );
+      setGlast(response.data.last);
       setGuestBook(response.data.content);
     } catch (e) {
       Alert.alert(
@@ -469,7 +468,13 @@ const Gallery: React.FC = ({ route }: any) => {
   };
 
   //방명록 페이징 처리
+  const [glast, setGlast] = useState<boolean>(false);
   const [gpage, setGpage] = useState<number>(0);
+  useEffect(() => {
+    if (!glast) {
+      getGuestBook(gpage);
+    }
+  }, [gpage]);
   const loadMoreGuestBook = () => {
     setGpage((prev) => prev + 1);
   };

@@ -103,6 +103,11 @@ const MyGallery: React.FC = () => {
       getMyExhibitions(exhibitonPage);
     }
   }, [exhibitonPage]);
+  useEffect(() => {
+    if (guestbookPage !== 0 && !last[2]) {
+      getMyGuestBook(guestbookPage);
+    }
+  }, [guestbookPage]);
 
   //전체 후원 작가 조회 API
   const [mySupporting, setMySupporting] = useState<any>(null);
@@ -172,7 +177,6 @@ const MyGallery: React.FC = () => {
         }}
       >
         <ImageBackground
-          // source={{ uri: item.story }}
           source={{ uri: item.photo_url }}
           style={{ width: "100%", height: "100%" }}
         />
