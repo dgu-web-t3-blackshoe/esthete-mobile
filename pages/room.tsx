@@ -17,13 +17,13 @@ import {
   Animated,
   ActivityIndicator as Spinner,
 } from "react-native";
-import { NavBar, SvgType } from "../../components/navbar";
+import { NavBar, SvgType } from "../components/navbar";
 
 //페이지 이동 타입
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
-import { SERVER_IP } from "../../components/utils";
+import { SERVER_IP } from "../components/utils";
 
 type RootStackParamList = {
   Photo: {
@@ -39,9 +39,13 @@ const Room: React.FC = ({ route }: any) => {
   //화면 이동(사진 조회)-------------------------------------------------------------
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  useEffect(() => {
-    getPhotos();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getPhotos();
+
+    }, [])
+  );
+
 
   //이미지 높이 계산----------------------------------------------------------
   const [imageHeights, setImageHeights] = useState<Map<string, number>>(

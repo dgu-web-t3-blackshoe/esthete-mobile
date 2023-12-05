@@ -26,10 +26,10 @@ import { Logo } from "./assets/svg";
 import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 
-import Box from "./pages/Exibition/box";
-import Gallery from "./pages/Exibition/gallery";
-import Exhibition from "./pages/Exibition/exibition";
-import Room from "./pages/Exibition/room";
+import Gallery from "./pages/gallery";
+import Exhibition from "./pages/exibition";
+import Room from "./pages/room";
+import PageExhibition from "./pages/Exibition/pageExh";
 
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
@@ -94,19 +94,20 @@ export default function App() {
               }}
             >
               <Stack.Screen
-                name="Box"
-                component={Box}
-                options={{
-                  header: () => <CustomHeader />,
-                }}
-              />
-              <Stack.Screen
                 name="InitialPage"
                 component={InitialPage}
                 options={{
-                  header: () => <CustomHeader />,
+                  headerShown: false,
                 }}
               />
+              <Stack.Screen
+                name="PageExhibition"
+                component={PageExhibition}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+
               <Stack.Screen
                 name="Gallery"
                 component={Gallery}

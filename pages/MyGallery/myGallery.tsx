@@ -41,11 +41,12 @@ type RootStackParamList = {
   };
   Exhibition: {
     exhibition_id: string;
-    exhibition_title: string;
-    exhibition_discription: string;
-    exhibition_thumbnail: string;
+    title: string;
+    description: string;
+    thumbnail: string;
     profile_img: string;
     nickname: string;
+    user_id: string;
   };
   EditProfile: {
     user_id: string;
@@ -107,9 +108,7 @@ const MyGallery: React.FC = () => {
   const [mySupporting, setMySupporting] = useState<any>(null);
   const getMySupporting = async () => {
     try {
-      const response = await axios.get(
-        `${SERVER_IP}core/new-works/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4`
-      );
+      const response = await axios.get(`${SERVER_IP}core/new-works/${userId}`);
       setMySupporting(response.data);
     } catch (e) {
       console.log(e);
@@ -122,7 +121,7 @@ const MyGallery: React.FC = () => {
   const getMyProfile = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`
+        `${SERVER_IP}core/users/${userId}/profile`
       );
       setUserData(response.data);
     } catch (e) {
@@ -139,7 +138,7 @@ const MyGallery: React.FC = () => {
   const getMyPhotos = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos?size=10&page=${page}`
+        `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
@@ -181,11 +180,9 @@ const MyGallery: React.FC = () => {
 
   const getMyExhibitions = async (page: number) => {
     try {
-      console.log("hey");
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/exhibitions?size=5&page=${page}`
+        `${SERVER_IP}core/users/${userId}/exhibitions?size=5&page=${page}`
       );
-      console.log("at get my Exhibition fx : ", response.data.content);
       if (page !== 0) {
         setMyExhibitions([...myExhibitions, ...response.data.content]);
       } else {
@@ -200,12 +197,12 @@ const MyGallery: React.FC = () => {
   const getMyGuestBook = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/guest-books?size=10&page=${page}`
+        `${SERVER_IP}core/users/${userId}/guest-books?size=10&page=${page}`
       );
       if (page !== 0) {
-        setMyGuestBook([...myGuestBook, response.data]);
+        setMyGuestBook([...myGuestBook, response.data.content]);
       } else {
-        setMyGuestBook(response.data);
+        setMyGuestBook(response.data.content);
       }
     } catch (e) {
       console.log(e);
@@ -316,7 +313,7 @@ const MyGallery: React.FC = () => {
                         justifyContent: "center",
                       }}
                       onPress={() => {
-                        navigation.push("Gallery", {
+                        navigation.navigate("Gallery", {
                           user_id: e.photographer_id,
                           profile_img: e.profile_img,
                           nickname: e.nickname,
@@ -394,8 +391,9 @@ const MyGallery: React.FC = () => {
             >
               {userData.profile_img === "" ? (
                 <Image
-                  source={require("../../assets/default_profile.jpg")}
+                  source={require("../../assets/default_profile.png")}
                   style={{ width: 150, height: 150 }}
+                  resizeMode="contain"
                 />
               ) : (
                 <Image
@@ -535,7 +533,7 @@ const MyGallery: React.FC = () => {
                 </Text>
                 {selectedOption === "GuestBook" && myGuestBook ? (
                   <Text style={{ color: "#FFA800" }}>
-                    {myGuestBook?.totalElements}
+                    {myGuestBook?.length}
                   </Text>
                 ) : (
                   <Text>{"  "}</Text>
@@ -562,7 +560,7 @@ const MyGallery: React.FC = () => {
                 // onEndReached={loadMoreData}
               />
             ) : selectedOption === "Photographs" &&
-              myPhotoData?.content.length === 0 ? (
+              myPhotoData?.length === 0 ? (
               <Text
                 style={{
                   width: "100%",
@@ -587,7 +585,7 @@ const MyGallery: React.FC = () => {
                 >
                   <TouchableOpacity
                     onPress={() => {
-                      if (myPhotoData?.content.length === 0) {
+                      if (myPhotoData?.length === 0) {
                         Alert.alert(
                           "알림",
                           "먼저 Dark Room을 통해 사진을 등록해주세요.",
@@ -622,13 +620,14 @@ const MyGallery: React.FC = () => {
                           gap: 20,
                         }}
                         onPress={() => {
-                          navigation.navigate("Exhibition", {
+                          navigation.push("Exhibition", {
                             exhibition_id: e.exhibition_id,
-                            exhibition_title: e.title,
-                            exhibition_discription: e.description,
-                            exhibition_thumbnail: e.thumbnail,
+                            title: e.title,
+                            description: e.description,
+                            thumbnail: e.thumbnail,
                             profile_img: userData.profile_img,
                             nickname: userData.nickname,
+                            user_id: userId,
                           });
                         }}
                       >
@@ -663,8 +662,8 @@ const MyGallery: React.FC = () => {
               </View>
             ) : (
               <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
-                {myGuestBook && myGuestBook?.content?.length > 0 ? (
-                  myGuestBook.content.map((e: any, i: any) => {
+                {myGuestBook && myGuestBook.length > 0 ? (
+                  myGuestBook.map((e: any, i: any) => {
                     return (
                       <View
                         key={i}
@@ -693,7 +692,7 @@ const MyGallery: React.FC = () => {
                               {e.nickname}
                             </Text>
                             <Text style={{ fontSize: 12, color: "white" }}>
-                              {e.created_at}
+                              {e.created_at.split("T")[0]}
                             </Text>
                           </View>
                           <Text

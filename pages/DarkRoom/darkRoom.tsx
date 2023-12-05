@@ -67,6 +67,7 @@ type RootStackParamList = {
 const DarkRoom: React.FC = () => {
   const userId = useSelector((state: State) => state.USER);
   const token = useSelector((state: State) => state.TOKEN);
+  const { lat, lon } = useSelector((state: State) => state.location);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   //모달
@@ -198,23 +199,18 @@ const DarkRoom: React.FC = () => {
       equipments: [`${equipments}`],
       genre_ids: genreOption.map((e: string, i: any) => getGenreValueByKey(e)),
     };
-    console.log(imageData);
-
     const jsonData = JSON.stringify(imageData);
 
     formData.append("photo_upload_request", jsonData);
 
     try {
-      await fetch(
-        `${SERVER_IP}core/photos/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4`,
-        {
-          method: "post",
-          headers: {
-            "content-Type": "multipart/form-data; ",
-          },
-          body: formData,
-        }
-      );
+      await fetch(`${SERVER_IP}core/photos/${userId}`, {
+        method: "post",
+        headers: {
+          "content-Type": "multipart/form-data; ",
+        },
+        body: formData,
+      });
       Alert.alert(
         "게시 완료",
         "사진을 게시하였습니다.",
@@ -233,8 +229,6 @@ const DarkRoom: React.FC = () => {
   };
 
   //맵뷰 관련 시작-----------------------------------------------------------------
-  //현재 위치 업데이트
-  const { lat, lon } = useSelector((state: State) => state.location);
   //맵뷰 visible 상태
   const [showMap, setShowMap] = useState<boolean | false>(false);
   //맵뷰 위치정보 상태
@@ -244,6 +238,16 @@ const DarkRoom: React.FC = () => {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  useEffect(() => {
+    if (lat !== null && lon !== null) {
+      setRegion({
+        latitude: lat,
+        longitude: lon,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  }, [lat, lon]);
 
   //맵뷰 위치 핸들링
   const handleSelectLocation = (data: any, details: any = null) => {
@@ -287,9 +291,21 @@ const DarkRoom: React.FC = () => {
         }
       );
 
-      const formattedAddress = response.data.results[0].formatted_address;
+      let longestAddress = response.data.results[0].formatted_address || '';
+      for (const result of response.data.results) {
+        const currentAddress = result.formatted_address || '';
+        if (currentAddress.length > longestAddress.length) {
+          longestAddress = currentAddress;
+        }
+      }
 
+      console.log(longestAddress);
+      const formattedAddress = response.data.results[0].formatted_address;
       const addressParts = formattedAddress.split(" ");
+      if (addressParts.includes("대한민국")) {
+        console.log("hi");
+        console.log(addressParts.indexOf("대한민국"));
+      }
       const length = addressParts.length;
       const state = addressParts[length - 4] || "";
       const city = addressParts[length - 3] || "";
@@ -302,8 +318,19 @@ const DarkRoom: React.FC = () => {
     }
   };
   //위도, 경도로 위치 정보 이름 가져오기
+  const mapRef = useRef<MapView>(null);
+
   useEffect(() => {
     if (temporaryLocation !== null) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: temporaryLocation.latitude,
+          longitude: temporaryLocation.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        500
+      );
       getLocationInfo(temporaryLocation.latitude, temporaryLocation.longitude);
     }
   }, [temporaryLocation]);
@@ -404,6 +431,7 @@ const DarkRoom: React.FC = () => {
 
           <MapView
             style={{ flex: 1 }}
+            ref={mapRef}
             region={region}
             onRegionChangeComplete={setRegion}
             onPress={(e) => {

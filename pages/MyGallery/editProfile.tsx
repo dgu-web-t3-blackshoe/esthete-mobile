@@ -22,10 +22,11 @@ import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 import { GenreArray } from "../../components/constants";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import {
-  getGenreValueByKey,
-  getGenreKeyByValue,
-} from "../../components/constants";
+import { getGenreValueByKey } from "../../components/constants";
+
+//페이지 이동 타입
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 //라이브러리
 import { Modalize } from "react-native-modalize";
@@ -38,13 +39,19 @@ import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
 //api
-import axios from "axios";
 import { SERVER_IP } from "../../components/utils";
 
 const size = Dimensions.get("window").width;
 
+type RootStackParamList = {
+  MyGallery: undefined;
+};
+
 const EditProfile: React.FC = ({ route }: any) => {
-  console.log("at edit profile : ", route.params);
+  //리덕스 유저 아이디 가져오기
+  const userId = useSelector((state: State) => state.USER);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   //모달
   const modalRef = useRef<Modalize>(null);
   const openModal = () => modalRef.current?.open();
@@ -68,7 +75,6 @@ const EditProfile: React.FC = ({ route }: any) => {
       return e.genre;
     })
   );
-  console.log("at edit profile : ", checkedItems);
 
   //장르 선택 함수
   const handleCheck = (item: string) => {
@@ -81,18 +87,6 @@ const EditProfile: React.FC = ({ route }: any) => {
       setCheckedItems((prev) => [...prev, item]);
     }
   };
-
-  //프로필 변경
-  // const submitProfile = async () =>{
-  //   try{
-  //     const response = await axios.put(`${SERVER_IP}/core/a3ebb72a-03f1-4f14-9c4f-031e33b6b69b/profile`,{
-
-  //     })
-  //   }catch(e){
-
-  //   }
-
-  // }
 
   //사진 등록 관련 시작---------------------------------------------------
   const [isImgChange, setImgChange] = useState<boolean>(false);
@@ -141,6 +135,7 @@ const EditProfile: React.FC = ({ route }: any) => {
       setSelectedImage(result.assets[0].uri);
       closeModal();
     }
+    setImgChange(true);
   };
   const takePhotoWithCamera = async (): Promise<void> => {
     if (!cameraPermission) {
@@ -159,6 +154,7 @@ const EditProfile: React.FC = ({ route }: any) => {
       setSelectedImage(result.assets[0].uri);
       closeModal();
     }
+    setImgChange(true);
   };
 
   const submitSupport = async () => {
@@ -175,23 +171,19 @@ const EditProfile: React.FC = ({ route }: any) => {
       genres: checkedItems.map((e, i) => getGenreValueByKey(e)),
       nickname: nickname,
     };
-    console.log("profileData : ", profileData);
 
     const jsonData = JSON.stringify(profileData);
     formData.append("userUpdateProfileRequest", jsonData);
 
     try {
-      const response = await fetch(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile`,
-        {
-          method: "put",
-          headers: {
-            "content-Type": "multipart/form-data; ",
-            // Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      await fetch(`${SERVER_IP}core/users/${userId}/profile`, {
+        method: "put",
+        headers: {
+          "content-Type": "multipart/form-data; ",
+          // Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
       Alert.alert(
         "완료",
         "저장하였습니다.",
@@ -205,6 +197,7 @@ const EditProfile: React.FC = ({ route }: any) => {
         ],
         { cancelable: true }
       );
+      navigation.replace("MyGallery");
     } catch (e) {
       console.log(e);
     }
@@ -236,7 +229,8 @@ const EditProfile: React.FC = ({ route }: any) => {
                 route.params.genres
                   ?.map((e: { genre: any }) => e.genre)
                   .every((element: string) => checkedItems.includes(element))
-              ) || isImgChange
+              ) ||
+              isImgChange
                 ? "black"
                 : "#c9c9c9",
           }}
@@ -283,7 +277,7 @@ const EditProfile: React.FC = ({ route }: any) => {
           <TouchableOpacity onPress={openModal}>
             {selectedImage === "" ? (
               <Image
-                source={require("../../assets/default_profile.jpg")}
+                source={require("../../assets/default_profile.png")}
                 style={{ width: 150, height: 150 }}
               />
             ) : (
@@ -297,6 +291,7 @@ const EditProfile: React.FC = ({ route }: any) => {
             <TextInput
               cursorColor={"#FFA800"}
               value={nickname}
+              maxLength={7}
               onChangeText={(text) => setNickname(text)}
               style={{ ...styles.text, fontSize: 18, height: 25 }}
             />
@@ -374,10 +369,7 @@ const EditProfile: React.FC = ({ route }: any) => {
           </View>
           <TouchableOpacity
             style={{ ...styles.modal_button, backgroundColor: "#363538" }}
-            onPress={() => {
-              setImgChange(true);
-              pickImageFromLibrary;
-            }}
+            onPress={pickImageFromLibrary}
           >
             <Icon
               name="image"
@@ -391,10 +383,7 @@ const EditProfile: React.FC = ({ route }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ ...styles.modal_button, backgroundColor: "#363538" }}
-            onPress={() => {
-              setImgChange(true);
-              takePhotoWithCamera();
-            }}
+            onPress={takePhotoWithCamera}
           >
             <Icon
               name="camera"

@@ -47,6 +47,8 @@ const size = Dimensions.get("window").width;
 
 const NewExhibition: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  //리덕스 유저 아이디 가져오기
+  const userId = useSelector((state: State) => state.USER);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -85,17 +87,14 @@ const NewExhibition: React.FC = ({ route }: any) => {
   const getMyPhotos = async () => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photos`
+        `${SERVER_IP}core/users/${userId}/photos`
       );
-      console.log(response.data);
       setMyPhotoData(response.data);
     } catch (e) {
       console.log(e);
     }
   };
 
-  //리덕스 유저 아이디 가져오기
-  const userId = useSelector((state: State) => state.USER);
   //input Data,
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");

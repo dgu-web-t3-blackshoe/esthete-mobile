@@ -23,6 +23,7 @@ import axios from "axios";
 import { SERVER_IP } from "../components/utils";
 
 const Photo: React.FC = ({ route }: any) => {
+  console.log("at photo route: ", route.params);
   //스위퍼 이동 시키는거
   let swiperRef: any = null;
   const goNext = () => {
@@ -40,48 +41,24 @@ const Photo: React.FC = ({ route }: any) => {
   const [photoData, setPhotoData] = useState<any>(null);
   const getPhotoData = async () => {
     try {
+      console.log(route.params.photo_id);
       const response = await axios.get(
         `${SERVER_IP}core/photos/${route.params.photo_id}`
       );
-      console.log("at photo page", response.data);
+      console.log("at Photo : ", response.data);
       setPhotoData(response.data);
     } catch (e) {
       console.log(e);
     }
   };
-  //응답:
-  //
-  // {
-  //   "photo_id" : "",
-  //   "user_id" : "",
-  //   "photo" : "",
-  //   "title" : "",
-  //   "dicription" : "",
-  //   "longitude" : "",
-  //   "latitude" : "",
-  //   "state": "",
-  //   "city" : "",
-  //   "town" : "",
-  //   "time": ",
-  //   "equipments" : [],
-  //   "genre_ids" : []
-  //   }
-
-  //---------------------------------------------
-
-  //userId로 유저 정보 조회 api---------------------
-  //URL: users/{user_id}/basic-info
-  //응답:
-  // {
-  //   "user_id" : "",
-  //   "profile_img" : "",
-  //   "name" : ""
-  //   }
-  const UserDummy = {
-    user_id: "",
-    profile_img: "",
-    nickname: "Jekoo",
+  const [nickname, setNickname] = useState<string>("");
+  const getNickname = async () => {
+    try {
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   //------------------------------------------------
 
   const [imageWidth, setImageWidth] = useState<number>(
