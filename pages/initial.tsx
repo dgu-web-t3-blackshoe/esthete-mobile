@@ -25,6 +25,7 @@ type RootStackParamList = {
   Gallery: undefined;
   Box: undefined;
   Exhibition:undefined;
+  PageExhibition:undefined;
 };
 
 // 앱이 시작하면 현재 위치를 전역 상태로 관리할 생각
@@ -50,7 +51,7 @@ const InitialPage: React.FC = () => {
         })
       );
 
-      navigation.navigate("Exhibition");
+      navigation.navigate("PageExhibition");
     })();
   }, []);
 
@@ -62,7 +63,7 @@ const InitialPage: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
       }}
-      onPress={() => navigation.navigate("Exhibition")}
+      onPress={() => navigation.navigate("PageExhibition")}
     >
       <Text>hhi</Text>
     </TouchableOpacity>

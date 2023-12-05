@@ -58,15 +58,13 @@ const Exhibition: React.FC = ({ route }: any) => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (route.params) {
-        setExhibitionData(route.params);
-      } else {
-        getRandom();
-      }
-    }, [])
-  );
+  useEffect(() => {
+    if (route.params) {
+      setExhibitionData(route.params);
+    } else {
+      getRandom();
+    }
+  }, []);
 
   useEffect(() => {
     if (exhibitionData !== null) {
@@ -116,7 +114,7 @@ const Exhibition: React.FC = ({ route }: any) => {
           marginBottom: 16,
         }}
         onPress={() => {
-          navigation.navigate("Room", {
+          navigation.push("Room", {
             exhibition_id: exhibitionData.exhibition_id,
             exhibition_title: exhibitionData.title,
             room_id: item.room_id,
@@ -165,7 +163,11 @@ const Exhibition: React.FC = ({ route }: any) => {
   const onRefresh = () => {
     setRefreshing(true);
     setRoomData(null);
-    getRooms();
+    if (route.params) {
+      getRooms();
+    } else {
+      getRandom();
+    }
 
     setRefreshing(false);
   };
@@ -271,11 +273,15 @@ const Exhibition: React.FC = ({ route }: any) => {
                     alignItems: "flex-end",
                     gap: 10,
                   }}
-                  onPress={() =>
-                    navigation.navigate("Gallery", {
-                      user_id: exhibitionData.user_id,
-                    })
-                  }
+                  onPress={() => {
+                    if (userId === exhibitionData.user_id) {
+                      navigation.push("MyGallery");
+                    } else {
+                      navigation.push("Gallery", {
+                        user_id: exhibitionData.user_id,
+                      });
+                    }
+                  }}
                 >
                   {exhibitionData.profile_img === "" ? (
                     <Image

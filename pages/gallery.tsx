@@ -539,7 +539,7 @@ const Gallery: React.FC = ({ route }: any) => {
                 <TouchableOpacity
                   style={{ flexDirection: "row" }}
                   onPress={() => {
-                    navigation.navigate("Exhibition", {
+                    navigation.push("Exhibition", {
                       exhibition_id: currentExhibition.exhibition_id,
                       title: currentExhibition.title,
                       description: currentExhibition.description,

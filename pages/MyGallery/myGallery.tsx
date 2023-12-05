@@ -620,7 +620,7 @@ const MyGallery: React.FC = () => {
                           gap: 20,
                         }}
                         onPress={() => {
-                          navigation.navigate("Exhibition", {
+                          navigation.push("Exhibition", {
                             exhibition_id: e.exhibition_id,
                             title: e.title,
                             description: e.description,

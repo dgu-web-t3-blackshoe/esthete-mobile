@@ -30,6 +30,7 @@ import Box from "./pages/Exibition/box";
 import Gallery from "./pages/gallery";
 import Exhibition from "./pages/MyGallery/exibition";
 import Room from "./pages/room";
+import PageExhibition from "./pages/Exibition/pageExh";
 
 import LightMap from "./pages/LightMap/lightMap";
 import LightMapList from "./pages/LightMap/lightMapList";
@@ -93,6 +94,13 @@ export default function App() {
                 animationEnabled: false,
               }}
             >
+              <Stack.Screen
+                name="PageExhibition"
+                component={PageExhibition}
+                options={{
+                  header: () => <CustomHeader />,
+                }}
+              />
               <Stack.Screen
                 name="Box"
                 component={Box}
