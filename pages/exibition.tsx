@@ -57,14 +57,8 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   //리덕스 유저 아이디 가져오기`
   const userId = useSelector((state: State) => state.USER);
-  console.log("at Exhibition: ", exhibitionData);
   useEffect(() => {
-    if (route.params) {
-      console.log("askdfasdf");
-      setExhibitionData(route.params);
-    } else {
-      console.log("no");
-    }
+    setExhibitionData(route.params);
   }, []);
 
   useEffect(() => {
@@ -76,7 +70,6 @@ const Exhibition: React.FC = ({ route }: any) => {
   const getRandom = async () => {
     try {
       const response = await axios.get(`${SERVER_IP}core/exhibitions/random`);
-      console.log("at response data : ", response.data);
       setExhibitionData(response.data);
     } catch (e) {
       console.log(e);
@@ -179,12 +172,12 @@ const Exhibition: React.FC = ({ route }: any) => {
   const onRefresh = () => {
     setRefreshing(true);
     setRoomData(null);
-    if (route.params) {
-      getRooms();
-    } else {
-      getRandom();
-    }
-
+    // if (route.params) {
+    //   getRooms();
+    // } else {
+    //   getRandom();
+    // }
+    getRandom();
     setRefreshing(false);
   };
 
@@ -372,7 +365,6 @@ const Exhibition: React.FC = ({ route }: any) => {
           <Spinner size="large" color="white" />
         </View>
       )}
-      <NavBar type={SvgType.Exibition} />
     </SafeAreaView>
   );
 };

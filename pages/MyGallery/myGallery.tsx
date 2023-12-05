@@ -89,17 +89,17 @@ const MyGallery: React.FC = () => {
   );
 
   //pages
-  const [last, setLast] = useState<boolean>(false);
+  const [last, setLast] = useState<Array<boolean>>([false, false, false]);
   const [photoPage, setPhotoPage] = useState<number>(0);
   const [exhibitonPage, setExhibitionPage] = useState<number>(0);
   const [guestbookPage, setGuestBookPage] = useState<number>(0);
   useEffect(() => {
-    if (photoPage !== 0 && !last) {
+    if (photoPage !== 0 && !last[0]) {
       getMyPhotos(photoPage);
     }
   }, [photoPage]);
   useEffect(() => {
-    if (exhibitonPage !== 0 && !last) {
+    if (exhibitonPage !== 0 && !last[1]) {
       getMyExhibitions(exhibitonPage);
     }
   }, [exhibitonPage]);
@@ -140,8 +140,11 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
-      setLast(response.data.last);
-
+      setLast((prevLast) => {
+        const newLast = [...prevLast];
+        newLast[0] = response.data.last;
+        return newLast;
+      });
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -185,7 +188,11 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/exhibitions?size=5&page=${page}`
       );
-      setLast(response.data.last);
+      setLast((prevLast) => {
+        const newLast = [...prevLast];
+        newLast[1] = response.data.last;
+        return newLast;
+      });
       if (page !== 0) {
         setMyExhibitions([...myExhibitions, ...response.data.content]);
       } else {
@@ -202,8 +209,11 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/guest-books?size=10&page=${page}`
       );
-      setLast(response.data.last);
-
+      setLast((prevLast) => {
+        const newLast = [...prevLast];
+        newLast[2] = response.data.last;
+        return newLast;
+      });
       if (page !== 0) {
         setMyGuestBook([...myGuestBook, response.data.content]);
       } else {
@@ -266,7 +276,7 @@ const MyGallery: React.FC = () => {
               loadMoreData();
             }
           }}
-          scrollEventThrottle={800}
+          scrollEventThrottle={400}
         >
           {/* 후원중인 사진가 타이틀 시작 */}
           <View
@@ -280,7 +290,7 @@ const MyGallery: React.FC = () => {
             <Text style={GlobalStyles.bigFont}>Supporting Photographers</Text>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("AllSupportingPG");
+                navigation.push("AllSupportingPG");
               }}
             >
               <Text>See All</Text>
@@ -682,7 +692,7 @@ const MyGallery: React.FC = () => {
                         }}
                       >
                         <Image
-                          source={e.profile_img}
+                          source={{ uri: e.profile_img_url }}
                           style={{ width: 50, height: 50, borderRadius: 50 }}
                         />
                         <View>

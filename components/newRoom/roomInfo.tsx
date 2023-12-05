@@ -41,7 +41,6 @@ export const RoomInfo = ({
   setRoomThumbnail,
   myPhotoData,
 }: any) => {
-  console.log("MYpHPTO : ", myPhotoData);
   //사진 나열
 
   const renderItem = ({ item }: any): React.JSX.Element => {
