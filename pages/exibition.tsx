@@ -16,11 +16,11 @@ import {
   ActivityIndicator as Spinner,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../../components/navbar";
+import { NavBar, SvgType } from "../components/navbar";
 
 //Redux
 import { useSelector } from "react-redux";
-import { State } from "../../storage/reducers";
+import { State } from "../storage/reducers";
 
 //navigation
 import { useNavigation } from "@react-navigation/native";
@@ -29,7 +29,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 //api
 import axios from "axios";
-import { SERVER_IP } from "../../components/utils";
+import { SERVER_IP } from "../components/utils";
 
 type RootStackParamList = {
   Gallery: {
@@ -55,7 +55,7 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   const [exhibitionData, setExhibitionData] = useState<any>(null);
 
-  //리덕스 유저 아이디 가져오기
+  //리덕스 유저 아이디 가져오기`
   const userId = useSelector((state: State) => state.USER);
   console.log("at Exhibition: ", exhibitionData);
   useEffect(() => {
@@ -285,7 +285,7 @@ const Exhibition: React.FC = ({ route }: any) => {
                 >
                   {exhibitionData.profile_img === "" ? (
                     <Image
-                      source={require("../../assets/default_profile.png")}
+                      source={require("../assets/default_profile.png")}
                       style={{ width: 50, height: 50, borderRadius: 50 }}
                     />
                   ) : (

@@ -27,7 +27,7 @@ import InitialPage from "./pages/initial";
 import Photo from "./pages/photo";
 
 import Gallery from "./pages/gallery";
-import Exhibition from "./pages/MyGallery/exibition";
+import Exhibition from "./pages/exibition";
 import Room from "./pages/room";
 import PageExhibition from "./pages/Exibition/pageExh";
 
@@ -94,20 +94,20 @@ export default function App() {
               }}
             >
               <Stack.Screen
-                name="PageExhibition"
-                component={PageExhibition}
-                options={{
-                  header: () => <CustomHeader />,
-                }}
-              />
-
-              <Stack.Screen
                 name="InitialPage"
                 component={InitialPage}
                 options={{
-                  header: () => <CustomHeader />,
+                  headerShown: false,
                 }}
               />
+              <Stack.Screen
+                name="PageExhibition"
+                component={PageExhibition}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+
               <Stack.Screen
                 name="Gallery"
                 component={Gallery}

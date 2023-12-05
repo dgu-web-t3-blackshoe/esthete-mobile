@@ -10,19 +10,18 @@ import {
   Platform,
   SafeAreaView,
   TouchableOpacity,
+  StatusBar,
   Modal,
   TouchableWithoutFeedback,
   StyleSheet,
   Dimensions,
   ScrollView,
 } from "react-native";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+
+import Random from "./random";
 import Carousel from "react-native-reanimated-carousel";
-import Animated, {
-  Extrapolate,
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import Animated, { Extrapolate, interpolate } from "react-native-reanimated";
 
 import { NavBar, SvgType } from "../../components/navbar";
 import {
@@ -32,14 +31,17 @@ import {
 } from "../../components/constants";
 import GlobalStyles from "../../assets/styles";
 
+const statusbarHeight = StatusBar.currentHeight;
+
 const PageExhibition: React.FC = () => {
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
 
+  //Cube Animation
   const animationStyle: any = React.useCallback(
     (value: number) => {
       "worklet";
-      const zIndex = interpolate(value, [-1, 0, 1], [-1000, 0, -1000]);
+      const zIndex = interpolate(value, [-1, 0, 1], [-1200, 0, -1200]);
 
       const rotateY = `${interpolate(
         value,
@@ -48,7 +50,7 @@ const PageExhibition: React.FC = () => {
         Extrapolate.CLAMP
       )}deg`;
 
-      const perspective = 850;
+      const perspective = 1000;
 
       const transform = {
         transform: [
@@ -66,13 +68,20 @@ const PageExhibition: React.FC = () => {
     [height, width]
   );
 
+  const [enabled, setEnabled] = useState<boolean>(true);
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "black",
+      }}
+    >
+      <ExpoStatusBar style="dark" />
       <Carousel
-        loop
         width={width}
-        height={height}
-        style={{ backgroundColor: "white" }}
+        height={height - 70 - 49}
+        autoPlay
+        autoPlayInterval={2000}
         data={[
           {
             description: "Ggg",
@@ -85,25 +94,44 @@ const PageExhibition: React.FC = () => {
             title: "Ggg",
             user_id: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
           },
+          {
+            description: "Ggg",
+            exhibition_id: "f6a5434e-7493-495f-a8ea-132c9973990c",
+            nickname: "제구",
+            profile_img:
+              "https://db3o78f1kbvk.cloudfront.net/test/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile/73a2c744-bd63-4c5d-869a-bbeb7e7137be.jpeg",
+            thumbnail:
+              "https://db3o78f1kbvk.cloudfront.net/test/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photo/4c402a41-643e-4bd4-b00b-2076d537d7b5.jpeg",
+            title: "Ggg",
+            user_id: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
+          },
+          {
+            description: "Ggg",
+            exhibition_id: "f6a5434e-7493-495f-a8ea-132c9973990c",
+            nickname: "제구",
+            profile_img:
+              "https://db3o78f1kbvk.cloudfront.net/test/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/profile/73a2c744-bd63-4c5d-869a-bbeb7e7137be.jpeg",
+            thumbnail:
+              "https://db3o78f1kbvk.cloudfront.net/test/8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4/photo/4c402a41-643e-4bd4-b00b-2076d537d7b5.jpeg",
+            title: "Ggg",
+            user_id: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
+          },
         ]}
+        loop={false}
+        snapEnabled={false}
+        enabled={enabled}
+        overscrollEnabled={false}
         scrollAnimationDuration={1000}
+        onProgressChange={(index) => {
+          index === 0 || (index === -0 && setEnabled(false));
+          console.log(index);
+        }}
         customAnimation={animationStyle}
-        onSnapToItem={(index) => console.log("current index:", index)}
-        renderItem={({ item, index }) => (
-          <View
-            style={{
-              flex: 1,
-              borderWidth: 1,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ textAlign: "center", fontSize: 30 }}>
-              {item.nickname}
-            </Text>
-          </View>
-        )}
+        // onSnapToItem={(index) => console.log("current index:", index)}
+        renderItem={({ item, index }) => <Random />}
       />
-    </View>
+      <NavBar type={SvgType.Exibition} />
+    </SafeAreaView>
   );
 };
 

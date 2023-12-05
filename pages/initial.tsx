@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 //요소
 import {
@@ -7,8 +7,14 @@ import {
   Text,
   View,
   SafeAreaView,
+  Animated,
+  Platform,
+  StatusBar,
   TouchableOpacity,
 } from "react-native";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+
+import { BigLogo } from "../assets/svg";
 
 //라이브러리
 import * as Location from "expo-location";
@@ -24,8 +30,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 type RootStackParamList = {
   Gallery: undefined;
   Box: undefined;
-  Exhibition:undefined;
-  PageExhibition:undefined;
+  Exhibition: undefined;
+  PageExhibition: undefined;
 };
 
 // 앱이 시작하면 현재 위치를 전역 상태로 관리할 생각
@@ -50,10 +56,18 @@ const InitialPage: React.FC = () => {
           lon: currentLocation.coords.longitude,
         })
       );
-
-      navigation.navigate("PageExhibition");
+      Animated.sequence([
+        Animated.timing(fadeAnim1, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        // navigation.navigate("PageExhibition");
+      });
     })();
   }, []);
+  const fadeAnim1 = useRef(new Animated.Value(0)).current;
 
   return (
     <TouchableOpacity
@@ -62,10 +76,14 @@ const InitialPage: React.FC = () => {
         height: "100%",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "black",
       }}
       onPress={() => navigation.navigate("PageExhibition")}
     >
-      <Text>hhi</Text>
+      <ExpoStatusBar style="light" />
+      <Animated.View style={{ opacity: fadeAnim1 }}>
+        <BigLogo />
+      </Animated.View>
     </TouchableOpacity>
   );
 };
