@@ -157,7 +157,6 @@ const LightMap: React.FC = () => {
 
   const getData = async (lat: any, lon: any) => {
     try {
-      console.log(locationInfo[0]);
 
       const response = await axios.get(
         `${SERVER_IP}core/photos/locations?state=서울특별시&city=중구&page=0&size=10&sort=recent`

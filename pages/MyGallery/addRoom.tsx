@@ -216,7 +216,6 @@ const AddRoom: React.FC = ({ route }: any) => {
   };
 
   //사진 나열
-  console.log(showCompo);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {

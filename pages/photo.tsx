@@ -23,12 +23,6 @@ import axios from "axios";
 import { SERVER_IP } from "../components/utils";
 
 const Photo: React.FC = ({ route }: any) => {
-  console.log("at photo route: ", route.params);
-  //스위퍼 이동 시키는거
-  let swiperRef: any = null;
-  const goNext = () => {
-    if (swiperRef) swiperRef.scrollBy(1, true);
-  };
   //<Swiper ref={(ref) => (swiperRef = ref)}>
   //onPress={goNext}
   //이렇게 사용
@@ -41,11 +35,9 @@ const Photo: React.FC = ({ route }: any) => {
   const [photoData, setPhotoData] = useState<any>(null);
   const getPhotoData = async () => {
     try {
-      console.log(route.params.photo_id);
       const response = await axios.get(
         `${SERVER_IP}core/photos/${route.params.photo_id}`
       );
-      console.log("at Photo : ", response.data);
       setPhotoData(response.data);
     } catch (e) {
       console.log(e);

@@ -96,7 +96,7 @@ const DarkRoom: React.FC = () => {
   //사진 등록 관련 시작---------------------------------------------------
   const [selectedImage, setSelectedImage] = useState<any | null>(null);
 
-  //카메라 접근 권한 허용
+  //카메라 접근 권한 허용n
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(
     null
   );

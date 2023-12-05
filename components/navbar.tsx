@@ -28,6 +28,7 @@ interface SvgProps {
 
 type RootStackParamList = {
   // 로그인: undefined;
+  PageExhibition:undefined;
   Exhibition: undefined;
   Gallery: undefined;
   LightMap: undefined;
@@ -109,7 +110,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
             key={i}
             onPress={() => {
               if (i === 0) {
-                navigation.navigate("Exhibition");
+                navigation.navigate("PageExhibition");
               } else if (i === 1) {
                 navigation.navigate("LightMap");
                 // if (userId === null) {

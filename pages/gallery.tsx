@@ -14,6 +14,7 @@ import {
   ImageBackground,
   ScrollView,
   View,
+  Keyboard,
   TextInput,
   ActivityIndicator as Spinner,
   RefreshControl,
@@ -103,9 +104,13 @@ const Gallery: React.FC = ({ route }: any) => {
   };
 
   //페이징
+
+  const [last, setLast] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   useEffect(() => {
-    getPhotos(page);
+    if (!last) {
+      getPhotos(page);
+    }
   }, [page]);
 
   //사진 가져오기
@@ -116,6 +121,7 @@ const Gallery: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${route.params.user_id}/photos?size=10&page=${page}`
       );
+      setLast(response.data.last);
       if (page === 0) {
         setPhotos(response.data.content);
       } else {
@@ -131,6 +137,7 @@ const Gallery: React.FC = ({ route }: any) => {
   const openModal = () => GuestBookModal.current?.open();
   const closeModal = () => GuestBookModal.current?.close();
 
+  //갤러리 사진 나열
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
@@ -289,6 +296,24 @@ const Gallery: React.FC = ({ route }: any) => {
               borderWidth: 0.8,
             }}
             placeholder="방명록을 입력하세요."
+            value={guestBookInput}
+            onChangeText={(text) => setGuestBookInput(text)}
+            onSubmitEditing={() => {
+              Alert.alert(
+                "알림",
+                "방명록을 등록하시겠습니까?",
+                [
+                  {
+                    text: "취소",
+                  },
+                  {
+                    text: "OK",
+                    onPress: () => submitGeustBook(),
+                  },
+                ],
+                { cancelable: true }
+              );
+            }}
           />
           <TouchableOpacity
             style={{
@@ -296,6 +321,19 @@ const Gallery: React.FC = ({ route }: any) => {
               justifyContent: "center",
               alignItems: "center",
               backgroundColor: "black",
+            }}
+            onPress={() => {
+              Alert.alert(
+                "알림",
+                "방명록을 등록하시겠습니까?",
+                [
+                  {
+                    text: "OK",
+                    onPress: () => submitGeustBook(),
+                  },
+                ],
+                { cancelable: true }
+              );
             }}
           >
             <Text style={{ color: "white", fontWeight: "500" }}>Submit</Text>
@@ -308,6 +346,7 @@ const Gallery: React.FC = ({ route }: any) => {
   //Guest Book Modal Header 끝-----------------------------------------------
 
   //방명록 조회
+  const [guestBookInput, setGuestBookInput] = useState<string>("");
   const [guestBookPage, setGuestBookPage] = useState<number>(0);
   const [guestBook, setGuestBook] = useState<any>(null);
   const getGuestBook = async (page: number) => {
@@ -335,20 +374,51 @@ const Gallery: React.FC = ({ route }: any) => {
     }
   };
 
+  //방명록 등록
+  const submitGeustBook = async () => {
+    try {
+      await axios.post(
+        `${SERVER_IP}core/users/${route.params.user_id}/guest-books`,
+        {
+          content: guestBookInput,
+          user_id: userId,
+        }
+      );
+      getGuestBook(0);
+      setGuestBookInput("");
+      Keyboard.dismiss();
+    } catch (e) {
+      Alert.alert(
+        "실패",
+        "네트워크 환경을 확인하세요.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      console.log(e);
+    }
+  };
+
   const renderGuestBook = ({ item }: any): React.JSX.Element => {
     return (
       <View
         style={{
           flexDirection: "row",
           borderBottomWidth: 0.8,
-          alignItems: "center",
           paddingVertical: 10,
           gap: 20,
+          paddingHorizontal: 20,
         }}
       >
         <Image
-          source={item.profile_img}
-          style={{ width: 50, height: 50, borderRadius: 50 }}
+          source={{ uri: item.profile_img_url }}
+          style={{ width: 40, height: 40, borderRadius: 50 }}
         />
         <View>
           <View
@@ -363,7 +433,7 @@ const Gallery: React.FC = ({ route }: any) => {
               {item.created_at.split("T")[0]}
             </Text>
           </View>
-          <Text style={{ fontSize: 17 }}>{item.content}</Text>
+          <Text style={{ fontSize: 17, paddingRight: 60 }}>{item.content}</Text>
         </View>
       </View>
     );
@@ -396,6 +466,12 @@ const Gallery: React.FC = ({ route }: any) => {
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
     );
+  };
+
+  //방명록 페이징 처리
+  const [gpage, setGpage] = useState<number>(0);
+  const loadMoreGuestBook = () => {
+    setGpage((prev) => prev + 1);
   };
 
   return (
@@ -640,6 +716,7 @@ const Gallery: React.FC = ({ route }: any) => {
                 data: guestBook,
                 renderItem: renderGuestBook,
                 keyExtractor: (item) => item.guestbook_id,
+                onEndReached: () => loadMoreGuestBook,
               }
             : undefined
         }
