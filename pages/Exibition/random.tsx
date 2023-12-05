@@ -50,19 +50,29 @@ type RootStackParamList = {
 const numColumns = 2;
 const size = (Dimensions.get("window").width - 56) / numColumns;
 
-const Random: React.FC = ({ route }: any) => {
+const Random: React.FC = ({
+  exhibition_id,
+  title,
+  description,
+  thumbnail,
+  profile_img,
+  nickname,
+  user_id,
+}: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [exhibitionData, setExhibitionData] = useState<any>(null);
 
-  //리덕스 유저 아이디 가져오기`
-  const userId = useSelector((state: State) => state.USER);
   useEffect(() => {
-    if (route) {
-      setExhibitionData(route.params);
-    } else {
-      getRandom();
-    }
+    setExhibitionData({
+      exhibition_id,
+      title,
+      description,
+      thumbnail,
+      profile_img,
+      nickname,
+      user_id,
+    });
   }, []);
 
   useEffect(() => {
