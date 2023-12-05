@@ -2,14 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 
 //요소
 import {
-  Image,
   Alert,
-  Text,
-  View,
-  SafeAreaView,
   Animated,
-  Platform,
-  StatusBar,
   TouchableOpacity,
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
@@ -63,7 +57,7 @@ const InitialPage: React.FC = () => {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // navigation.navigate("PageExhibition");
+        navigation.navigate("PageExhibition");
       });
     })();
   }, []);
@@ -89,3 +83,5 @@ const InitialPage: React.FC = () => {
 };
 
 export default InitialPage;
+
+

@@ -80,7 +80,6 @@ const MyGallery: React.FC = () => {
       setPhotoPage(0);
       setExhibitionPage(0);
       setGuestBookPage(0);
-
       getMyProfile();
       getMySupporting();
       getMyPhotos(0);
@@ -90,16 +89,17 @@ const MyGallery: React.FC = () => {
   );
 
   //pages
+  const [last, setLast] = useState<boolean>(false);
   const [photoPage, setPhotoPage] = useState<number>(0);
   const [exhibitonPage, setExhibitionPage] = useState<number>(0);
   const [guestbookPage, setGuestBookPage] = useState<number>(0);
   useEffect(() => {
-    if (photoPage !== 0) {
+    if (photoPage !== 0 && !last) {
       getMyPhotos(photoPage);
     }
   }, [photoPage]);
   useEffect(() => {
-    if (exhibitonPage !== 0) {
+    if (exhibitonPage !== 0 && !last) {
       getMyExhibitions(exhibitonPage);
     }
   }, [exhibitonPage]);
@@ -140,6 +140,8 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
+      setLast(response.data.last);
+
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -183,6 +185,7 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/exhibitions?size=5&page=${page}`
       );
+      setLast(response.data.last);
       if (page !== 0) {
         setMyExhibitions([...myExhibitions, ...response.data.content]);
       } else {
@@ -199,6 +202,8 @@ const MyGallery: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/guest-books?size=10&page=${page}`
       );
+      setLast(response.data.last);
+
       if (page !== 0) {
         setMyGuestBook([...myGuestBook, response.data.content]);
       } else {
@@ -261,7 +266,7 @@ const MyGallery: React.FC = () => {
               loadMoreData();
             }
           }}
-          scrollEventThrottle={400}
+          scrollEventThrottle={800}
         >
           {/* 후원중인 사진가 타이틀 시작 */}
           <View
