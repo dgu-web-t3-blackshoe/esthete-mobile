@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {  useEffect, useRef } from "react";
 
 //요소
 import { Alert, Animated, TouchableOpacity } from "react-native";

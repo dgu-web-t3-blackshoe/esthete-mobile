@@ -45,6 +45,8 @@ type RootStackParamList = {
     nickname: string;
   };
   MyGallery: undefined;
+  Error: undefined;
+
 };
 
 const numColumns = 2;
@@ -72,6 +74,8 @@ const Exhibition: React.FC = ({ route }: any) => {
       const response = await axios.get(`${SERVER_IP}core/exhibitions/random`);
       setExhibitionData(response.data);
     } catch (e) {
+      navigation.replace("Error");
+
       console.log(e);
     }
   };

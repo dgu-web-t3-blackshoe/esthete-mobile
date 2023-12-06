@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect,  } from "react";
 
 //요소
 import {
@@ -10,11 +10,9 @@ import {
   Dimensions,
   ScrollView,
   View,
-  ActivityIndicator as Spinner,
   BackHandler,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 import { RoomInfo } from "../../components/newRoom/roomInfo";
 import { AddPhoto } from "../../components/newRoom/addPhoto";
@@ -29,12 +27,10 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import { SERVER_IP } from "../../components/utils";
 
-//넓이 계산
-const size = Dimensions.get("window").width;
-
 type RootStackParamList = {
   MyGallery: undefined;
 };
+
 const AddRoom: React.FC = ({ route }: any) => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);

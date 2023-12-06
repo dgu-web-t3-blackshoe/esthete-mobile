@@ -1,22 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 //요소
 import {
-  Alert,
-  Image,
   Text,
-  KeyboardAvoidingView,
   View,
   Platform,
   SafeAreaView,
   TouchableOpacity,
-  StatusBar,
-  Modal,
-  TouchableWithoutFeedback,
   StyleSheet,
   Dimensions,
   ActivityIndicator as Spinner,
-  ScrollView,
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import Random from "./random";
@@ -50,6 +43,7 @@ type RootStackParamList = {
     nickname: string;
     user_id: string;
   };
+  Error: undefined;
 };
 const PageExhibition: React.FC = () => {
   const width = Dimensions.get("window").width;
@@ -109,6 +103,7 @@ const PageExhibition: React.FC = () => {
       const newExhibitionData = responses.map((response) => response.data);
       setExhibitionData([...exhibitionData, ...newExhibitionData]);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };

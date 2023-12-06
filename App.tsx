@@ -24,6 +24,7 @@ import { Logo } from "./assets/svg";
 
 //Pages
 import InitialPage from "./pages/initial";
+import Error from "./pages/error";
 import Photo from "./pages/photo";
 
 import Gallery from "./pages/gallery";
@@ -98,6 +99,13 @@ export default function App() {
                 component={InitialPage}
                 options={{
                   headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Error"
+                component={Error}
+                options={{
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen

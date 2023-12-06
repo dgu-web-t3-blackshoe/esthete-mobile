@@ -40,6 +40,7 @@ type RootStackParamList = {
     description: string;
     thumbnail: string;
   };
+  Error: undefined;
 };
 
 //넓이 계산
@@ -91,6 +92,7 @@ const NewExhibition: React.FC = ({ route }: any) => {
       );
       setMyPhotoData(response.data);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };

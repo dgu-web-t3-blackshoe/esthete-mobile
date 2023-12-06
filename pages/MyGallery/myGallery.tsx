@@ -67,6 +67,7 @@ type RootStackParamList = {
     nickname: string;
   };
   AllSupportingPG: undefined;
+  Error: undefined;
 };
 
 //넓이 계산
@@ -133,6 +134,7 @@ const MyGallery: React.FC = () => {
       );
       setUserData(response.data);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };

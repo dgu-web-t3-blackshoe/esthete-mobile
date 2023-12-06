@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import GlobalStyles from "../assets/styles";
 import { NavBar, SvgType } from "../components/navbar";
-import { getGenreKeyByValue } from "../components/constants";
 
 //라이브러리
 import Swiper from "react-native-swiper";
@@ -22,13 +21,18 @@ import MapView, { Marker } from "react-native-maps";
 import axios from "axios";
 import { SERVER_IP } from "../components/utils";
 
+//페이지 이동 타입
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  Error: undefined;
+};
+
 const Photo: React.FC = ({ route }: any) => {
-  //<Swiper ref={(ref) => (swiperRef = ref)}>
-  //onPress={goNext}
-  //이렇게 사용
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   //사진 조회 API--------------------------------------------
-  //URL: photos/{photo_id}
   useEffect(() => {
     getPhotoData();
   }, []);
@@ -41,16 +45,9 @@ const Photo: React.FC = ({ route }: any) => {
       setPhotoData(response.data);
     } catch (e) {
       console.log(e);
+      navigation.replace("Error");
     }
   };
-  const [nickname, setNickname] = useState<string>("");
-  const getNickname = async () => {
-    try {
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   //------------------------------------------------
 
   const [imageWidth, setImageWidth] = useState<number>(

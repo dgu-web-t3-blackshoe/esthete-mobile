@@ -8,24 +8,15 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  ScrollView,
   ImageBackground,
   View,
-  Alert,
-  RefreshControl,
   ActivityIndicator as Spinner,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../../components/navbar";
 
-//Redux
-import { useSelector } from "react-redux";
-import { State } from "../../storage/reducers";
 
 //navigation
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useFocusEffect } from "@react-navigation/native";
 
 //api
 import axios from "axios";
@@ -81,14 +72,6 @@ const Random: React.FC = ({
     }
   }, [exhibitionData]);
 
-  const getRandom = async () => {
-    try {
-      const response = await axios.get(`${SERVER_IP}core/exhibitions/random`);
-      setExhibitionData(response.data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const [roomData, setRoomData] = useState<any>(null);
   const getRooms = async () => {

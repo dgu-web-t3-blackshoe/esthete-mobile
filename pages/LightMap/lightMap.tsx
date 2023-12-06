@@ -39,6 +39,7 @@ type RootStackParamList = {
     city: string;
     town: string;
   };
+  Error: undefined;
 };
 
 const LightMap: React.FC = () => {
@@ -111,12 +112,19 @@ const LightMap: React.FC = () => {
       const formattedAddress = response.data.results[0].formatted_address;
 
       const addressParts = formattedAddress.split(" ");
-      const length = addressParts.length;
-      const state = addressParts[length - 4] || "";
-      const city = addressParts[length - 3] || "";
-      const town = addressParts[length - 2] || "";
-
-      setLocationInfo([state, city, town]);
+      if (addressParts.includes("대한민국")) {
+        const indexofC = addressParts.indexOf("대한민국");
+        const state = addressParts[indexofC + 1] || "";
+        const city = addressParts[indexofC + 2] || "";
+        const town = addressParts[indexofC + 3] || "";
+        setLocationInfo([longitude, latitude, state, city, town]);
+      } else {
+        const state = addressParts[1] || "";
+        const city = addressParts[2] || "";
+        const town = addressParts[3] || "";
+        setLocationInfo([longitude, latitude, state, city, town]);
+      }
+      
     } catch (e) {
       console.error(e);
       return null;
@@ -133,6 +141,7 @@ const LightMap: React.FC = () => {
       console.log(response.data);
       setPhotoData(response.data.content);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };

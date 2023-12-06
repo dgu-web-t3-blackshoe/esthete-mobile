@@ -45,6 +45,7 @@ const size = Dimensions.get("window").width;
 
 type RootStackParamList = {
   MyGallery: undefined;
+  Error: undefined;
 };
 
 const EditProfile: React.FC = ({ route }: any) => {
@@ -200,6 +201,20 @@ const EditProfile: React.FC = ({ route }: any) => {
       navigation.replace("MyGallery");
     } catch (e) {
       console.log(e);
+      Alert.alert(
+        "실패",
+        "저장에 실패하셨습니다.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+      navigation.replace("Error");
     }
   };
 

@@ -30,6 +30,7 @@ type RootStackParamList = {
     photo_id: string;
     nickname: string;
   };
+  Error: undefined;
 };
 
 //화면 넓이 계산 (이미지 넓이에 사용)
@@ -42,10 +43,8 @@ const Room: React.FC = ({ route }: any) => {
   useFocusEffect(
     React.useCallback(() => {
       getPhotos();
-
     }, [])
   );
-
 
   //이미지 높이 계산----------------------------------------------------------
   const [imageHeights, setImageHeights] = useState<Map<string, number>>(
@@ -83,6 +82,7 @@ const Room: React.FC = ({ route }: any) => {
         )
       );
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };
@@ -233,7 +233,7 @@ const Room: React.FC = ({ route }: any) => {
         </View>
       )}
 
-      <NavBar type={SvgType.Exibition} />
+      <NavBar type={SvgType.Any} />
     </SafeAreaView>
   );
 };
