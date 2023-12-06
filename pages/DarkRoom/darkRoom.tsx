@@ -19,7 +19,6 @@ import {
 import { NavBar, SvgType } from "../../components/navbar";
 import {
   GenreArray,
-  getGenreKeyByValue,
   getGenreValueByKey,
 } from "../../components/constants";
 import GlobalStyles from "../../assets/styles";

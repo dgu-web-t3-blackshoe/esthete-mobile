@@ -1,4 +1,4 @@
-import React, {  useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 //요소
 import { Alert, Animated, TouchableOpacity } from "react-native";
@@ -14,11 +14,13 @@ import { useDispatch } from "react-redux";
 import { setLocation } from "../storage/actions";
 
 //네비게이션
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
   Gallery: undefined;
+  Sign: undefined;
+  MyGallery: undefined;
   Box: undefined;
   Exhibition: undefined;
   PageExhibition: undefined;
@@ -62,14 +64,18 @@ const InitialPage: React.FC = () => {
           lon: currentLocation.coords.longitude,
         })
       );
-      navigation.navigate("PageExhibition");
+      navigation.navigate("Sign");
+      // navigation.navigate("PageExhibition");
     } catch (error) {
       setTimeout(startAnimation, 2000);
     }
   };
-  useEffect(() => {
-    startAnimation();
-  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      startAnimation();
+    }, [])
+  );
 
   return (
     <TouchableOpacity
@@ -80,7 +86,7 @@ const InitialPage: React.FC = () => {
         alignItems: "center",
         backgroundColor: "black",
       }}
-      onPress={() => navigation.navigate("PageExhibition")}
+      onPress={() => navigation.navigate("Sign")}
     >
       <ExpoStatusBar style="light" />
       <Animated.View style={{ opacity: fadeAnim }}>

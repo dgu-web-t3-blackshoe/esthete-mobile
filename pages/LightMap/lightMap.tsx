@@ -117,14 +117,14 @@ const LightMap: React.FC = () => {
         const state = addressParts[indexofC + 1] || "";
         const city = addressParts[indexofC + 2] || "";
         const town = addressParts[indexofC + 3] || "";
-        setLocationInfo([longitude, latitude, state, city, town]);
+        setLocationInfo([state, city, town]);
       } else {
         const state = addressParts[1] || "";
         const city = addressParts[2] || "";
         const town = addressParts[3] || "";
-        setLocationInfo([longitude, latitude, state, city, town]);
+        setLocationInfo([state, city, town]);
       }
-      
+
     } catch (e) {
       console.error(e);
       return null;

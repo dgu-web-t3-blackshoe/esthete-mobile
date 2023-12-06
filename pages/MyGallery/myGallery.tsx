@@ -97,6 +97,7 @@ const MyGallery: React.FC = () => {
   const [photoPage, setPhotoPage] = useState<number>(0);
   const [exhibitonPage, setExhibitionPage] = useState<number>(0);
   const [guestbookPage, setGuestBookPage] = useState<number>(0);
+
   useEffect(() => {
     if (photoPage !== 0 && !last[0]) {
       getMyPhotos(photoPage);
@@ -129,10 +130,12 @@ const MyGallery: React.FC = () => {
 
   const getMyProfile = async () => {
     try {
+      console.log(userId);
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/profile`
       );
       setUserData(response.data);
+      console.log(response.data);
     } catch (e) {
       navigation.replace("Error");
       console.log(e);

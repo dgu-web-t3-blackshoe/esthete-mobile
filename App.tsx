@@ -26,6 +26,7 @@ import { Logo } from "./assets/svg";
 import InitialPage from "./pages/initial";
 import Error from "./pages/error";
 import Photo from "./pages/photo";
+import Sign from "./pages/Sign/signUp";
 
 import Gallery from "./pages/gallery";
 import Exhibition from "./pages/exibition";
@@ -106,6 +107,19 @@ export default function App() {
                 component={Error}
                 options={{
                   header: () => <CustomHeader2 />,
+                }}
+              />
+              <Stack.Screen
+                name="Sign"
+                component={Sign}
+                options={{
+                  headerStyle: {
+                    backgroundColor: "white",
+                  },
+                  headerTitleStyle: {
+                    color: "black",
+                  },
+                  headerTitle: "Sign In",
                 }}
               />
               <Stack.Screen
