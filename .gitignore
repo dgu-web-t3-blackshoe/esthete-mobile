@@ -2,6 +2,7 @@
 .env
 
 # dependencies
+android/
 node_modules/
 
 # Expo
