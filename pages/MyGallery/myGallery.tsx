@@ -4,14 +4,17 @@ import React, { useState, useEffect } from "react";
 //요소
 import {
   Image,
+  Modal,
   Alert,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   StyleSheet,
   FlatList,
   Dimensions,
   ImageBackground,
+  TextInput,
+  Platform,
+  KeyboardAvoidingView,
   ScrollView,
   View,
   RefreshControl,
@@ -19,14 +22,14 @@ import {
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
-import { useFocusEffect } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
 
 //Redux
 import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
 //페이지 이동 타입
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 //api
@@ -228,6 +231,61 @@ const MyGallery: React.FC = () => {
     }
   };
 
+  //방명록 신고
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [reportId, setReportId] = useState<any>(null);
+  const [report, setReport] = useState<string>("");
+  const reportGuestBook = async () => {
+    if (reportId) {
+      console.log(reportId);
+      console.log(userId);
+      try {
+        const response = await axios.post(
+          `${SERVER_IP}core/abusing-reports/guest-books`,
+          {
+            guest_book_id: reportId,
+            reason: report,
+            user_id: userId,
+          }
+        );
+        console.log(response.data);
+
+        Alert.alert(
+          "완료",
+          "방명록을 신고했습니다.",
+          [
+            {
+              text: "cancel",
+            },
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+        setIsModalVisible(false);
+        setReport("");
+        setReportId(null);
+      } catch (e) {
+        Alert.alert(
+          "실패",
+          "네트워크 환경을 확인하세요.",
+          [
+            {
+              text: "cancel",
+            },
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
+
+        console.log(e);
+      }
+    }
+  };
+
   //새로고침 로직
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
@@ -268,7 +326,10 @@ const MyGallery: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {userData ? (
         <ScrollView
           style={{ flex: 1, backgroundColor: "black" }}
@@ -280,7 +341,7 @@ const MyGallery: React.FC = () => {
               loadMoreData();
             }
           }}
-          scrollEventThrottle={400}
+          scrollEventThrottle={600}
         >
           {/* 후원중인 사진가 타이틀 시작 */}
           <View
@@ -689,41 +750,83 @@ const MyGallery: React.FC = () => {
                         style={{
                           flexDirection: "row",
                           borderBottomWidth: 0.5,
-                          alignItems: "center",
                           paddingVertical: 10,
                           gap: 20,
                           borderBottomColor: "white",
+                          justifyContent: "space-between",
                         }}
                       >
-                        <Image
-                          source={{ uri: e.profile_img_url }}
-                          style={{ width: 50, height: 50, borderRadius: 50 }}
-                        />
-                        <View>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "flex-end",
-                              gap: 10,
-                            }}
-                          >
-                            <Text style={{ fontWeight: "500", color: "white" }}>
-                              {e.nickname}
-                            </Text>
-                            <Text style={{ fontSize: 12, color: "white" }}>
-                              {e.created_at.split("T")[0]}
+                        <View
+                          style={{
+                            flexDirection: "row",
+                          }}
+                        >
+                          <Image
+                            source={{ uri: e.profile_img_url }}
+                            style={{ width: 40, height: 40, borderRadius: 50 }}
+                          />
+                          <View style={{ marginLeft: 20 }}>
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "flex-end",
+                                gap: 10,
+                              }}
+                            >
+                              <Text
+                                style={{ fontWeight: "500", color: "white" }}
+                              >
+                                {e.nickname}
+                              </Text>
+                              <Text style={{ fontSize: 12, color: "white" }}>
+                                {e.created_at.split("T")[0]}
+                              </Text>
+                            </View>
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                paddingRight: 60,
+
+                                color: "white",
+                              }}
+                            >
+                              {e.content}
                             </Text>
                           </View>
-                          <Text
-                            style={{
-                              fontSize: 14,
-                              width: 260,
-                              color: "white",
-                            }}
-                          >
-                            {e.content}
-                          </Text>
                         </View>
+
+                        <TouchableOpacity
+                          style={{
+                            paddingHorizontal: 10,
+                          }}
+                          onPress={() => {
+                            Alert.alert(
+                              "알림",
+                              "방명록을 신고하시겠습니까??",
+                              [
+                                {
+                                  text: "취소",
+                                  onPress: () => null,
+                                  style: "cancel",
+                                },
+                                {
+                                  text: "확인",
+                                  onPress: () => {
+                                    setReportId(e.guestbook_id);
+                                    setIsModalVisible(true);
+                                  },
+                                },
+                              ],
+                              { cancelable: false }
+                            );
+                          }}
+                        >
+                          <Icon
+                            name="notifications-sharp"
+                            size={23}
+                            color={"white"}
+                          />
+                        </TouchableOpacity>
                       </View>
                     );
                   })
@@ -759,8 +862,125 @@ const MyGallery: React.FC = () => {
         </View>
       )}
 
+      {/* 신고 모달 시작 */}
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 22,
+            width: "100%",
+
+            height: "100%",
+            borderRadius: 10,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              backgroundColor: "white",
+              paddingTop: 20,
+              paddingBottom: 25,
+              paddingHorizontal: 10,
+              gap: 15,
+              width: 280,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "500" }}>신고 접수</Text>
+            <TextInput
+              style={{
+                borderColor: "gray",
+                borderWidth: 1,
+                paddingHorizontal: 10,
+                width: "100%",
+                height: 200,
+                backgroundColor: "white",
+              }}
+              multiline
+              value={report}
+              placeholder="신고 사유를 작성하세요."
+              onChangeText={(text) => setReport(text)}
+            />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "white",
+              width: 280,
+              borderTopWidth: 0.5,
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                borderRightWidth: 0.5,
+                width: 140,
+                paddingVertical: 10,
+              }}
+              onPress={() => {
+                setIsModalVisible(false);
+                setReportId(null);
+                setReport("");
+              }}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "500" }}>취소</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                paddingVertical: 10,
+                width: 140,
+              }}
+              onPress={() => {
+                if (report === "") {
+                  Alert.alert(
+                    "경고",
+                    "입력을 완료해주세요.",
+                    [
+                      {
+                        text: "OK",
+                      },
+                    ],
+                    { cancelable: true }
+                  );
+                } else {
+                  reportGuestBook();
+                }
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "500",
+                  color: report === "" ? "#c9c9c9" : "black",
+                }}
+              >
+                확인
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* 신고 모달 끝 */}
+
       <NavBar type={SvgType.MyGallery} />
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

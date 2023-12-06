@@ -153,7 +153,7 @@ const PageExhibition: React.FC = () => {
           enabled={enabled}
           overscrollEnabled={false}
           onSnapToItem={(index) => setNow(index)}
-          scrollAnimationDuration={1000}
+          scrollAnimationDuration={500}
           customAnimation={animationStyle}
           // onSnapToItem={(index) => console.log("current index:", index)}
           renderItem={({ item, index }: any) => (
