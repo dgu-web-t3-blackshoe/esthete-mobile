@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
 //라이브러리
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
@@ -123,47 +123,52 @@ const LightMap: React.FC = () => {
     }
   };
 
-  // const getCoordinatesFromAddress = async (
-  //   country: string,
-  //   state: string,
-  //   city: string
-  // ) => {
-  //   try {
-  //     const address = `${city}, ${state}, ${country}`;
-
-  //     const response = await axios.get(
-  //       "https://maps.googleapis.com/maps/api/geocode/json",
-  //       {
-  //         params: {
-  //           address: address,
-  //           key: API_KEY,
-  //           language: "ko",
-  //         },
-  //       }
-  //     );
-
-  //     const location = response.data.results[0].geometry.location;
-  //     const latitude = location.lat;
-  //     const longitude = location.lng;
-
-  //     return latitude;
-  //   } catch (e) {
-  //     console.error(e);
-  //     return null;
-  //   }
-  // };
-
   const [photoData, setPhotoData] = useState<any>(null);
 
   const getData = async (lat: any, lon: any) => {
     try {
-
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations?state=서울특별시&city=중구&page=0&size=10&sort=recent`
+        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=100000&group=city`
       );
+      console.log(response.data);
       setPhotoData(response.data.content);
     } catch (e) {
       console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    // if(photoData){
+    //   photoData.
+
+    // }
+    getLatLon("부산광역시", "중구", "");
+  }, [photoData]);
+
+  //데이터 받아오면 그걸로 위도, 경도 받아오기
+  const getLatLon = async (country: string, state: string, city: string) => {
+    try {
+      const address = `${city}, ${state}, ${country}`;
+
+      const response = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json",
+        {
+          params: {
+            address: address,
+            key: API_KEY,
+          },
+        }
+      );
+
+      const location = response.data.results[0].geometry.location;
+      const latitude = location.lat;
+      const longitude = location.lng;
+      console.log("at lat fx", latitude);
+      console.log("at lon fx", longitude);
+      return { latitude, longitude };
+    } catch (e) {
+      console.error(e);
+      return null;
     }
   };
 
@@ -197,6 +202,7 @@ const LightMap: React.FC = () => {
           style={{ flex: 1 }}
           initialRegion={currentRegion}
           region={currentRegion}
+          provider={PROVIDER_GOOGLE}
         >
           <Marker
             coordinate={{
@@ -222,8 +228,8 @@ const LightMap: React.FC = () => {
             <Image
               source={{ uri: photoData[0]?.photo_url }}
               style={{
-                width: 100 ,
-                height: 100 ,
+                width: 100,
+                height: 100,
                 borderRadius: 50,
               }}
             />

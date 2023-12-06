@@ -291,9 +291,9 @@ const DarkRoom: React.FC = () => {
         }
       );
 
-      let longestAddress = response.data.results[0].formatted_address || '';
+      let longestAddress = response.data.results[0].formatted_address || "";
       for (const result of response.data.results) {
-        const currentAddress = result.formatted_address || '';
+        const currentAddress = result.formatted_address || "";
         if (currentAddress.length > longestAddress.length) {
           longestAddress = currentAddress;
         }
@@ -305,13 +305,19 @@ const DarkRoom: React.FC = () => {
       if (addressParts.includes("대한민국")) {
         console.log("hi");
         console.log(addressParts.indexOf("대한민국"));
-      }
-      const length = addressParts.length;
-      const state = addressParts[length - 4] || "";
-      const city = addressParts[length - 3] || "";
-      const town = addressParts[length - 2] || "";
+        const indexofC = addressParts.indexOf("대한민국");
+        const state = addressParts[indexofC + 1] || "";
+        const city = addressParts[indexofC + 2] || "";
+        const town = addressParts[indexofC + 3] || "";
+        setLocationInfo([longitude, latitude, state, city, town]);
+      } else {
+        const length = addressParts.length;
+        const state = addressParts[length - 4] || "";
+        const city = addressParts[length - 3] || "";
+        const town = addressParts[length - 2] || "";
 
-      setLocationInfo([longitude, latitude, state, city, town]);
+        setLocationInfo([longitude, latitude, state, city, town]);
+      }
     } catch (e) {
       console.error(e);
       return null;

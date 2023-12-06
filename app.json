@@ -18,7 +18,8 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jekoo.esthetev1"
     },
     "web": {
       "favicon": "./assets/favicon.png"
