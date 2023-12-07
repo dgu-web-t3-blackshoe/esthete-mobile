@@ -95,7 +95,6 @@ const PageExhibition: React.FC = () => {
       //   axios.get(`${SERVER_IP}core/exhibitions/random`),
       //   axios.get(`${SERVER_IP}core/exhibitions/random`),
       // ]);
-
       // const newExhibitionData = responses.map((response) => response.data);
       // setExhibitionData([...exhibitionData, ...newExhibitionData]);
     } catch (e) {
@@ -110,7 +109,7 @@ const PageExhibition: React.FC = () => {
   const [enabled, setEnabled] = useState<boolean>(true);
 
   const handleVisit = () => {
-    const currentExhibition = exhibitionData[now];
+    const currentExhibition: any = exhibitionData[now];
     if (currentExhibition) {
       navigation.push("Exhibition", {
         exhibition_id: currentExhibition.exhibition_id,

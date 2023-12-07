@@ -163,7 +163,7 @@ const EditProfile: React.FC = ({ route }: any) => {
   };
 
   const submitSupport = async () => {
-    const formData = new FormData();
+    const formData:any = new FormData();
     formData.append("profile_img", {
       uri: selectedImage,
       type: mime.getType(selectedImage),
