@@ -36,7 +36,8 @@ import { SERVER_IP } from "../../components/utils";
 type RootStackParamList = {
   LightMapList: {
     state: string;
-    city: string;
+    city?: string;
+    town?: string;
   };
   Error: undefined;
 };
@@ -74,7 +75,7 @@ const LightMap: React.FC = () => {
 
   useEffect(() => {
     if (locationInfo) {
-      getData(lat, lon);
+      getData(lat, lon, radius);
     }
   }, [locationInfo]);
 
@@ -133,10 +134,17 @@ const LightMap: React.FC = () => {
 
   const [photoData, setPhotoData] = useState<any>(null);
 
-  const getData = async (lat: any, lon: any) => {
+  const getData = async (lat: any, lon: any, radius: any) => {
     try {
+      let group = "city";
+      if (radius > 80) {
+        group = "state";
+      } else if (radius < 5) {
+        group = "town";
+      }
+
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=5&group=city`
+        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=${radius}&group=${group}`
       );
       setPhotoData(response.data.content);
     } catch (e) {
@@ -144,7 +152,7 @@ const LightMap: React.FC = () => {
       console.log(e);
     }
   };
-
+  console.log("photoData : ", photoData);
   const [dataWithMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -154,8 +162,15 @@ const LightMap: React.FC = () => {
             .filter(
               (e: { state: string; city: string }) => e.state !== "string"
             )
-            .map(async (e: { state: string; city: string }) => {
-              const latlon: any = await getLatLon(e.state, e.city, "");
+            .map(async (e: any) => {
+              let latlon: any = [lat, lon];
+              if (e.town) {
+                latlon = await getLatLon(e.state, e.city, e.town);
+              } else if (e.city) {
+                latlon = await getLatLon(e.state, e.city, "");
+              } else {
+                latlon = await getLatLon(e.state, "", "");
+              }
               return {
                 ...e,
                 latitude: latlon[0],
@@ -164,16 +179,7 @@ const LightMap: React.FC = () => {
             })
         );
 
-        setDataWithmMarkers((prev: any) => {
-          const newMarkers = temp.filter((newItem) => {
-            return !prev.some(
-              (prevItem: any) =>
-                prevItem.state === newItem.state &&
-                prevItem.city === newItem.city
-            );
-          });
-          return [...prev, ...newMarkers];
-        });
+        setDataWithmMarkers(temp);
       }
     };
 
@@ -184,7 +190,6 @@ const LightMap: React.FC = () => {
   const getLatLon = async (country: string, state: string, city: string) => {
     try {
       const address = `${city}, ${state}, ${country}`;
-
       const response = await axios.get(
         "https://maps.googleapis.com/maps/api/geocode/json",
         {
@@ -204,9 +209,24 @@ const LightMap: React.FC = () => {
     }
   };
 
+  //델타를 킬로미터로
+  function deltaToKilometers(delta: number) {
+    return delta * 111;
+  }
+
+  const [latlon, setLatlon] = useState<Array<number>>([0, 0]);
+  const [radius, setRadius] = useState<number>(5);
+
+  useEffect(() => {
+    if (latlon[0] !== 0) {
+      getData(latlon[0], latlon[1], radius);
+    }
+  }, [latlon]);
   //지도 이동
   const handleRegionChangeComplete = (region: any) => {
-    console.log("Current region is:", region);
+    console.log(deltaToKilometers(region.latitudeDelta));
+    setRadius(deltaToKilometers(region.latitudeDelta));
+    setLatlon([region.latitude, region.longitude]);
   };
 
   return (
@@ -258,12 +278,24 @@ const LightMap: React.FC = () => {
                     latitude: e.latitude,
                     longitude: e.longitude,
                   }}
-                  onPress={() =>
-                    navigation.navigate("LightMapList", {
-                      state: e.state,
-                      city: e.city,
-                    })
-                  }
+                  onPress={() => {
+                    if (e.town) {
+                      navigation.navigate("LightMapList", {
+                        state: e.state,
+                        city: e.city,
+                        town: e.town,
+                      });
+                    } else if (e.city) {
+                      navigation.navigate("LightMapList", {
+                        state: e.state,
+                        city: e.city,
+                      });
+                    } else {
+                      navigation.navigate("LightMapList", {
+                        state: e.state,
+                      });
+                    }
+                  }}
                 >
                   <View
                     style={{

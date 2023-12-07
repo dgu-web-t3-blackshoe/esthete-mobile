@@ -59,8 +59,16 @@ const LightMapList: React.FC = ({ route }: any) => {
 
   const getData = async (page: number) => {
     try {
+      let temp = "";
+
+      if (route.params.town) {
+        temp = `&city=${route.params.city}&town=${route.params.town}`;
+      } else if (route.params.city) {
+        temp = `&city=${route.params.city}`;
+      }
+
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations?state=${route.params.state}&city=${route.params.city}&page=${page}&size=20&sort=recent`
+        `${SERVER_IP}core/photos/locations?state=${route.params.state}${temp}&page=${page}&size=20&sort=recent`
       );
       if (page !== 0) {
         setPhotoData([...photoData, ...response.data.content]);
