@@ -37,7 +37,6 @@ type RootStackParamList = {
   LightMapList: {
     state: string;
     city: string;
-    town: string;
   };
   Error: undefined;
 };
@@ -137,7 +136,7 @@ const LightMap: React.FC = () => {
   const getData = async (lat: any, lon: any) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=100000&group=city`
+        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=5&group=city`
       );
       setPhotoData(response.data.content);
     } catch (e) {
@@ -146,13 +145,15 @@ const LightMap: React.FC = () => {
     }
   };
 
-  const [dataWithmMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
+  const [dataWithMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
   useEffect(() => {
     const fetchCoordinates = async () => {
       if (photoData !== null) {
         const temp = await Promise.all(
           photoData
-            .filter((e: { state: string }) => e.state !== "string")
+            .filter(
+              (e: { state: string; city: string }) => e.state !== "string"
+            )
             .map(async (e: { state: string; city: string }) => {
               const latlon: any = await getLatLon(e.state, e.city, "");
               return {
@@ -163,7 +164,16 @@ const LightMap: React.FC = () => {
             })
         );
 
-        setDataWithmMarkers((prev) => [...prev, ...temp]);
+        setDataWithmMarkers((prev: any) => {
+          const newMarkers = temp.filter((newItem) => {
+            return !prev.some(
+              (prevItem: any) =>
+                prevItem.state === newItem.state &&
+                prevItem.city === newItem.city
+            );
+          });
+          return [...prev, ...newMarkers];
+        });
       }
     };
 
@@ -193,6 +203,14 @@ const LightMap: React.FC = () => {
       return null;
     }
   };
+
+  //지도 이동
+  const handleRegionChangeComplete = (region) => {
+    console.log("Current region is:", region);
+    // region.latitude와 region.longitude를 사용하여 현재 위치를 얻을 수 있음
+  };
+
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -225,7 +243,7 @@ const LightMap: React.FC = () => {
           initialRegion={currentRegion}
           region={currentRegion}
           provider={PROVIDER_GOOGLE}
-          onRegionChangeComplete={() => console.log("moved")}
+          onRegionChangeComplete={handleRegionChangeComplete}
         >
           {/* <Marker
             coordinate={{
@@ -234,8 +252,8 @@ const LightMap: React.FC = () => {
             }}
             title={"내 위치"}
           /> */}
-          {dataWithmMarkers.length > 0 &&
-            dataWithmMarkers.map((e: any, i) => {
+          {dataWithMarkers.length > 0 &&
+            dataWithMarkers.map((e: any, i: number) => {
               return (
                 <Marker
                   key={i}
@@ -243,17 +261,16 @@ const LightMap: React.FC = () => {
                     latitude: e.latitude,
                     longitude: e.longitude,
                   }}
-                  // onPress={() =>
-                  //   navigation.navigate("LightMapList", {
-                  //     state: locationInfo[0],
-                  //     city: locationInfo[1],
-                  //     town: locationInfo[2],
-                  //   })
-                  // }
+                  onPress={() =>
+                    navigation.navigate("LightMapList", {
+                      state: e.state,
+                      city: e.city,
+                    })
+                  }
                 >
                   <View
                     style={{
-                      padding: 5,
+                      padding: 3,
                       backgroundColor: "black",
                       borderRadius: 50,
                     }}
@@ -263,20 +280,20 @@ const LightMap: React.FC = () => {
                       style={{
                         width:
                           e.count > 10
-                            ? 100
+                            ? 120
                             : e.count > 5
-                            ? 80
+                            ? 100
                             : e.count > 2
-                            ? 60
-                            : 50,
+                            ? 80
+                            : 70,
                         height:
                           e.count > 10
-                            ? 100
+                            ? 120
                             : e.count > 5
-                            ? 80
+                            ? 100
                             : e.count > 2
-                            ? 60
-                            : 50,
+                            ? 80
+                            : 70,
                         borderRadius: 50,
                       }}
                     />

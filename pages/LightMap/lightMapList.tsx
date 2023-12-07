@@ -61,10 +61,10 @@ const LightMapList: React.FC = ({ route }: any) => {
 
   const [photoData, setPhotoData] = useState<any>(null);
 
-  const getData = async () => {
+  const getData = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations?state=서울특별시&city=중구&page=0&size=10&sort=recent`
+        `${SERVER_IP}core/photos/locations?state=${route.params.state}&city=${route.params.city}&page=0&size=10&sort=recent`
       );
       setPhotoData(response.data.content);
     } catch (e) {
@@ -73,10 +73,6 @@ const LightMapList: React.FC = ({ route }: any) => {
   };
 
   //정렬 방식 모달 끝------------------------------------------------
-
-  //동별 사진 조회
-  //URL: photos?town={동 이름}&sort={}&size={}&page={}
-  //응답 :
 
   //사진 나열
   const renderItem = ({ item }: any): React.JSX.Element => {
