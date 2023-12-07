@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 //components
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, LogBox } from "react-native";
 
 //navigation
 import { useNavigation } from "@react-navigation/native";
@@ -11,7 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //redux
 import { useDispatch } from "react-redux";
-import { setToken, setUserId } from "../../storage/actions";
+import { setUserId } from "../../storage/actions";
 
 //api
 import { SERVER_IP } from "../../components/utils";
@@ -22,16 +22,16 @@ import { WebView } from "react-native-webview";
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.stopLoading(true);`;
 
 type RootStackParamList = {
-  SignLobby: undefined;
-  EveryHere: undefined;
-  SignUp: undefined;
+  UserInfo: undefined;
+  MyGallery: undefined;
 };
 
 const SocialLogin = ({ route }: any) => {
   // Navigation----------------------------------
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const { what } = route.params;
+  const what = route.params.what;
+  const auto = route.params.auto;
 
   // Redux---------------------------------------
   const dispatch = useDispatch();
@@ -44,6 +44,7 @@ const SocialLogin = ({ route }: any) => {
     const { url } = newNavState;
     setUrl(url);
   };
+  console.log(url);
 
   const getParams = (url: string) => {
     const paramPart = url.split("?")[1];
@@ -57,47 +58,50 @@ const SocialLogin = ({ route }: any) => {
     }, {});
   };
 
+  LogBox.ignoreLogs(["Encountered an error loading page"]);
+
   // Render--------------------------------------
   useEffect(() => {
     if (url?.includes("social-login")) {
       const params: any = getParams(url);
       if (params["sign-up"] === "false") {
-        navigation.navigate("SignUp");
-      } else {
-        AsyncStorage.setItem("user_id", params["userId"]);
-        AsyncStorage.setItem("access_token", params["access-token"]);
+        if (auto) {
+          AsyncStorage.setItem("user_id", params["userId"]);
+        }
         dispatch(setUserId(params["userId"]));
-        dispatch(setToken(params["access-token"]));
-        navigation.navigate("EveryHere");
+        navigation.navigate("UserInfo");
+      } else {
+        if (auto) {
+          AsyncStorage.setItem("user_id", params["userId"]);
+        }
+        dispatch(setUserId(params["userId"]));
+        navigation.navigate("MyGallery");
       }
     }
   }, [url]);
 
   return (
-    <>
-      <View style={styles.container}>
-        <WebView
-          style={{ flex: 1 }}
-          originWhitelist={["*"]}
-          scalesPageToFit={false}
-          source={{
-            uri: `${SERVER_IP}oauth2/authorize/${what}`,
-          }}
-          onNavigationStateChange={handleWebViewNavigationStateChange}
-          injectedJavaScript={INJECTED_JAVASCRIPT}
-          javaScriptEnabled={true}
-          thirdPartyCookiesEnabled={true}
-          userAgent="Chrome/99.0.4844.51 Safari/537.36"
-        />
-      </View>
-    </>
+    <View style={styles.container}>
+      <WebView
+        style={{ flex: 1 }}
+        originWhitelist={["*"]}
+        scalesPageToFit={false}
+        source={{
+          uri: `${SERVER_IP}core/oauth2/authorize/${what}`,
+        }}
+        onNavigationStateChange={handleWebViewNavigationStateChange}
+        injectedJavaScript={INJECTED_JAVASCRIPT}
+        javaScriptEnabled={true}
+        thirdPartyCookiesEnabled={true}
+        userAgent="Chrome/99.0.4844.51 Safari/537.36"
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 30,
     backgroundColor: "#fff",
   },
 });

@@ -350,7 +350,7 @@ const Gallery: React.FC = ({ route }: any) => {
   const getGuestBook = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=10&page${page}`
+        `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=20&page${page}`
       );
       setGlast(response.data.last);
       setGuestBook(response.data.content);

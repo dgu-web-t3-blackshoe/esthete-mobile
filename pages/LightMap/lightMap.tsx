@@ -136,7 +136,7 @@ const LightMap: React.FC = () => {
   const getData = async (lat: any, lon: any) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=100000&group=city`
+        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=100000&group=town`
       );
       console.log(response.data);
       setPhotoData(response.data.content);
@@ -147,10 +147,6 @@ const LightMap: React.FC = () => {
   };
 
   useEffect(() => {
-    // if(photoData){
-    //   photoData.
-
-    // }
     getLatLon("부산광역시", "중구", "");
   }, [photoData]);
 

@@ -1,20 +1,15 @@
 //3-2
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState } from "react";
 
 //요소
 import {
   Image,
-  Alert,
   Text,
   SafeAreaView,
   TouchableOpacity,
-  StyleSheet,
-  FlatList,
   Dimensions,
   ScrollView,
-  ImageBackground,
   View,
-  Animated,
   ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../components/navbar";

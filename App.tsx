@@ -27,6 +27,8 @@ import InitialPage from "./pages/initial";
 import Error from "./pages/error";
 import Photo from "./pages/photo";
 import Sign from "./pages/Sign/signUp";
+import SocialLogin from "./pages/Sign/socialLogin";
+import UserInfo from "./pages/Sign/userInfo";
 
 import Gallery from "./pages/gallery";
 import Exhibition from "./pages/exibition";
@@ -120,6 +122,26 @@ export default function App() {
                     color: "black",
                   },
                   headerTitle: "Sign In",
+                }}
+              />
+              <Stack.Screen
+                name="SocialLogin"
+                component={SocialLogin}
+                options={{
+                  headerStyle: {
+                    backgroundColor: "white",
+                  },
+                  headerTitleStyle: {
+                    color: "black",
+                  },
+                  headerTitle: "Sign In",
+                }}
+              />
+              <Stack.Screen
+                name="UserInfo"
+                component={UserInfo}
+                options={{
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen

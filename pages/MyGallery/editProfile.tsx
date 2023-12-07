@@ -6,14 +6,11 @@ import {
   Image,
   Alert,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  ImageBackground,
   ScrollView,
   View,
   TextInput,
@@ -30,12 +27,16 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 //라이브러리
 import { Modalize } from "react-native-modalize";
+
 import mime from "mime";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Redux
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setUserId } from "../../storage/actions";
 import { State } from "../../storage/reducers";
 
 //api
@@ -44,6 +45,7 @@ import { SERVER_IP } from "../../components/utils";
 const size = Dimensions.get("window").width;
 
 type RootStackParamList = {
+  InitialPage: undefined;
   MyGallery: undefined;
   Error: undefined;
 };
@@ -51,6 +53,8 @@ type RootStackParamList = {
 const EditProfile: React.FC = ({ route }: any) => {
   //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
+  const dispatch = useDispatch();
+
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   //모달
@@ -372,6 +376,31 @@ const EditProfile: React.FC = ({ route }: any) => {
           onChangeText={(text) => setEquipments(text)}
         />
         {/* 장비 부분 끝 */}
+
+        <View
+          style={{ width: "100%", marginBottom: 45, alignItems: "flex-end" }}
+        >
+          <TouchableOpacity
+            style={{
+              backgroundColor: "white",
+              width: 100,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingVertical: 3,
+              paddingHorizontal: 10,
+              borderRadius: 4,
+            }}
+            onPress={() => {
+              dispatch(setUserId(null));
+              navigation.navigate("InitialPage");
+              AsyncStorage.removeItem("user_id");
+            }}
+          >
+            <Text style={{ color: "black", fontWeight: "500", fontSize: 18 }}>
+              로그 아웃
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
       <NavBar type={SvgType.MyGallery} />
       <Modalize ref={modalRef} adjustToContentHeight={true}>
@@ -452,7 +481,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     height: 100,
     borderRadius: 4,
-    marginBottom: 60,
+    marginBottom: 25,
   },
   modal_container: {
     paddingHorizontal: 30,

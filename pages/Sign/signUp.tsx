@@ -2,32 +2,32 @@ import React, { useState, useRef, useEffect } from "react";
 
 //요소
 import {
-  Alert,
   Image,
   Text,
-  KeyboardAvoidingView,
   View,
-  Platform,
   Animated,
   SafeAreaView,
   TouchableOpacity,
-  Modal,
-  TouchableWithoutFeedback,
   StyleSheet,
-  Dimensions,
-  ScrollView,
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 import { BigBigLogo } from "../../assets/svg";
 
-import GlobalStyles from "../../assets/styles";
-
 //nav
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
+type RootStackParamList = {
+  SocialLogin: {
+    what: string;
+    auto: boolean;
+  };
+};
+
 const Sign: React.FC = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const startAnimation = () => {
@@ -44,6 +44,8 @@ const Sign: React.FC = () => {
     startAnimation();
   }, []);
 
+  const [auto, setAuto] = useState<boolean>(false);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
       <ExpoStatusBar style="dark" />
@@ -52,7 +54,7 @@ const Sign: React.FC = () => {
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
-          height: 370,
+          height: 345,
         }}
       >
         <BigBigLogo />
@@ -64,7 +66,38 @@ const Sign: React.FC = () => {
       </View>
       <View style={{ alignItems: "center" }}>
         <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            width: 285,
+            marginBottom: 25,
+            paddingLeft: 10,
+          }}
+          onPress={() => {
+            setAuto(!auto);
+          }}
+        >
+          <View
+            style={{
+              width: 13,
+              height: 13,
+              backgroundColor: auto ? "#FFA800" : "white",
+              borderWidth: 1,
+              borderColor: "white",
+            }}
+          />
+          <Text style={{ color: "white", fontSize: 16 }}>자동 로그인</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={{ ...styles.button, backgroundColor: "#FFEB00" }}
+          onPress={() =>
+            navigation.navigate("SocialLogin", {
+              what: "kakao",
+              auto: auto,
+            })
+          }
         >
           <Image
             source={require("../../assets/social_kakao.png")}
@@ -75,6 +108,12 @@ const Sign: React.FC = () => {
 
         <TouchableOpacity
           style={{ ...styles.button, backgroundColor: "#45C530" }}
+          onPress={() =>
+            navigation.navigate("SocialLogin", {
+              what: "naver",
+              auto: auto,
+            })
+          }
         >
           <Image
             source={require("../../assets/social_naver.png")}
@@ -85,6 +124,12 @@ const Sign: React.FC = () => {
 
         <TouchableOpacity
           style={{ ...styles.button, backgroundColor: "#EFF0F1" }}
+          onPress={() =>
+            navigation.navigate("SocialLogin", {
+              what: "google",
+              auto: auto,
+            })
+          }
         >
           <Image
             source={require("../../assets/social_google.png")}
@@ -102,13 +147,13 @@ export default Sign;
 const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
-    borderRadius: 10,
+    borderRadius: 8,
     paddingHorizontal: 10,
     justifyContent: "center",
     width: 285,
-    paddingVertical: 13,
+    paddingVertical: 12,
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 23,
     marginTop: 3,
   },
   buttonIcon: {

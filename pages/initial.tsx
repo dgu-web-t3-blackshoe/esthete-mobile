@@ -8,10 +8,11 @@ import { BigLogo } from "../assets/svg";
 
 //라이브러리
 import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Redux
 import { useDispatch } from "react-redux";
-import { setLocation } from "../storage/actions";
+import { setLocation, setUserId } from "../storage/actions";
 
 //네비게이션
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -64,8 +65,7 @@ const InitialPage: React.FC = () => {
           lon: currentLocation.coords.longitude,
         })
       );
-      navigation.navigate("Sign");
-      // navigation.navigate("PageExhibition");
+      checkAuto();
     } catch (error) {
       setTimeout(startAnimation, 2000);
     }
@@ -76,6 +76,19 @@ const InitialPage: React.FC = () => {
       startAnimation();
     }, [])
   );
+
+  const checkAuto = async () => {
+    const userId = await AsyncStorage.getItem("user_id");
+    if (userId) {
+      dispatch(setUserId(userId));
+
+      //======================================================================================
+      //나중에 PageExhibiton으로 변경 필요
+      navigation.navigate("MyGallery");
+    } else {
+      navigation.navigate("Sign");
+    }
+  };
 
   return (
     <TouchableOpacity

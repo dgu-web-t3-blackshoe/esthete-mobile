@@ -38,9 +38,9 @@ export const RoomInfo = ({
           aspectRatio: 1,
         }}
         onPress={() => {
-          if (roomThumbnail) {
+          if (roomThumbnail.length > 0) {
             if (roomThumbnail === item.photo_id) {
-              setRoomThumbnail(null);
+              setRoomThumbnail("");
             } else {
               setRoomThumbnail(item.photo_id);
             }
@@ -116,7 +116,7 @@ export const RoomInfo = ({
         </Text>
         <TextInput
           cursorColor={"#FFA800"}
-          placeholder="전시회 설명을 입력하세요."
+          placeholder="전시실 설명을 입력하세요."
           style={{
             backgroundColor: "white",
             textAlign: "center",
