@@ -16,7 +16,7 @@ import {
   ActivityIndicator as Spinner,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../components/navbar";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -45,6 +45,7 @@ type RootStackParamList = {
     nickname: string;
   };
   MyGallery: undefined;
+  Error: undefined;
 };
 
 const numColumns = 2;
@@ -72,6 +73,8 @@ const Exhibition: React.FC = ({ route }: any) => {
       const response = await axios.get(`${SERVER_IP}core/exhibitions/random`);
       setExhibitionData(response.data);
     } catch (e) {
+      navigation.replace("Error");
+
       console.log(e);
     }
   };
@@ -183,6 +186,8 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <ExpoStatusBar style="dark" />
+
       {exhibitionData ? (
         <ScrollView
           style={{ flex: 1, backgroundColor: "black" }}

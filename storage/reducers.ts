@@ -16,8 +16,7 @@ interface Action {
 
 const initialState: State = {
   TOKEN: null,
-  USER: "8c3841c7-f2cf-462e-9ef1-6c6e7bc9ffa4",
-  // USER: "2542b811-d7f4-4f2b-9adb-9a87304fd9fc",
+  USER: null,
   location: { lat: null, lon: null },
 };
 

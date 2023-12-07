@@ -1,20 +1,15 @@
 //3-2
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState } from "react";
 
 //요소
 import {
   Image,
-  Alert,
   Text,
   SafeAreaView,
   TouchableOpacity,
-  StyleSheet,
-  FlatList,
   Dimensions,
   ScrollView,
-  ImageBackground,
   View,
-  Animated,
   ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../components/navbar";
@@ -28,8 +23,10 @@ import { SERVER_IP } from "../components/utils";
 type RootStackParamList = {
   Photo: {
     photo_id: string;
+    user_id: string;
     nickname: string;
   };
+  Error: undefined;
 };
 
 //화면 넓이 계산 (이미지 넓이에 사용)
@@ -42,10 +39,8 @@ const Room: React.FC = ({ route }: any) => {
   useFocusEffect(
     React.useCallback(() => {
       getPhotos();
-
     }, [])
   );
-
 
   //이미지 높이 계산----------------------------------------------------------
   const [imageHeights, setImageHeights] = useState<Map<string, number>>(
@@ -72,6 +67,7 @@ const Room: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/exhibitions/${route.params.exhibition_id}/rooms/${route.params.room_id}`
       );
+      console.log(response.data);
       setEvenPhotos(
         response.data.room_photos.filter(
           (_: any, index: number) => index % 2 === 0
@@ -83,6 +79,7 @@ const Room: React.FC = ({ route }: any) => {
         )
       );
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };
@@ -167,6 +164,7 @@ const Room: React.FC = ({ route }: any) => {
                       onPress={() => {
                         navigation.navigate("Photo", {
                           photo_id: e.photo_id,
+                          user_id: e.user_id,
                           nickname: route.params.nickname,
                         });
                       }}
@@ -198,7 +196,7 @@ const Room: React.FC = ({ route }: any) => {
                       onPress={() => {
                         navigation.navigate("Photo", {
                           photo_id: e.photo_id,
-
+                          user_id: e.user_id,
                           nickname: route.params.nickname,
                         });
                       }}
@@ -233,7 +231,7 @@ const Room: React.FC = ({ route }: any) => {
         </View>
       )}
 
-      <NavBar type={SvgType.Exibition} />
+      <NavBar type={SvgType.Any} />
     </SafeAreaView>
   );
 };

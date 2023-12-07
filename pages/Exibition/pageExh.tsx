@@ -1,22 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 //요소
 import {
-  Alert,
-  Image,
   Text,
-  KeyboardAvoidingView,
   View,
   Platform,
   SafeAreaView,
   TouchableOpacity,
-  StatusBar,
-  Modal,
-  TouchableWithoutFeedback,
   StyleSheet,
   Dimensions,
   ActivityIndicator as Spinner,
-  ScrollView,
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import Random from "./random";
@@ -32,10 +25,6 @@ import Carousel from "react-native-reanimated-carousel";
 import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
-//api
-import axios from "axios";
-import { SERVER_IP } from "../../components/utils";
-
 //navigation
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -50,6 +39,7 @@ type RootStackParamList = {
     nickname: string;
     user_id: string;
   };
+  Error: undefined;
 };
 const PageExhibition: React.FC = () => {
   const width = Dimensions.get("window").width;
@@ -100,15 +90,15 @@ const PageExhibition: React.FC = () => {
   const [exhibitionData, setExhibitionData] = useState<Array<object>>([]);
   const getRandom = async () => {
     try {
-      const responses = await Promise.all([
-        axios.get(`${SERVER_IP}core/exhibitions/random`),
-        axios.get(`${SERVER_IP}core/exhibitions/random`),
-        axios.get(`${SERVER_IP}core/exhibitions/random`),
-      ]);
-
-      const newExhibitionData = responses.map((response) => response.data);
-      setExhibitionData([...exhibitionData, ...newExhibitionData]);
+      // const responses = await Promise.all([
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      // ]);
+      // const newExhibitionData = responses.map((response) => response.data);
+      // setExhibitionData([...exhibitionData, ...newExhibitionData]);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };
@@ -119,7 +109,7 @@ const PageExhibition: React.FC = () => {
   const [enabled, setEnabled] = useState<boolean>(true);
 
   const handleVisit = () => {
-    const currentExhibition = exhibitionData[now];
+    const currentExhibition: any = exhibitionData[now];
     if (currentExhibition) {
       navigation.push("Exhibition", {
         exhibition_id: currentExhibition.exhibition_id,

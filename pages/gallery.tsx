@@ -26,8 +26,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Modalize } from "react-native-modalize";
 import { NavBar, SvgType } from "../components/navbar";
 
-//assets
-
 //사진 랜더링 시 필요한 width 계산
 const numColumns = 3;
 const size = (Dimensions.get("window").width - 40) / numColumns;
@@ -58,6 +56,7 @@ type RootStackParamList = {
     user_id: string;
   };
   DarkRoom: undefined;
+  Error: undefined;
 };
 
 const Gallery: React.FC = ({ route }: any) => {
@@ -85,6 +84,7 @@ const Gallery: React.FC = ({ route }: any) => {
       );
       setUserData(response.data);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };
@@ -350,7 +350,7 @@ const Gallery: React.FC = ({ route }: any) => {
   const getGuestBook = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=10&page${page}`
+        `${SERVER_IP}core/users/${route.params.user_id}/guest-books?size=20&page${page}`
       );
       setGlast(response.data.last);
       setGuestBook(response.data.content);

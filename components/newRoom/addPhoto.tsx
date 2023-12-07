@@ -2,32 +2,19 @@ import React, { useState, useEffect } from "react";
 
 //요소
 import {
-  Image,
-  Alert,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   StyleSheet,
   FlatList,
   Dimensions,
-  Platform,
   ImageBackground,
   ScrollView,
   View,
-  TextInput,
-  KeyboardAvoidingView,
-  ActivityIndicator as Spinner,
-  BackHandler,
 } from "react-native";
 import {} from "@react-navigation/native";
 
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../navbar";
-import GlobalStyles from "../../assets/styles";
 
-//Redux
-import { useSelector } from "react-redux";
-import { State } from "../../storage/reducers";
 
 //넓이 계산
 const size = Dimensions.get("window").width;

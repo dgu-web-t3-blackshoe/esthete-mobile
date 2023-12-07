@@ -18,7 +18,7 @@ export function setUser(payload: Payload) {
   return { type: SET_USER, payload: payload };
 }
 
-export function setUserId(userId: string) {
+export function setUserId(userId: any) {
   return { type: SET_USER_ID, payload: { userId } };
 }
 

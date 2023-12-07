@@ -24,7 +24,11 @@ import { Logo } from "./assets/svg";
 
 //Pages
 import InitialPage from "./pages/initial";
+import Error from "./pages/error";
 import Photo from "./pages/photo";
+import Sign from "./pages/Sign/signUp";
+import SocialLogin from "./pages/Sign/socialLogin";
+import UserInfo from "./pages/Sign/userInfo";
 
 import Gallery from "./pages/gallery";
 import Exhibition from "./pages/exibition";
@@ -98,6 +102,46 @@ export default function App() {
                 component={InitialPage}
                 options={{
                   headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Error"
+                component={Error}
+                options={{
+                  header: () => <CustomHeader2 />,
+                }}
+              />
+              <Stack.Screen
+                name="Sign"
+                component={Sign}
+                options={{
+                  headerStyle: {
+                    backgroundColor: "white",
+                  },
+                  headerTitleStyle: {
+                    color: "black",
+                  },
+                  headerTitle: "Sign In",
+                }}
+              />
+              <Stack.Screen
+                name="SocialLogin"
+                component={SocialLogin}
+                options={{
+                  headerStyle: {
+                    backgroundColor: "white",
+                  },
+                  headerTitleStyle: {
+                    color: "black",
+                  },
+                  headerTitle: "Sign In",
+                }}
+              />
+              <Stack.Screen
+                name="UserInfo"
+                component={UserInfo}
+                options={{
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen

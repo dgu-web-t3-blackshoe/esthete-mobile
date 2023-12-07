@@ -2,32 +2,19 @@ import React, { useState, useEffect } from "react";
 
 //요소
 import {
-  Image,
-  Alert,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   StyleSheet,
   FlatList,
   Dimensions,
-  Platform,
   ImageBackground,
   ScrollView,
   View,
   TextInput,
-  KeyboardAvoidingView,
-  ActivityIndicator as Spinner,
-  BackHandler,
 } from "react-native";
 import {} from "@react-navigation/native";
 
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../navbar";
-import GlobalStyles from "../../assets/styles";
-
-//Redux
-import { useSelector } from "react-redux";
-import { State } from "../../storage/reducers";
 
 //넓이 계산
 const size = Dimensions.get("window").width;
@@ -42,7 +29,6 @@ export const RoomInfo = ({
   myPhotoData,
 }: any) => {
   //사진 나열
-
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
       <TouchableOpacity
@@ -52,9 +38,9 @@ export const RoomInfo = ({
           aspectRatio: 1,
         }}
         onPress={() => {
-          if (roomThumbnail) {
+          if (roomThumbnail.length > 0) {
             if (roomThumbnail === item.photo_id) {
-              setRoomThumbnail(null);
+              setRoomThumbnail("");
             } else {
               setRoomThumbnail(item.photo_id);
             }
@@ -130,7 +116,7 @@ export const RoomInfo = ({
         </Text>
         <TextInput
           cursorColor={"#FFA800"}
-          placeholder="전시회 설명을 입력하세요."
+          placeholder="전시실 설명을 입력하세요."
           style={{
             backgroundColor: "white",
             textAlign: "center",

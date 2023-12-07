@@ -1,24 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 //요소
-import { Alert, Animated, TouchableOpacity } from "react-native";
+import { Alert, Animated, View } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 import { BigLogo } from "../assets/svg";
 
 //라이브러리
 import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Redux
 import { useDispatch } from "react-redux";
-import { setLocation } from "../storage/actions";
+import { setLocation, setUserId } from "../storage/actions";
 
 //네비게이션
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
   Gallery: undefined;
+  Sign: undefined;
+  MyGallery: undefined;
   Box: undefined;
   Exhibition: undefined;
   PageExhibition: undefined;
@@ -62,17 +65,33 @@ const InitialPage: React.FC = () => {
           lon: currentLocation.coords.longitude,
         })
       );
-      navigation.navigate("PageExhibition");
+      checkAuto();
     } catch (error) {
       setTimeout(startAnimation, 2000);
     }
   };
-  useEffect(() => {
-    startAnimation();
-  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      startAnimation();
+    }, [])
+  );
+
+  const checkAuto = async () => {
+    const userId = await AsyncStorage.getItem("user_id");
+    if (userId) {
+      dispatch(setUserId(userId));
+
+      //======================================================================================
+      //나중에 PageExhibiton으로 변경 필요
+      navigation.navigate("MyGallery");
+    } else {
+      navigation.navigate("Sign");
+    }
+  };
 
   return (
-    <TouchableOpacity
+    <View
       style={{
         width: "100%",
         height: "100%",
@@ -80,13 +99,12 @@ const InitialPage: React.FC = () => {
         alignItems: "center",
         backgroundColor: "black",
       }}
-      onPress={() => navigation.navigate("PageExhibition")}
     >
       <ExpoStatusBar style="light" />
       <Animated.View style={{ opacity: fadeAnim }}>
         <BigLogo />
       </Animated.View>
-    </TouchableOpacity>
+    </View>
   );
 };
 export default InitialPage;

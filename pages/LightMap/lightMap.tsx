@@ -39,6 +39,7 @@ type RootStackParamList = {
     city: string;
     town: string;
   };
+  Error: undefined;
 };
 
 const LightMap: React.FC = () => {
@@ -73,7 +74,9 @@ const LightMap: React.FC = () => {
   }, [lat, lon]);
 
   useEffect(() => {
-    getData(lat, lon);
+    if (locationInfo) {
+      getData(lat, lon);
+    }
   }, [locationInfo]);
 
   const goToCurrentLocation = async () => {
@@ -111,12 +114,18 @@ const LightMap: React.FC = () => {
       const formattedAddress = response.data.results[0].formatted_address;
 
       const addressParts = formattedAddress.split(" ");
-      const length = addressParts.length;
-      const state = addressParts[length - 4] || "";
-      const city = addressParts[length - 3] || "";
-      const town = addressParts[length - 2] || "";
-
-      setLocationInfo([state, city, town]);
+      if (addressParts.includes("대한민국")) {
+        const indexofC = addressParts.indexOf("대한민국");
+        const state = addressParts[indexofC + 1] || "";
+        const city = addressParts[indexofC + 2] || "";
+        const town = addressParts[indexofC + 3] || "";
+        setLocationInfo([state, city, town]);
+      } else {
+        const state = addressParts[1] || "";
+        const city = addressParts[2] || "";
+        const town = addressParts[3] || "";
+        setLocationInfo([state, city, town]);
+      }
     } catch (e) {
       console.error(e);
       return null;
@@ -130,19 +139,35 @@ const LightMap: React.FC = () => {
       const response = await axios.get(
         `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=100000&group=city`
       );
-      console.log(response.data);
       setPhotoData(response.data.content);
     } catch (e) {
+      navigation.replace("Error");
       console.log(e);
     }
   };
 
+  const [dataWithmMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
   useEffect(() => {
-    // if(photoData){
-    //   photoData.
+    const fetchCoordinates = async () => {
+      if (photoData !== null) {
+        const temp = await Promise.all(
+          photoData
+            .filter((e: { state: string }) => e.state !== "string")
+            .map(async (e: { state: string; city: string }) => {
+              const latlon: any = await getLatLon(e.state, e.city, "");
+              return {
+                ...e,
+                latitude: latlon[0],
+                longitude: latlon[1],
+              };
+            })
+        );
 
-    // }
-    getLatLon("부산광역시", "중구", "");
+        setDataWithmMarkers((prev) => [...prev, ...temp]);
+      }
+    };
+
+    fetchCoordinates();
   }, [photoData]);
 
   //데이터 받아오면 그걸로 위도, 경도 받아오기
@@ -159,13 +184,10 @@ const LightMap: React.FC = () => {
           },
         }
       );
-
       const location = response.data.results[0].geometry.location;
       const latitude = location.lat;
       const longitude = location.lng;
-      console.log("at lat fx", latitude);
-      console.log("at lon fx", longitude);
-      return { latitude, longitude };
+      return [latitude, longitude];
     } catch (e) {
       console.error(e);
       return null;
@@ -203,37 +225,65 @@ const LightMap: React.FC = () => {
           initialRegion={currentRegion}
           region={currentRegion}
           provider={PROVIDER_GOOGLE}
+          onRegionChangeComplete={() => console.log("moved")}
         >
-          <Marker
+          {/* <Marker
             coordinate={{
               latitude: currentRegion.latitude,
               longitude: currentRegion.longitude,
             }}
             title={"내 위치"}
-          />
-
-          <Marker
-            coordinate={{
-              latitude: lat || 0,
-              longitude: lon || 0,
-            }}
-            onPress={() =>
-              navigation.navigate("LightMapList", {
-                state: locationInfo[0],
-                city: locationInfo[1],
-                town: locationInfo[2],
-              })
-            }
-          >
-            <Image
-              source={{ uri: photoData[0]?.photo_url }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-              }}
-            />
-          </Marker>
+          /> */}
+          {dataWithmMarkers.length > 0 &&
+            dataWithmMarkers.map((e: any, i) => {
+              return (
+                <Marker
+                  key={i}
+                  coordinate={{
+                    latitude: e.latitude,
+                    longitude: e.longitude,
+                  }}
+                  // onPress={() =>
+                  //   navigation.navigate("LightMapList", {
+                  //     state: locationInfo[0],
+                  //     city: locationInfo[1],
+                  //     town: locationInfo[2],
+                  //   })
+                  // }
+                >
+                  <View
+                    style={{
+                      padding: 5,
+                      backgroundColor: "black",
+                      borderRadius: 50,
+                    }}
+                  >
+                    <Image
+                      source={{ uri: e.thumbnail }}
+                      style={{
+                        width:
+                          e.count > 10
+                            ? 100
+                            : e.count > 5
+                            ? 80
+                            : e.count > 2
+                            ? 60
+                            : 50,
+                        height:
+                          e.count > 10
+                            ? 100
+                            : e.count > 5
+                            ? 80
+                            : e.count > 2
+                            ? 60
+                            : 50,
+                        borderRadius: 50,
+                      }}
+                    />
+                  </View>
+                </Marker>
+              );
+            })}
         </MapView>
       ) : (
         <View
