@@ -17,10 +17,7 @@ import {
   ScrollView,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
-import {
-  GenreArray,
-  getGenreValueByKey,
-} from "../../components/constants";
+import { GenreArray, getGenreValueByKey } from "../../components/constants";
 import GlobalStyles from "../../assets/styles";
 
 import { Step1 } from "../../components/darkRoom/darkRoomStep1";
@@ -65,7 +62,6 @@ type RootStackParamList = {
 
 const DarkRoom: React.FC = () => {
   const userId = useSelector((state: State) => state.USER);
-  const token = useSelector((state: State) => state.TOKEN);
   const { lat, lon } = useSelector((state: State) => state.location);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -99,17 +95,26 @@ const DarkRoom: React.FC = () => {
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(
     null
   );
+  const [mediaPermission, setMediaPermission] = useState<boolean | null>(null);
 
   const requestPermissions = async (): Promise<boolean> => {
     const { status: cameraStatus } =
       await ImagePicker.requestCameraPermissionsAsync();
+
+    const { status: mediaStatus } =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
     const { status: mediaLibraryStatus } =
       await MediaLibrary.requestPermissionsAsync();
 
     setCameraPermission(cameraStatus === "granted");
+    setMediaPermission(mediaStatus === "granted");
     setMediaLibraryPermission(mediaLibraryStatus === "granted");
 
-    return cameraStatus === "granted" && mediaLibraryStatus === "granted";
+    return (
+      cameraStatus === "granted" &&
+      mediaLibraryStatus === "granted" &&
+      mediaStatus === "granted"
+    );
   };
 
   //갤러리 접근 권한 허용
@@ -118,7 +123,7 @@ const DarkRoom: React.FC = () => {
   >(null);
 
   const pickImageFromLibrary = async (): Promise<void> => {
-    if (!mediaLibraryPermission) {
+    if (!mediaLibraryPermission || !mediaPermission) {
       if (!(await requestPermissions())) {
         alert("권한 설정을 확인하세요!");
         return;
@@ -127,11 +132,15 @@ const DarkRoom: React.FC = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      quality: 1,
       exif: true,
     });
+
     if (!result.canceled && result.assets && result.assets[0].uri) {
       setSelectedImage(result.assets[0].uri);
+      if (result.assets[0].exif?.DateTime) {
+        setDateText(result.assets[0].exif?.DateTime.split(" ")[0]);
+      }
       closeModal();
     }
   };
@@ -143,6 +152,7 @@ const DarkRoom: React.FC = () => {
       }
     }
     const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       exif: true,
     });
@@ -177,8 +187,22 @@ const DarkRoom: React.FC = () => {
     }
   };
 
+  const checkPhoto = async () => {
+    // try {
+    //   const response = await axios.post(`${SERVER_IP}core`);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+  };
+
+  useEffect(() => {
+    if (selectedImage) {
+      checkPhoto;
+    }
+  }, [selectedImage]);
+
   const upload = async () => {
-    const formData = new FormData();
+    const formData: any = new FormData();
     formData.append("photo", {
       uri: selectedImage,
       type: mime.getType(selectedImage),

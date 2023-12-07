@@ -42,10 +42,6 @@ type RootStackParamList = {
 const LightMapList: React.FC = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  useEffect(() => {
-    getData();
-  }, []);
-
   //정렬 방식 모달 시작-------------------------------------------
   const [isSortModalVisible, setSortModalVisible] = useState<boolean>(false);
   const [sortOption, setSortOption] = useState<string>("recent");
@@ -64,9 +60,13 @@ const LightMapList: React.FC = ({ route }: any) => {
   const getData = async (page: number) => {
     try {
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations?state=${route.params.state}&city=${route.params.city}&page=0&size=10&sort=recent`
+        `${SERVER_IP}core/photos/locations?state=${route.params.state}&city=${route.params.city}&page=${page}&size=20&sort=recent`
       );
-      setPhotoData(response.data.content);
+      if (page !== 0) {
+        setPhotoData([...photoData, ...response.data.content]);
+      } else {
+        setPhotoData(response.data.content);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -97,6 +97,16 @@ const LightMapList: React.FC = ({ route }: any) => {
       </TouchableOpacity>
     );
   };
+
+  //페이징 처리
+  const [page, setPage] = useState<number>(0);
+  const loadMoreData = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  useEffect(() => {
+    getData(page);
+  }, [page]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -142,7 +152,7 @@ const LightMapList: React.FC = ({ route }: any) => {
             paddingHorizontal: 20,
             backgroundColor: "black",
           }}
-          // onEndReached={loadMoreData}
+          onEndReached={loadMoreData}
         />
       ) : (
         <View

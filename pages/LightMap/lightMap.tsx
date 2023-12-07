@@ -205,12 +205,9 @@ const LightMap: React.FC = () => {
   };
 
   //지도 이동
-  const handleRegionChangeComplete = (region) => {
+  const handleRegionChangeComplete = (region: any) => {
     console.log("Current region is:", region);
-    // region.latitude와 region.longitude를 사용하여 현재 위치를 얻을 수 있음
   };
-
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

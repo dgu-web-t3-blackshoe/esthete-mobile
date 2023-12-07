@@ -21,6 +21,10 @@ import { NavBar, SvgType } from "../../components/navbar";
 
 import Carousel from "react-native-reanimated-carousel";
 
+//api
+import axios from "axios";
+import { SERVER_IP } from "../../components/utils";
+
 //Redux
 import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
@@ -90,13 +94,13 @@ const PageExhibition: React.FC = () => {
   const [exhibitionData, setExhibitionData] = useState<Array<object>>([]);
   const getRandom = async () => {
     try {
-      // const responses = await Promise.all([
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      // ]);
-      // const newExhibitionData = responses.map((response) => response.data);
-      // setExhibitionData([...exhibitionData, ...newExhibitionData]);
+      const responses = await Promise.all([
+        axios.get(`${SERVER_IP}core/exhibitions/random`),
+        axios.get(`${SERVER_IP}core/exhibitions/random`),
+        axios.get(`${SERVER_IP}core/exhibitions/random`),
+      ]);
+      const newExhibitionData = responses.map((response) => response.data);
+      setExhibitionData([...exhibitionData, ...newExhibitionData]);
     } catch (e) {
       navigation.replace("Error");
       console.log(e);

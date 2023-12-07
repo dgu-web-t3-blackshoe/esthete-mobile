@@ -23,7 +23,7 @@ const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.stopLoading(true);`;
 
 type RootStackParamList = {
   UserInfo: undefined;
-  MyGallery: undefined;
+  PageExhibition: undefined;
 };
 
 const SocialLogin = ({ route }: any) => {
@@ -75,7 +75,7 @@ const SocialLogin = ({ route }: any) => {
           AsyncStorage.setItem("user_id", params["userId"]);
         }
         dispatch(setUserId(params["userId"]));
-        navigation.navigate("MyGallery");
+        navigation.navigate("PageExhibition");
       }
     }
   }, [url]);

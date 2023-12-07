@@ -33,7 +33,7 @@ type RootStackParamList = {
     auto: boolean;
   };
   Error: undefined;
-  MyGallery: undefined;
+  PageExhibition: undefined;
 };
 
 const UserInfo: React.FC = () => {
@@ -72,7 +72,7 @@ const UserInfo: React.FC = () => {
         }
       );
       console.log(response.data);
-      navigation.replace("MyGallery");
+      navigation.replace("PageExhibition");
     } catch (e) {
       console.log(e);
       Alert.alert(

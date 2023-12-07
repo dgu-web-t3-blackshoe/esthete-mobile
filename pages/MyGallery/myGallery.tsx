@@ -327,7 +327,7 @@ const MyGallery: React.FC = () => {
     contentOffset,
     contentSize,
   }: any) => {
-    const paddingToBottom = 20;
+    const paddingToBottom = 0;
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
@@ -369,75 +369,78 @@ const MyGallery: React.FC = () => {
                 navigation.push("AllSupportingPG");
               }}
             >
-              <Text>See All</Text>
+              <Text style={{ fontWeight: "500", fontSize: 16 }}>See All</Text>
             </TouchableOpacity>
           </View>
           {/* 후원중인 사진가 타이틀 끝 */}
 
           {/* 후원중인 작가 수평 스크롤뷰 시작 */}
-          <ScrollView
-            horizontal
-            contentContainerStyle={{
-              gap: 15,
-              paddingHorizontal: 20,
-              paddingVertical: 7.5,
-              width: "100%",
-              backgroundColor: "white",
-            }}
-            showsHorizontalScrollIndicator={false}
-          >
-            {mySupporting && mySupporting?.length > 0 ? (
-              [...mySupporting]
-                .sort((a, b) =>
-                  a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1
-                )
-                .map((e, i) => {
-                  const displayedName =
-                    e.nickname.length > 6
-                      ? `${e.nickname.substring(0, 6)}...`
-                      : e.nickname;
-                  return (
-                    <TouchableOpacity
-                      key={i}
-                      style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                      onPress={() => {
-                        navigation.navigate("Gallery", {
-                          user_id: e.photographer_id,
-                          profile_img: e.profile_img,
-                          nickname: e.nickname,
-                        });
-                      }}
-                    >
-                      <Image
-                        source={e.profile_img}
-                        style={{
-                          width: e.has_new ? 75 : 70,
-                          height: e.has_new ? 75 : 70,
-                          borderRadius: 50,
-                          borderWidth: e.has_new ? 3 : 0,
-                          borderColor: "#FFA800",
-                        }}
-                      />
-                      <Text>{displayedName}</Text>
-                    </TouchableOpacity>
-                  );
-                })
-            ) : (
-              <Text
-                style={{
+
+          {
+            mySupporting && mySupporting?.length > 0 ? (
+              <ScrollView
+                horizontal
+                contentContainerStyle={{
+                  gap: 15,
+                  paddingHorizontal: 20,
+                  paddingVertical: 7.5,
                   width: "100%",
-                  textAlign: "center",
-                  fontWeight: "500",
-                  paddingBottom: 5,
+                  backgroundColor: "white",
                 }}
+                showsHorizontalScrollIndicator={false}
               >
-                후원 중인 작가가 없습니다.
-              </Text>
-            )}
-          </ScrollView>
+                {[...mySupporting]
+                  .sort((a, b) =>
+                    a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1
+                  )
+                  .map((e, i) => {
+                    const displayedName =
+                      e.nickname.length > 6
+                        ? `${e.nickname.substring(0, 6)}...`
+                        : e.nickname;
+                    return (
+                      <TouchableOpacity
+                        key={i}
+                        style={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                        onPress={() => {
+                          navigation.navigate("Gallery", {
+                            user_id: e.photographer_id,
+                            profile_img: e.profile_img,
+                            nickname: e.nickname,
+                          });
+                        }}
+                      >
+                        <Image
+                          source={e.profile_img}
+                          style={{
+                            width: e.has_new ? 75 : 70,
+                            height: e.has_new ? 75 : 70,
+                            borderRadius: 50,
+                            borderWidth: e.has_new ? 3 : 0,
+                            borderColor: "#FFA800",
+                          }}
+                        />
+                        <Text>{displayedName}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+              </ScrollView>
+            ) : null
+            // <Text
+            //   style={{
+            //     width: "100%",
+            //     textAlign: "center",
+            //     fontWeight: "500",
+            //     paddingBottom: 5,
+            //   }}
+            // >
+            //   후원 중인 작가가 없습니다.
+            // </Text>
+          }
+
           {/* 후원중인 작가 수평 스크롤뷰 끝 */}
 
           <View style={{ backgroundColor: "black" }}>

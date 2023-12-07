@@ -460,7 +460,7 @@ const Gallery: React.FC = ({ route }: any) => {
     contentOffset,
     contentSize,
   }: any) => {
-    const paddingToBottom = 20;
+    const paddingToBottom = 0;
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom

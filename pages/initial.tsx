@@ -21,7 +21,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 type RootStackParamList = {
   Gallery: undefined;
   Sign: undefined;
-  MyGallery: undefined;
   Box: undefined;
   Exhibition: undefined;
   PageExhibition: undefined;
@@ -84,7 +83,7 @@ const InitialPage: React.FC = () => {
 
       //======================================================================================
       //나중에 PageExhibiton으로 변경 필요
-      navigation.navigate("MyGallery");
+      navigation.navigate("PageExhibition");
     } else {
       navigation.navigate("Sign");
     }
