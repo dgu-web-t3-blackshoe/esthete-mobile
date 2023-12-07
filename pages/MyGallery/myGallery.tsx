@@ -20,6 +20,8 @@ import {
   RefreshControl,
   ActivityIndicator as Spinner,
 } from "react-native";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+
 import { NavBar, SvgType } from "../../components/navbar";
 import GlobalStyles from "../../assets/styles";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -64,6 +66,7 @@ type RootStackParamList = {
   };
   Photo: {
     photo_id: string;
+    user_id: string;
     nickname: string;
   };
   AllSupportingPG: undefined;
@@ -99,15 +102,20 @@ const MyGallery: React.FC = () => {
   const [guestbookPage, setGuestBookPage] = useState<number>(0);
 
   useEffect(() => {
+    if (photoPage === 0) {
+      return;
+    }
     if (photoPage !== 0 && !last[0]) {
       getMyPhotos(photoPage);
     }
   }, [photoPage]);
+
   useEffect(() => {
     if (exhibitonPage !== 0 && !last[1]) {
       getMyExhibitions(exhibitonPage);
     }
   }, [exhibitonPage]);
+
   useEffect(() => {
     if (guestbookPage !== 0 && !last[2]) {
       getMyGuestBook(guestbookPage);
@@ -135,7 +143,6 @@ const MyGallery: React.FC = () => {
         `${SERVER_IP}core/users/${userId}/profile`
       );
       setUserData(response.data);
-      console.log(response.data);
     } catch (e) {
       navigation.replace("Error");
       console.log(e);
@@ -150,6 +157,7 @@ const MyGallery: React.FC = () => {
 
   const getMyPhotos = async (page: number) => {
     try {
+      console.log("count");
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
@@ -158,6 +166,7 @@ const MyGallery: React.FC = () => {
         newLast[0] = response.data.last;
         return newLast;
       });
+      console.log(response.data.last);
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -180,6 +189,7 @@ const MyGallery: React.FC = () => {
         onPress={() => {
           navigation.navigate("Photo", {
             photo_id: item.photo_id,
+            user_id: userId,
             nickname: userData.nickname,
           });
         }}
@@ -242,18 +252,12 @@ const MyGallery: React.FC = () => {
   const [report, setReport] = useState<string>("");
   const reportGuestBook = async () => {
     if (reportId) {
-      console.log(reportId);
-      console.log(userId);
       try {
-        const response = await axios.post(
-          `${SERVER_IP}core/abusing-reports/guest-books`,
-          {
-            guest_book_id: reportId,
-            reason: report,
-            user_id: userId,
-          }
-        );
-        console.log(response.data);
+        await axios.post(`${SERVER_IP}core/abusing-reports/guest-books`, {
+          guest_book_id: reportId,
+          reason: report,
+          user_id: userId,
+        });
 
         Alert.alert(
           "완료",
@@ -335,6 +339,8 @@ const MyGallery: React.FC = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <ExpoStatusBar style="dark" />
+
       {userData ? (
         <ScrollView
           style={{ flex: 1, backgroundColor: "black" }}
@@ -346,7 +352,7 @@ const MyGallery: React.FC = () => {
               loadMoreData();
             }
           }}
-          scrollEventThrottle={600}
+          scrollEventThrottle={100}
         >
           {/* 후원중인 사진가 타이틀 시작 */}
           <View

@@ -23,6 +23,7 @@ import { SERVER_IP } from "../components/utils";
 type RootStackParamList = {
   Photo: {
     photo_id: string;
+    user_id: string;
     nickname: string;
   };
   Error: undefined;
@@ -66,6 +67,7 @@ const Room: React.FC = ({ route }: any) => {
       const response = await axios.get(
         `${SERVER_IP}core/exhibitions/${route.params.exhibition_id}/rooms/${route.params.room_id}`
       );
+      console.log(response.data);
       setEvenPhotos(
         response.data.room_photos.filter(
           (_: any, index: number) => index % 2 === 0
@@ -162,6 +164,7 @@ const Room: React.FC = ({ route }: any) => {
                       onPress={() => {
                         navigation.navigate("Photo", {
                           photo_id: e.photo_id,
+                          user_id: e.user_id,
                           nickname: route.params.nickname,
                         });
                       }}
@@ -193,7 +196,7 @@ const Room: React.FC = ({ route }: any) => {
                       onPress={() => {
                         navigation.navigate("Photo", {
                           photo_id: e.photo_id,
-
+                          user_id: e.user_id,
                           nickname: route.params.nickname,
                         });
                       }}

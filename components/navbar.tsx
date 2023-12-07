@@ -262,6 +262,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 5,
     paddingHorizontal: 18,
+    borderTopWidth: 0.2,
+    
   },
   xml_style: {
     width: "100%",

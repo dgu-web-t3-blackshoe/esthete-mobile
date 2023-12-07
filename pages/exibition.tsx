@@ -16,7 +16,7 @@ import {
   ActivityIndicator as Spinner,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { NavBar, SvgType } from "../components/navbar";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -46,7 +46,6 @@ type RootStackParamList = {
   };
   MyGallery: undefined;
   Error: undefined;
-
 };
 
 const numColumns = 2;
@@ -187,6 +186,8 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <ExpoStatusBar style="dark" />
+
       {exhibitionData ? (
         <ScrollView
           style={{ flex: 1, backgroundColor: "black" }}

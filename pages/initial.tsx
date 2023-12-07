@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 //요소
-import { Alert, Animated, TouchableOpacity } from "react-native";
+import { Alert, Animated, View } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 import { BigLogo } from "../assets/svg";
@@ -91,7 +91,7 @@ const InitialPage: React.FC = () => {
   };
 
   return (
-    <TouchableOpacity
+    <View
       style={{
         width: "100%",
         height: "100%",
@@ -99,13 +99,12 @@ const InitialPage: React.FC = () => {
         alignItems: "center",
         backgroundColor: "black",
       }}
-      onPress={() => navigation.navigate("Sign")}
     >
       <ExpoStatusBar style="light" />
       <Animated.View style={{ opacity: fadeAnim }}>
         <BigLogo />
       </Animated.View>
-    </TouchableOpacity>
+    </View>
   );
 };
 export default InitialPage;
