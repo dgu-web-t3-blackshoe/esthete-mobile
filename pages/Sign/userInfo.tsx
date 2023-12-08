@@ -71,7 +71,6 @@ const UserInfo: React.FC = () => {
           nickname: nickname,
         }
       );
-      console.log(response.data);
       navigation.replace("PageExhibition");
     } catch (e) {
       console.log(e);

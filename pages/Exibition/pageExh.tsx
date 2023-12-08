@@ -18,7 +18,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 //animation
 import { Extrapolate, interpolate } from "react-native-reanimated";
 import { NavBar, SvgType } from "../../components/navbar";
-
 import Carousel from "react-native-reanimated-carousel";
 
 //api
@@ -45,6 +44,7 @@ type RootStackParamList = {
   };
   Error: undefined;
 };
+
 const PageExhibition: React.FC = () => {
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
@@ -54,16 +54,13 @@ const PageExhibition: React.FC = () => {
     (value: number) => {
       "worklet";
       const zIndex = interpolate(value, [-1, 0, 1], [-1200, 0, -1200]);
-
       const rotateY = `${interpolate(
         value,
         [-1, 0, 1],
         [-90, 0, 90],
         Extrapolate.CLAMP
       )}deg`;
-
       const perspective = 1000;
-
       const transform = {
         transform: [
           { perspective },
@@ -71,7 +68,6 @@ const PageExhibition: React.FC = () => {
           { translateX: value * width },
         ],
       };
-
       return {
         ...transform,
         zIndex,
@@ -81,37 +77,37 @@ const PageExhibition: React.FC = () => {
   );
 
   //Start Logics-------------------------------------------------------------------------------
-
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  //리덕스 유저 아이디 가져오기`
+  //리덕스 유저 아이디 가져오기
   const userId = useSelector((state: State) => state.USER);
   useEffect(() => {
     getRandom();
   }, []);
 
   //getRandom function
-  const [exhibitionData, setExhibitionData] = useState<Array<object>>([]);
+  const [exhibitionData, setExhibitionData] = useState<any>(null);
   const getRandom = async () => {
     try {
-      const responses = await Promise.all([
-        axios.get(`${SERVER_IP}core/exhibitions/random`),
-        axios.get(`${SERVER_IP}core/exhibitions/random`),
-        axios.get(`${SERVER_IP}core/exhibitions/random`),
-      ]);
-      const newExhibitionData = responses.map((response) => response.data);
-      setExhibitionData([...exhibitionData, ...newExhibitionData]);
+      // const responses = await Promise.all([
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
+      // ]);
+      // const newExhibitionData = responses.map((response) => response.data);
+      // // setExhibitionData([...exhibitionData, ...newExhibitionData]);
+      // setExhibitionData(newExhibitionData);
     } catch (e) {
       navigation.replace("Error");
       console.log(e);
     }
   };
+
   //현재 데이터 인덱스
   const [now, setNow] = useState<number>(0);
   const [auto, setAuto] = useState<boolean>(true);
-
-  const [enabled, setEnabled] = useState<boolean>(true);
-
   const handleVisit = () => {
     const currentExhibition: any = exhibitionData[now];
     if (currentExhibition) {
@@ -127,6 +123,8 @@ const PageExhibition: React.FC = () => {
     }
   };
 
+  const [getMore, setGetMore] = useState<boolean>(false);
+
   return (
     <SafeAreaView
       style={{
@@ -135,7 +133,7 @@ const PageExhibition: React.FC = () => {
       }}
     >
       <ExpoStatusBar style="dark" />
-      {exhibitionData.length > 0 ? (
+      {exhibitionData ? (
         <Carousel
           width={width}
           height={height - 70 - 49}
@@ -144,12 +142,16 @@ const PageExhibition: React.FC = () => {
           data={exhibitionData}
           loop={false}
           snapEnabled={false}
-          enabled={enabled}
           overscrollEnabled={false}
-          onSnapToItem={(index) => setNow(index)}
+          onSnapToItem={(index) => {
+            if (index === 4) {
+              setGetMore(true);
+            }
+            setNow(index);
+          }}
           scrollAnimationDuration={500}
+          // onScrollEnd={}
           customAnimation={animationStyle}
-          // onSnapToItem={(index) => console.log("current index:", index)}
           renderItem={({ item, index }: any) => (
             <Random
               exhibition_id={item.exhibition_id}
@@ -178,8 +180,7 @@ const PageExhibition: React.FC = () => {
       )}
 
       {/* 밑에 버튼 시작 */}
-
-      {exhibitionData.length > 0 && (
+      {exhibitionData && (
         <>
           <View
             style={{
@@ -205,10 +206,18 @@ const PageExhibition: React.FC = () => {
               borderRadius: 20,
             }}
             onPress={() => {
-              setAuto(!auto);
+              if (getMore) {
+                setExhibitionData(null);
+                setNow(0);
+                setGetMore(false);
+              } else {
+                setAuto(!auto);
+              }
             }}
           >
-            {auto ? (
+            {getMore ? (
+              <Text>More</Text>
+            ) : auto ? (
               <Icon name="pause-sharp" size={27} color={"black"} />
             ) : (
               <Icon name="play" size={27} color={"black"} />
@@ -217,7 +226,6 @@ const PageExhibition: React.FC = () => {
           {/* 밑에 버튼 끝 */}
         </>
       )}
-
       <NavBar type={SvgType.Exibition} />
     </SafeAreaView>
   );

@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 //요소
 import {
   Image,
-  Alert,
   Text,
   View,
   SafeAreaView,
@@ -137,7 +136,7 @@ const LightMap: React.FC = () => {
   const getData = async (lat: any, lon: any, radius: any) => {
     try {
       let group = "city";
-      if (radius > 80) {
+      if (radius > 60) {
         group = "state";
       } else if (radius < 5) {
         group = "town";
@@ -222,6 +221,7 @@ const LightMap: React.FC = () => {
       getData(latlon[0], latlon[1], radius);
     }
   }, [latlon]);
+  
   //지도 이동
   const handleRegionChangeComplete = (region: any) => {
     console.log(deltaToKilometers(region.latitudeDelta));
@@ -301,7 +301,7 @@ const LightMap: React.FC = () => {
                     style={{
                       padding: 3,
                       backgroundColor: "black",
-                      borderRadius: 50,
+                      borderRadius: e.count > 10 ? 60 : 50,
                     }}
                   >
                     <Image

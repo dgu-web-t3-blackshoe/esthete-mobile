@@ -44,7 +44,6 @@ const SocialLogin = ({ route }: any) => {
     const { url } = newNavState;
     setUrl(url);
   };
-  console.log(url);
 
   const getParams = (url: string) => {
     const paramPart = url.split("?")[1];

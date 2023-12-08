@@ -51,7 +51,6 @@ const Random: React.FC = ({
   user_id,
 }: any) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-
   const [exhibitionData, setExhibitionData] = useState<any>(null);
 
   useEffect(() => {
