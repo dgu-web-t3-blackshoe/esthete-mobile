@@ -58,6 +58,11 @@ interface Location {
 
 type RootStackParamList = {
   MyGallery: undefined;
+  Photo: {
+    photo_id: string;
+    user_id: string;
+    nickname: string;
+  };
 };
 
 const DarkRoom: React.FC = () => {
@@ -90,6 +95,13 @@ const DarkRoom: React.FC = () => {
 
   //사진 등록 관련 시작---------------------------------------------------
   const [selectedImage, setSelectedImage] = useState<any | null>(null);
+
+  //사진 저작권 등 체크
+  useEffect(() => {
+    if (selectedImage) {
+      checkPhoto();
+    }
+  }, [selectedImage]);
 
   //카메라 접근 권한 허용n
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(
@@ -131,7 +143,7 @@ const DarkRoom: React.FC = () => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       quality: 1,
       exif: true,
     });
@@ -159,6 +171,9 @@ const DarkRoom: React.FC = () => {
 
     if (!result.canceled && result.assets && result.assets[0].uri) {
       setSelectedImage(result.assets[0].uri);
+      if (result.assets[0].exif?.DateTime) {
+        setDateText(result.assets[0].exif?.DateTime.split(" ")[0]);
+      }
       closeModal();
     }
   };
@@ -187,19 +202,65 @@ const DarkRoom: React.FC = () => {
     }
   };
 
-  const checkPhoto = async () => {
-    // try {
-    //   const response = await axios.post(`${SERVER_IP}core`);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  };
+  const [alert, setAlert] = useState<string>("");
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [photoId, setPhotoId] = useState<any>(null);
+  const [object, setObject] = useState<any>(null);
 
   useEffect(() => {
-    if (selectedImage) {
-      checkPhoto;
+    if (alert !== "") {
+      setIsModalVisible(true);
     }
-  }, [selectedImage]);
+  }, [alert]);
+
+  const checkPhoto = async () => {
+    try {
+      const formData: any = new FormData();
+      formData.append("request", {
+        uri: selectedImage,
+        type: mime.getType(selectedImage),
+        name: selectedImage.split("/").pop(),
+      });
+      const response = await axios.post(
+        `${SERVER_IP}core/copyright`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const response2 = await axios.post(
+          `${SERVER_IP}core/safe-search`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response2.status === 202) {
+          setSelectedImage(null);
+          setAlert(`${response2.data.error}`);
+          console.log("response.data.error : ", response2.data);
+        }
+      } else {
+        setSelectedImage(null);
+        setAlert(`${response.data.error}`);
+        setPhotoId([
+          response.data.original_photo_id,
+          response.data.original_photo_user_id,
+          response.data.original_photo_user_nickname,
+        ]);
+        console.log("response2.data.error : ", response.data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const upload = async () => {
     const formData: any = new FormData();
@@ -225,6 +286,7 @@ const DarkRoom: React.FC = () => {
     const jsonData = JSON.stringify(imageData);
 
     formData.append("photo_upload_request", jsonData);
+    console.log(formData._parts[0][0]);
 
     try {
       await fetch(`${SERVER_IP}core/photos/${userId}`, {
@@ -331,9 +393,9 @@ const DarkRoom: React.FC = () => {
         const town = addressParts[indexofC + 3] || "";
         setLocationInfo([longitude, latitude, state, city, town]);
       } else {
-        const state = addressParts[1] || "";
-        const city = addressParts[2] || "";
-        const town = addressParts[3] || "";
+        const state = addressParts[0] || "";
+        const city = addressParts[1] || "";
+        const town = addressParts[2] || "";
 
         setLocationInfo([longitude, latitude, state, city, town]);
       }
@@ -855,6 +917,66 @@ const DarkRoom: React.FC = () => {
           </TouchableOpacity>
         </View>
       </Modalize>
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 22,
+            width: "100%",
+
+            height: "100%",
+            borderRadius: 10,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              backgroundColor: "white",
+              paddingTop: 20,
+              paddingBottom: 25,
+              paddingHorizontal: 10,
+              gap: 15,
+              width: 280,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {alert === "" ? null : (
+              <Text style={{ color: "black", fontSize: 16 }}>{alert}</Text>
+            )}
+            {photoId ? (
+              <TouchableOpacity
+                onPress={() => {
+                  setIsModalVisible(false);
+                  navigation.push("Photo", {
+                    photo_id: photoId[0],
+                    user_id: photoId[1],
+                    nickname: photoId[2],
+                  });
+                }}
+              >
+                <Text>원본 사진 확인</Text>
+              </TouchableOpacity>
+            ) : (
+              <Icon name="alarm-light" size={23} color={alert && "red"} />
+            )}
+            <TouchableOpacity
+              style={{ backgroundColor: "black" }}
+              onPress={() => setIsModalVisible(false)}
+            >
+              <Text>Ok</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };

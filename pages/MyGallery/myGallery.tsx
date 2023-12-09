@@ -41,8 +41,6 @@ import axios from "axios";
 type RootStackParamList = {
   Gallery: {
     user_id: string;
-    profile_img: string;
-    nickname: string;
   };
   Exhibition: {
     exhibition_id: string;
@@ -127,6 +125,7 @@ const MyGallery: React.FC = () => {
   const getMySupporting = async () => {
     try {
       const response = await axios.get(`${SERVER_IP}core/new-works/${userId}`);
+      console.log("at my supporting: ", response.data);
       setMySupporting(response.data);
     } catch (e) {
       console.log(e);
@@ -138,7 +137,6 @@ const MyGallery: React.FC = () => {
 
   const getMyProfile = async () => {
     try {
-      console.log(userId);
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/profile`
       );
@@ -157,7 +155,6 @@ const MyGallery: React.FC = () => {
 
   const getMyPhotos = async (page: number) => {
     try {
-      console.log("count");
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
@@ -166,7 +163,6 @@ const MyGallery: React.FC = () => {
         newLast[0] = response.data.last;
         return newLast;
       });
-      console.log(response.data.last);
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -194,10 +190,12 @@ const MyGallery: React.FC = () => {
           });
         }}
       >
-        <ImageBackground
-          source={{ uri: item.photo_url }}
-          style={{ width: "100%", height: "100%" }}
-        />
+        {item.photo_url !== "" && (
+          <ImageBackground
+            source={{ uri: item.photo_url }}
+            style={{ width: "100%", height: "100%" }}
+          />
+        )}
       </TouchableOpacity>
     );
   };
@@ -340,7 +338,6 @@ const MyGallery: React.FC = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ExpoStatusBar style="dark" />
-
       {userData ? (
         <ScrollView
           style={{ flex: 1, backgroundColor: "black" }}
@@ -376,70 +373,60 @@ const MyGallery: React.FC = () => {
 
           {/* 후원중인 작가 수평 스크롤뷰 시작 */}
 
-          {
-            mySupporting && mySupporting?.length > 0 ? (
-              <ScrollView
-                horizontal
-                contentContainerStyle={{
-                  gap: 15,
-                  paddingHorizontal: 20,
-                  paddingVertical: 7.5,
-                  width: "100%",
-                  backgroundColor: "white",
-                }}
-                showsHorizontalScrollIndicator={false}
-              >
-                {[...mySupporting]
-                  .sort((a, b) =>
-                    a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1
-                  )
-                  .map((e, i) => {
-                    const displayedName =
-                      e.nickname.length > 6
-                        ? `${e.nickname.substring(0, 6)}...`
-                        : e.nickname;
-                    return (
-                      <TouchableOpacity
-                        key={i}
+          {mySupporting && mySupporting?.length > 0 ? (
+            <ScrollView
+              horizontal
+              contentContainerStyle={{
+                gap: 15,
+                paddingHorizontal: 20,
+                paddingVertical: 7.5,
+                width: "100%",
+                backgroundColor: "white",
+              }}
+              showsHorizontalScrollIndicator={false}
+            >
+              {[...mySupporting]
+                .sort((a, b) =>
+                  a.has_new_exhibition === b.has_new_exhibition
+                    ? 0
+                    : a.has_new_exhibition
+                    ? -1
+                    : 1
+                )
+                .map((e, i) => {
+                  const displayedName =
+                    e.nickname.length > 6
+                      ? `${e.nickname.substring(0, 6)}...`
+                      : e.nickname;
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      onPress={() => {
+                        navigation.navigate("Gallery", {
+                          user_id: e.photographer_id,
+                        });
+                      }}
+                    >
+                      <Image
+                        source={e.profile_img}
                         style={{
-                          alignItems: "center",
-                          justifyContent: "center",
+                          width: e.has_new_exhibition ? 75 : 70,
+                          height: e.has_new_exhibition ? 75 : 70,
+                          borderRadius: 50,
+                          borderWidth: e.has_new_exhibition ? 3 : 0,
+                          borderColor: "#FFA800",
                         }}
-                        onPress={() => {
-                          navigation.navigate("Gallery", {
-                            user_id: e.photographer_id,
-                            profile_img: e.profile_img,
-                            nickname: e.nickname,
-                          });
-                        }}
-                      >
-                        <Image
-                          source={e.profile_img}
-                          style={{
-                            width: e.has_new ? 75 : 70,
-                            height: e.has_new ? 75 : 70,
-                            borderRadius: 50,
-                            borderWidth: e.has_new ? 3 : 0,
-                            borderColor: "#FFA800",
-                          }}
-                        />
-                        <Text>{displayedName}</Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-              </ScrollView>
-            ) : null
-            // <Text
-            //   style={{
-            //     width: "100%",
-            //     textAlign: "center",
-            //     fontWeight: "500",
-            //     paddingBottom: 5,
-            //   }}
-            // >
-            //   후원 중인 작가가 없습니다.
-            // </Text>
-          }
+                      />
+                      <Text>{displayedName}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+            </ScrollView>
+          ) : null}
 
           {/* 후원중인 작가 수평 스크롤뷰 끝 */}
 
@@ -775,10 +762,26 @@ const MyGallery: React.FC = () => {
                             flexDirection: "row",
                           }}
                         >
-                          <Image
-                            source={{ uri: e.profile_img_url }}
-                            style={{ width: 40, height: 40, borderRadius: 50 }}
-                          />
+                          {e.profile_img_url === "" ? (
+                            <Image
+                              source={require("../../assets/default_profile.png")}
+                              style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 50,
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              source={{ uri: e.profile_img_url }}
+                              style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 50,
+                              }}
+                            />
+                          )}
+
                           <View style={{ marginLeft: 20 }}>
                             <View
                               style={{

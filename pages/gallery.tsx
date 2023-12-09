@@ -415,10 +415,22 @@ const Gallery: React.FC = ({ route }: any) => {
           paddingHorizontal: 20,
         }}
       >
-        <Image
-          source={{ uri: item.profile_img_url }}
-          style={{ width: 40, height: 40, borderRadius: 50 }}
-        />
+        {item.profile_img_url === "" ? (
+          <Image
+            source={require("../assets/default_profile.png")}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 50,
+            }}
+          />
+        ) : (
+          <Image
+            source={{ uri: item.profile_img_url }}
+            style={{ width: 40, height: 40, borderRadius: 50 }}
+          />
+        )}
+
         <View>
           <View
             style={{

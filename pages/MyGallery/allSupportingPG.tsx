@@ -59,7 +59,6 @@ const AllSupportingPG: React.FC = () => {
       );
       setLast(response.data.last);
       setData(response.data.content);
-      console.log(response.data);
     } catch (e) {
       console.log(e);
     }
@@ -127,6 +126,8 @@ const AllSupportingPG: React.FC = () => {
   //장르--------------------------------------------------------------------
   //장르 선택 상태
   const [checkedItems, setCheckedItems] = useState<Array<string>>([]);
+  console.log(checkedItems);
+  console.log(selectedSortOption);
 
   //장르 선택 함수
   const handleCheck = (item: string) => {
@@ -452,7 +453,7 @@ const AllSupportingPG: React.FC = () => {
           </View>
         </View>
       )}
-      <NavBar type={SvgType.MyGallery} />
+      <NavBar type={SvgType.Any} />
     </SafeAreaView>
   );
 };

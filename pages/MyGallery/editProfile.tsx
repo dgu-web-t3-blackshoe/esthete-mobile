@@ -163,7 +163,7 @@ const EditProfile: React.FC = ({ route }: any) => {
   };
 
   const submitSupport = async () => {
-    const formData:any = new FormData();
+    const formData: any = new FormData();
     formData.append("profile_img", {
       uri: selectedImage,
       type: mime.getType(selectedImage),
@@ -174,6 +174,7 @@ const EditProfile: React.FC = ({ route }: any) => {
       biography: biography,
       equipments: [`${equipments}`],
       genres: checkedItems.map((e, i) => getGenreValueByKey(e)),
+      
       nickname: nickname,
     };
 

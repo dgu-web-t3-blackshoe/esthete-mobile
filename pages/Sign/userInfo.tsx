@@ -45,9 +45,6 @@ const UserInfo: React.FC = () => {
   const [equipments, setEquipments] = useState<string>("");
 
   const [checkedItems, setCheckedItems] = useState<Array<string>>([]);
-  console.log(checkedItems);
-  console.log("at userInfo : ", userId);
-
   //장르 선택 함수
   const handleCheck = (item: string) => {
     if (checkedItems.includes(item)) {
@@ -62,21 +59,18 @@ const UserInfo: React.FC = () => {
 
   const sign = async () => {
     try {
-      const response = await axios.post(
-        `${SERVER_IP}core/users/${userId}/sign-up`,
-        {
-          biography: description,
-          genres: checkedItems.map((e, i) => getGenreValueByKey(e)),
-          equipments: [`${equipments}`],
-          nickname: nickname,
-        }
-      );
+      await axios.post(`${SERVER_IP}core/users/${userId}/sign-up`, {
+        biography: description,
+        genres: checkedItems.map((e, i) => getGenreValueByKey(e)),
+        equipments: [`${equipments}`],
+        nickname: nickname,
+      });
       navigation.replace("PageExhibition");
     } catch (e) {
-      console.log(e);
+      console.log("at sign :", e);
       Alert.alert(
-        "완료",
-        "저장하였습니다.",
+        "실패",
+        "네트워크 오류가 발생하였습니다.",
         [
           {
             text: "cancel",

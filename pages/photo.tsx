@@ -80,6 +80,19 @@ const Photo: React.FC = ({ route }: any) => {
       });
       setIsModalVisible(false);
       setReport("");
+      Alert.alert(
+        "신고 완료",
+        "사진을 신고하였습니다.",
+        [
+          {
+            text: "cancel",
+          },
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
     } catch (e) {
       Alert.alert(
         "실패",

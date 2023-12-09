@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 //요소
 import {
@@ -29,7 +29,7 @@ import { useSelector } from "react-redux";
 import { State } from "../../storage/reducers";
 
 //navigation
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
@@ -48,6 +48,16 @@ type RootStackParamList = {
 const PageExhibition: React.FC = () => {
   const width = Dimensions.get("window").width;
   const height = Dimensions.get("window").height;
+
+  const pageRef = useRef(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setAuto(false);
+      };
+    }, [])
+  );
 
   //Cube Animation
   const animationStyle: any = React.useCallback(
@@ -86,19 +96,24 @@ const PageExhibition: React.FC = () => {
   }, []);
 
   //getRandom function
-  const [exhibitionData, setExhibitionData] = useState<any>(null);
+  const [exhibitionData, setExhibitionData] = useState<any>([]);
   const getRandom = async () => {
     try {
-      // const responses = await Promise.all([
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      //   axios.get(`${SERVER_IP}core/exhibitions/random`),
-      // ]);
-      // const newExhibitionData = responses.map((response) => response.data);
-      // // setExhibitionData([...exhibitionData, ...newExhibitionData]);
+      const responses = await Promise.all([
+        axios.get(`${SERVER_IP}core/recommendations/${userId}`),
+        axios.get(`${SERVER_IP}core/recommendations/${userId}`),
+        axios.get(`${SERVER_IP}core/recommendations/${userId}`),
+        axios.get(`${SERVER_IP}core/recommendations/${userId}`),
+        axios.get(`${SERVER_IP}core/recommendations/${userId}`),
+      ]);
+      const newExhibitionData = responses.map((response) => response.data);
+      setExhibitionData([...exhibitionData, ...newExhibitionData]);
       // setExhibitionData(newExhibitionData);
+      // const response = await axios.get(
+      //   `${SERVER_IP}core/recommendations/${userId}`
+      // );
+      // console.log(response.data);
+      // setExhibitionData(response.data);
     } catch (e) {
       navigation.replace("Error");
       console.log(e);
@@ -109,6 +124,7 @@ const PageExhibition: React.FC = () => {
   const [now, setNow] = useState<number>(0);
   const [auto, setAuto] = useState<boolean>(true);
   const handleVisit = () => {
+    setAuto(false);
     const currentExhibition: any = exhibitionData[now];
     if (currentExhibition) {
       navigation.push("Exhibition", {
@@ -123,8 +139,6 @@ const PageExhibition: React.FC = () => {
     }
   };
 
-  const [getMore, setGetMore] = useState<boolean>(false);
-
   return (
     <SafeAreaView
       style={{
@@ -133,8 +147,9 @@ const PageExhibition: React.FC = () => {
       }}
     >
       <ExpoStatusBar style="dark" />
-      {exhibitionData ? (
+      {exhibitionData.length > 0 ? (
         <Carousel
+          ref={pageRef}
           width={width}
           height={height - 70 - 49}
           autoPlay={auto}
@@ -144,10 +159,11 @@ const PageExhibition: React.FC = () => {
           snapEnabled={false}
           overscrollEnabled={false}
           onSnapToItem={(index) => {
-            if (index === 4) {
-              setGetMore(true);
+            if (index % 4 === 0) {
+              getRandom();
             }
             setNow(index);
+            console.log(index);
           }}
           scrollAnimationDuration={500}
           // onScrollEnd={}
@@ -180,7 +196,7 @@ const PageExhibition: React.FC = () => {
       )}
 
       {/* 밑에 버튼 시작 */}
-      {exhibitionData && (
+      {exhibitionData.length > 0 && (
         <>
           <View
             style={{
@@ -206,18 +222,10 @@ const PageExhibition: React.FC = () => {
               borderRadius: 20,
             }}
             onPress={() => {
-              if (getMore) {
-                setExhibitionData(null);
-                setNow(0);
-                setGetMore(false);
-              } else {
-                setAuto(!auto);
-              }
+              setAuto(!auto);
             }}
           >
-            {getMore ? (
-              <Text>More</Text>
-            ) : auto ? (
+            {auto ? (
               <Icon name="pause-sharp" size={27} color={"black"} />
             ) : (
               <Icon name="play" size={27} color={"black"} />

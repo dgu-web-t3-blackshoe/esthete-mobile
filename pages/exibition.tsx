@@ -65,8 +65,24 @@ const Exhibition: React.FC = ({ route }: any) => {
   useEffect(() => {
     if (exhibitionData !== null) {
       getRooms();
+      postView();
     }
   }, [exhibitionData]);
+
+  //전시회 조회 등록
+
+  const postView = async () => {
+    try {
+      const response = await axios.post(
+        `${SERVER_IP}core/exhibitions/${exhibitionData.exhibition_id}/users/${userId}`
+      );
+      console.log(response);
+    } catch (e) {
+      console.log("hihi");
+      navigation.replace("Error");
+      console.log(e);
+    }
+  };
 
   const getRandom = async () => {
     try {
@@ -74,7 +90,6 @@ const Exhibition: React.FC = ({ route }: any) => {
       setExhibitionData(response.data);
     } catch (e) {
       navigation.replace("Error");
-
       console.log(e);
     }
   };
