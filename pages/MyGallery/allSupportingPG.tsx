@@ -126,8 +126,6 @@ const AllSupportingPG: React.FC = () => {
   //장르--------------------------------------------------------------------
   //장르 선택 상태
   const [checkedItems, setCheckedItems] = useState<Array<string>>([]);
-  console.log(checkedItems);
-  console.log(selectedSortOption);
 
   //장르 선택 함수
   const handleCheck = (item: string) => {
@@ -166,7 +164,7 @@ const AllSupportingPG: React.FC = () => {
           </View>
           {/* Supporting Photographers 타이틀 끝  */}
           {/* 필터 버튼 시작 */}
-          {data && data.length !== 0 && (
+          {/* {data && data.length !== 0 && (
             <TouchableOpacity
               style={{
                 backgroundColor: "white",
@@ -179,7 +177,7 @@ const AllSupportingPG: React.FC = () => {
             >
               <Text style={{ fontSize: 17, fontWeight: "500" }}>Filter</Text>
             </TouchableOpacity>
-          )}
+          )} */}
 
           {/* 필터 버튼 끝 */}
           {data && data.length === 0 && (

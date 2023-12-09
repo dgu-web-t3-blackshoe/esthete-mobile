@@ -713,12 +713,11 @@ const Gallery: React.FC = ({ route }: any) => {
       )}
 
       {/* </Animated.View> */}
-      <NavBar type={SvgType.Exibition} />
+      <NavBar type={SvgType.Any} />
       <Modalize
         onOverlayPress={closeModal}
         ref={GuestBookModal}
         avoidKeyboardLikeIOS={true}
-        // adjustToContentHeight={true}
         keyboardAvoidingBehavior="height"
         modalHeight={550}
         modalStyle={{
@@ -737,42 +736,7 @@ const Gallery: React.FC = ({ route }: any) => {
               }
             : undefined
         }
-      >
-        {/* <View style={{ paddingHorizontal: 20 }}>
-          {GuestBookDummy.content.map((e, i) => {
-            return (
-              <View
-                key={i}
-                style={{
-                  flexDirection: "row",
-                  borderBottomWidth: 0.8,
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  gap: 20,
-                }}
-              >
-                <Image
-                  source={e.profile_img}
-                  style={{ width: 50, height: 50, borderRadius: 50 }}
-                />
-                <View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "flex-end",
-                      gap: 10,
-                    }}
-                  >
-                    <Text style={{ fontWeight: "500" }}>{e.nickname}</Text>
-                    <Text style={{ fontSize: 12 }}>{e.created_at}</Text>
-                  </View>
-                  <Text style={{ fontSize: 17 }}>{e.content}</Text>
-                </View>
-              </View>
-            );
-          })}
-        </View> */}
-      </Modalize>
+      ></Modalize>
     </SafeAreaView>
   );
 };

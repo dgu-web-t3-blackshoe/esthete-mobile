@@ -125,7 +125,6 @@ const MyGallery: React.FC = () => {
   const getMySupporting = async () => {
     try {
       const response = await axios.get(`${SERVER_IP}core/new-works/${userId}`);
-      console.log("at my supporting: ", response.data);
       setMySupporting(response.data);
     } catch (e) {
       console.log(e);
@@ -632,13 +631,11 @@ const MyGallery: React.FC = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.photo_id}
                 numColumns={3}
-                // columnWrapperStyle={{ marginBottom: 5 }}
                 style={{
                   flex: 1,
                   backgroundColor: "black",
                   marginBottom: 20,
                 }}
-                // onEndReached={loadMoreData}
               />
             ) : selectedOption === "Photographs" &&
               myPhotoData?.length === 0 ? (
@@ -890,24 +887,19 @@ const MyGallery: React.FC = () => {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 22,
             width: "100%",
-
             height: "100%",
-            borderRadius: 10,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         >
           <View
             style={{
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
               backgroundColor: "white",
               paddingTop: 20,
               paddingBottom: 25,
               paddingHorizontal: 10,
               gap: 15,
-              width: 280,
+              width: 300,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -935,10 +927,10 @@ const MyGallery: React.FC = () => {
               justifyContent: "space-between",
               alignItems: "center",
               backgroundColor: "white",
-              width: 280,
+              width: 300,
               borderTopWidth: 0.5,
-              borderBottomLeftRadius: 10,
-              borderBottomRightRadius: 10,
+              // borderBottomLeftRadius: 10,
+              // borderBottomRightRadius: 10,
             }}
           >
             <TouchableOpacity

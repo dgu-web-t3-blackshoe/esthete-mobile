@@ -23,7 +23,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 //라이브러리
 import Swiper from "react-native-swiper";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -132,32 +132,32 @@ const Photo: React.FC = ({ route }: any) => {
               <Text style={{ fontSize: 19, fontWeight: "600" }}>
                 {photoData?.title}
               </Text>
-              {/* {route.params.user_id !== userId && ( */}
-              <TouchableOpacity
-                onPress={() => {
-                  Alert.alert(
-                    "알림",
-                    "사진을 신고하시겠습니까??",
-                    [
-                      {
-                        text: "취소",
-                        onPress: () => null,
-                        style: "cancel",
-                      },
-                      {
-                        text: "확인",
-                        onPress: () => {
-                          setIsModalVisible(true);
+              {route.params.user_id !== userId && (
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert(
+                      "알림",
+                      "사진을 신고하시겠습니까??",
+                      [
+                        {
+                          text: "취소",
+                          onPress: () => null,
+                          style: "cancel",
                         },
-                      },
-                    ],
-                    { cancelable: false }
-                  );
-                }}
-              >
-                <Icon name="notifications-sharp" size={23} color={"black"} />
-              </TouchableOpacity>
-              {/* )} */}
+                        {
+                          text: "확인",
+                          onPress: () => {
+                            setIsModalVisible(true);
+                          },
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }}
+                >
+                  <Icon name="notifications-sharp" size={23} color={"black"} />
+                </TouchableOpacity>
+              )}
             </View>
             {/* 맨 위 제목 끝 */}
             {/* 사진 시작 */}
@@ -257,6 +257,7 @@ const Photo: React.FC = ({ route }: any) => {
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                   }}
+                  provider={PROVIDER_GOOGLE}
                 >
                   <Marker
                     coordinate={{
@@ -344,24 +345,19 @@ const Photo: React.FC = ({ route }: any) => {
             style={{
               justifyContent: "center",
               alignItems: "center",
-              marginTop: 22,
               width: "100%",
-
               height: "100%",
-              borderRadius: 10,
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
           >
             <View
               style={{
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
                 backgroundColor: "white",
                 paddingTop: 20,
                 paddingBottom: 25,
                 paddingHorizontal: 10,
                 gap: 15,
-                width: 280,
+                width: 300,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -389,10 +385,8 @@ const Photo: React.FC = ({ route }: any) => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 backgroundColor: "white",
-                width: 280,
+                width: 300,
                 borderTopWidth: 0.5,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
               }}
             >
               <TouchableOpacity

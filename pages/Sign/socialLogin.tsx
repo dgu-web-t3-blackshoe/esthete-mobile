@@ -81,8 +81,17 @@ const SocialLogin = ({ route }: any) => {
 
   return (
     <View style={styles.container}>
+      {/* <View
+        style={{
+          zIndex: 10,
+          position: "absolute",
+          backgroundColor:'white',
+          top: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      /> */}
       <WebView
-        style={{ flex: 1 }}
         originWhitelist={["*"]}
         scalesPageToFit={false}
         source={{

@@ -55,7 +55,6 @@ const InitialPage: React.FC = () => {
       Alert.alert("Permission to access location was denied");
       return;
     }
-
     try {
       let currentLocation = await Location.getCurrentPositionAsync({});
       dispatch(

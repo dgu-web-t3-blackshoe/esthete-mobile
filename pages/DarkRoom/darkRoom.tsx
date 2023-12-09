@@ -15,6 +15,7 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  ActivityIndicator as Spinner,
 } from "react-native";
 import { NavBar, SvgType } from "../../components/navbar";
 import { GenreArray, getGenreValueByKey } from "../../components/constants";
@@ -35,7 +36,7 @@ import { State } from "../../storage/reducers";
 //라이브러리
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import MapView, { Marker, Region } from "react-native-maps";
+import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 import { Modalize } from "react-native-modalize";
 import mime from "mime";
 import * as MediaLibrary from "expo-media-library";
@@ -150,6 +151,7 @@ const DarkRoom: React.FC = () => {
 
     if (!result.canceled && result.assets && result.assets[0].uri) {
       setSelectedImage(result.assets[0].uri);
+
       if (result.assets[0].exif?.DateTime) {
         setDateText(result.assets[0].exif?.DateTime.split(" ")[0]);
       }
@@ -204,8 +206,42 @@ const DarkRoom: React.FC = () => {
 
   const [alert, setAlert] = useState<string>("");
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [safe, setSafe] = useState<any>(null);
   const [photoId, setPhotoId] = useState<any>(null);
-  const [object, setObject] = useState<any>(null);
+
+  const renderA: React.FC = (a: any, b: any) => {
+    let color = "red";
+    switch (b) {
+      case "VERY_UNLIKELY":
+        color = "blue";
+        break;
+      case "UNLIKELY":
+        color = "green";
+        break;
+      case "POSSIBLE":
+        color = "yellow";
+        break;
+      case "LIKELY":
+        color = "orange";
+        break;
+
+      default:
+        break;
+    }
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 10,
+        }}
+      >
+        <Icon name="alarm-light" size={23} color={color} />
+        <Text>
+          {a} : {b}
+        </Text>
+      </View>
+    );
+  };
 
   useEffect(() => {
     if (alert !== "") {
@@ -221,6 +257,7 @@ const DarkRoom: React.FC = () => {
         type: mime.getType(selectedImage),
         name: selectedImage.split("/").pop(),
       });
+
       const response = await axios.post(
         `${SERVER_IP}core/copyright`,
         formData,
@@ -241,12 +278,23 @@ const DarkRoom: React.FC = () => {
             },
           }
         );
-
         if (response2.status === 202) {
           setSelectedImage(null);
           setAlert(`${response2.data.error}`);
-          console.log("response.data.error : ", response2.data);
+          setSafe(response2.data.safe_search_data);
+          return;
         }
+
+        Alert.alert(
+          "알림",
+          "저작권 및 유해성 검사를 통과하였습니다.",
+          [
+            {
+              text: "OK",
+            },
+          ],
+          { cancelable: true }
+        );
       } else {
         setSelectedImage(null);
         setAlert(`${response.data.error}`);
@@ -255,7 +303,7 @@ const DarkRoom: React.FC = () => {
           response.data.original_photo_user_id,
           response.data.original_photo_user_nickname,
         ]);
-        console.log("response2.data.error : ", response.data);
+        return;
       }
     } catch (e) {
       console.log(e);
@@ -302,7 +350,6 @@ const DarkRoom: React.FC = () => {
         [
           {
             text: "OK",
-            // onPress: () => navigation.navigate("MyGallery"),
           },
         ],
         { cancelable: false }
@@ -370,7 +417,7 @@ const DarkRoom: React.FC = () => {
         {
           params: {
             latlng: `${latitude},${longitude}`,
-            key: API_KEY,
+            key: "AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA",
             language: "ko",
           },
         }
@@ -485,7 +532,7 @@ const DarkRoom: React.FC = () => {
             placeholder="Search"
             onPress={handleSelectLocation}
             query={{
-              key: API_KEY,
+              key: "AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA",
               language: "en",
             }}
             GooglePlacesDetailsQuery={{ fields: "geometry" }}
@@ -530,6 +577,7 @@ const DarkRoom: React.FC = () => {
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
+            provider={PROVIDER_GOOGLE}
           >
             {temporaryLocation && (
               <Marker coordinate={temporaryLocation}>
@@ -692,6 +740,7 @@ const DarkRoom: React.FC = () => {
                       height: 400,
                       justifyContent: "center",
                       alignItems: "center",
+                      zIndex: 10,
                     }}
                   >
                     <Icon name="plus-thick" size={27} color={"black"} />
@@ -927,33 +976,41 @@ const DarkRoom: React.FC = () => {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 22,
             width: "100%",
-
             height: "100%",
-            borderRadius: 10,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         >
           <View
             style={{
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
               backgroundColor: "white",
+              paddingBottom: 20,
               paddingTop: 20,
-              paddingBottom: 25,
-              paddingHorizontal: 10,
+              paddingHorizontal: 20,
               gap: 15,
-              width: 280,
+              width: 300,
               justifyContent: "center",
-              alignItems: "center",
             }}
           >
+            <Text style={{ color: "black", fontSize: 28, fontWeight: "500" }}>
+              알림
+            </Text>
             {alert === "" ? null : (
-              <Text style={{ color: "black", fontSize: 16 }}>{alert}</Text>
+              <Text style={{ color: "black", fontSize: 16, fontWeight: "500" }}>
+                {alert}
+              </Text>
             )}
-            {photoId ? (
+
+            {/* 저작권 꺼 */}
+            {photoId && (
               <TouchableOpacity
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  paddingVertical: 5,
+                  marginTop: 10,
+                  backgroundColor: "#c9c9c9",
+                }}
                 onPress={() => {
                   setIsModalVisible(false);
                   navigation.push("Photo", {
@@ -963,16 +1020,37 @@ const DarkRoom: React.FC = () => {
                   });
                 }}
               >
-                <Text>원본 사진 확인</Text>
+                <Text style={{ fontSize: 20, color: "white" }}>
+                  원본 사진 확인
+                </Text>
               </TouchableOpacity>
-            ) : (
-              <Icon name="alarm-light" size={23} color={alert && "red"} />
             )}
+
+            {safe && (
+              <View>
+                {renderA("선정성", safe.adult)}
+                {renderA("폭력성", safe.violence)}
+                {renderA("인종차별성", safe.racy)}
+                {renderA("의료성", safe.medical)}
+                {renderA("위변조성", safe.spoof)}
+              </View>
+            )}
+
             <TouchableOpacity
-              style={{ backgroundColor: "black" }}
-              onPress={() => setIsModalVisible(false)}
+              style={{
+                width: "100%",
+                alignItems: "center",
+                paddingVertical: 5,
+                backgroundColor: "black",
+              }}
+              onPress={() => {
+                setIsModalVisible(false);
+                setAlert("");
+                setSafe(null);
+                setPhotoId(null);
+              }}
             >
-              <Text>Ok</Text>
+              <Text style={{ fontSize: 20, color: "white" }}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>

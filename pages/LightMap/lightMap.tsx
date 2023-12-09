@@ -104,7 +104,7 @@ const LightMap: React.FC = () => {
         {
           params: {
             latlng: `${latitude},${longitude}`,
-            key: API_KEY,
+            key: 'AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA',
             language: "ko",
           },
         }
@@ -136,6 +136,7 @@ const LightMap: React.FC = () => {
   const getData = async (lat: any, lon: any, radius: any) => {
     try {
       let group = "city";
+
       if (radius > 60) {
         group = "state";
       } else if (radius < 5) {
@@ -151,7 +152,6 @@ const LightMap: React.FC = () => {
       console.log(e);
     }
   };
-  console.log("photoData : ", photoData);
   const [dataWithMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -194,7 +194,7 @@ const LightMap: React.FC = () => {
         {
           params: {
             address: address,
-            key: API_KEY,
+            key: 'AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA',
           },
         }
       );
@@ -221,10 +221,9 @@ const LightMap: React.FC = () => {
       getData(latlon[0], latlon[1], radius);
     }
   }, [latlon]);
-  
+
   //지도 이동
   const handleRegionChangeComplete = (region: any) => {
-    console.log(deltaToKilometers(region.latitudeDelta));
     setRadius(deltaToKilometers(region.latitudeDelta));
     setLatlon([region.latitude, region.longitude]);
   };
@@ -301,7 +300,7 @@ const LightMap: React.FC = () => {
                     style={{
                       padding: 3,
                       backgroundColor: "black",
-                      borderRadius: e.count > 10 ? 60 : 50,
+                      borderRadius: 60,
                     }}
                   >
                     <Image
@@ -310,20 +309,20 @@ const LightMap: React.FC = () => {
                         width:
                           e.count > 10
                             ? 120
-                            : e.count > 5
+                            : e.count > 6
                             ? 100
-                            : e.count > 2
+                            : e.count > 3
                             ? 80
-                            : 70,
+                            : 60,
                         height:
                           e.count > 10
                             ? 120
-                            : e.count > 5
+                            : e.count > 6
                             ? 100
-                            : e.count > 2
+                            : e.count > 3
                             ? 80
-                            : 70,
-                        borderRadius: 50,
+                            : 60,
+                        borderRadius: 60,
                       }}
                     />
                   </View>
