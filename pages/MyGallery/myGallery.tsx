@@ -41,8 +41,6 @@ import axios from "axios";
 type RootStackParamList = {
   Gallery: {
     user_id: string;
-    profile_img: string;
-    nickname: string;
   };
   Exhibition: {
     exhibition_id: string;
@@ -138,7 +136,6 @@ const MyGallery: React.FC = () => {
 
   const getMyProfile = async () => {
     try {
-      console.log(userId);
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/profile`
       );
@@ -157,7 +154,6 @@ const MyGallery: React.FC = () => {
 
   const getMyPhotos = async (page: number) => {
     try {
-      console.log("count");
       const response = await axios.get(
         `${SERVER_IP}core/users/${userId}/photos?size=10&page=${page}`
       );
@@ -166,7 +162,6 @@ const MyGallery: React.FC = () => {
         newLast[0] = response.data.last;
         return newLast;
       });
-      console.log(response.data.last);
       if (page !== 0) {
         setMyPhotoData([...myPhotoData, ...response.data.content]);
       } else {
@@ -194,10 +189,12 @@ const MyGallery: React.FC = () => {
           });
         }}
       >
-        <ImageBackground
-          source={{ uri: item.photo_url }}
-          style={{ width: "100%", height: "100%" }}
-        />
+        {item.photo_url !== "" && (
+          <ImageBackground
+            source={{ uri: item.photo_url }}
+            style={{ width: "100%", height: "100%" }}
+          />
+        )}
       </TouchableOpacity>
     );
   };
@@ -327,7 +324,7 @@ const MyGallery: React.FC = () => {
     contentOffset,
     contentSize,
   }: any) => {
-    const paddingToBottom = 20;
+    const paddingToBottom = 0;
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
@@ -340,7 +337,6 @@ const MyGallery: React.FC = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ExpoStatusBar style="dark" />
-
       {userData ? (
         <ScrollView
           style={{ flex: 1, backgroundColor: "black" }}
@@ -369,27 +365,32 @@ const MyGallery: React.FC = () => {
                 navigation.push("AllSupportingPG");
               }}
             >
-              <Text>See All</Text>
+              <Text style={{ fontWeight: "500", fontSize: 16 }}>See All</Text>
             </TouchableOpacity>
           </View>
           {/* 후원중인 사진가 타이틀 끝 */}
 
           {/* 후원중인 작가 수평 스크롤뷰 시작 */}
-          <ScrollView
-            horizontal
-            contentContainerStyle={{
-              gap: 15,
-              paddingHorizontal: 20,
-              paddingVertical: 7.5,
-              width: "100%",
-              backgroundColor: "white",
-            }}
-            showsHorizontalScrollIndicator={false}
-          >
-            {mySupporting && mySupporting?.length > 0 ? (
-              [...mySupporting]
+
+          {mySupporting && mySupporting?.length > 0 ? (
+            <ScrollView
+              horizontal
+              contentContainerStyle={{
+                gap: 15,
+                paddingHorizontal: 20,
+                paddingVertical: 7.5,
+                width: "100%",
+                backgroundColor: "white",
+              }}
+              showsHorizontalScrollIndicator={false}
+            >
+              {[...mySupporting]
                 .sort((a, b) =>
-                  a.has_new === b.has_new ? 0 : a.has_new ? -1 : 1
+                  a.has_new_exhibition === b.has_new_exhibition
+                    ? 0
+                    : a.has_new_exhibition
+                    ? -1
+                    : 1
                 )
                 .map((e, i) => {
                   const displayedName =
@@ -406,38 +407,26 @@ const MyGallery: React.FC = () => {
                       onPress={() => {
                         navigation.navigate("Gallery", {
                           user_id: e.photographer_id,
-                          profile_img: e.profile_img,
-                          nickname: e.nickname,
                         });
                       }}
                     >
                       <Image
                         source={e.profile_img}
                         style={{
-                          width: e.has_new ? 75 : 70,
-                          height: e.has_new ? 75 : 70,
+                          width: e.has_new_exhibition ? 75 : 70,
+                          height: e.has_new_exhibition ? 75 : 70,
                           borderRadius: 50,
-                          borderWidth: e.has_new ? 3 : 0,
+                          borderWidth: e.has_new_exhibition ? 3 : 0,
                           borderColor: "#FFA800",
                         }}
                       />
                       <Text>{displayedName}</Text>
                     </TouchableOpacity>
                   );
-                })
-            ) : (
-              <Text
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  fontWeight: "500",
-                  paddingBottom: 5,
-                }}
-              >
-                후원 중인 작가가 없습니다.
-              </Text>
-            )}
-          </ScrollView>
+                })}
+            </ScrollView>
+          ) : null}
+
           {/* 후원중인 작가 수평 스크롤뷰 끝 */}
 
           <View style={{ backgroundColor: "black" }}>
@@ -642,13 +631,11 @@ const MyGallery: React.FC = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.photo_id}
                 numColumns={3}
-                // columnWrapperStyle={{ marginBottom: 5 }}
                 style={{
                   flex: 1,
                   backgroundColor: "black",
                   marginBottom: 20,
                 }}
-                // onEndReached={loadMoreData}
               />
             ) : selectedOption === "Photographs" &&
               myPhotoData?.length === 0 ? (
@@ -772,10 +759,26 @@ const MyGallery: React.FC = () => {
                             flexDirection: "row",
                           }}
                         >
-                          <Image
-                            source={{ uri: e.profile_img_url }}
-                            style={{ width: 40, height: 40, borderRadius: 50 }}
-                          />
+                          {e.profile_img_url === "" ? (
+                            <Image
+                              source={require("../../assets/default_profile.png")}
+                              style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 50,
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              source={{ uri: e.profile_img_url }}
+                              style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 50,
+                              }}
+                            />
+                          )}
+
                           <View style={{ marginLeft: 20 }}>
                             <View
                               style={{
@@ -884,24 +887,19 @@ const MyGallery: React.FC = () => {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 22,
             width: "100%",
-
             height: "100%",
-            borderRadius: 10,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         >
           <View
             style={{
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
               backgroundColor: "white",
               paddingTop: 20,
               paddingBottom: 25,
               paddingHorizontal: 10,
               gap: 15,
-              width: 280,
+              width: 300,
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -929,10 +927,10 @@ const MyGallery: React.FC = () => {
               justifyContent: "space-between",
               alignItems: "center",
               backgroundColor: "white",
-              width: 280,
+              width: 300,
               borderTopWidth: 0.5,
-              borderBottomLeftRadius: 10,
-              borderBottomRightRadius: 10,
+              // borderBottomLeftRadius: 10,
+              // borderBottomRightRadius: 10,
             }}
           >
             <TouchableOpacity

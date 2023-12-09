@@ -23,7 +23,7 @@ const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.stopLoading(true);`;
 
 type RootStackParamList = {
   UserInfo: undefined;
-  MyGallery: undefined;
+  PageExhibition: undefined;
 };
 
 const SocialLogin = ({ route }: any) => {
@@ -44,7 +44,6 @@ const SocialLogin = ({ route }: any) => {
     const { url } = newNavState;
     setUrl(url);
   };
-  console.log(url);
 
   const getParams = (url: string) => {
     const paramPart = url.split("?")[1];
@@ -75,15 +74,24 @@ const SocialLogin = ({ route }: any) => {
           AsyncStorage.setItem("user_id", params["userId"]);
         }
         dispatch(setUserId(params["userId"]));
-        navigation.navigate("MyGallery");
+        navigation.navigate("PageExhibition");
       }
     }
   }, [url]);
 
   return (
     <View style={styles.container}>
+      {/* <View
+        style={{
+          zIndex: 10,
+          position: "absolute",
+          backgroundColor:'white',
+          top: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      /> */}
       <WebView
-        style={{ flex: 1 }}
         originWhitelist={["*"]}
         scalesPageToFit={false}
         source={{

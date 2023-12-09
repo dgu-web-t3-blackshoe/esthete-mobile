@@ -4,7 +4,7 @@ import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import GlobalStyles from "../../assets/styles";
 
-import MapView, { Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
 //Step2
 export const Step2 = ({
@@ -77,6 +77,7 @@ export const Step2 = ({
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
+            provider={PROVIDER_GOOGLE}
           >
             <Marker
               coordinate={{
@@ -89,7 +90,6 @@ export const Step2 = ({
         </TouchableOpacity>
       )}
       {/* 위치 정보 지도 맵뷰 끝 */}
-      
     </View>
   );
 };

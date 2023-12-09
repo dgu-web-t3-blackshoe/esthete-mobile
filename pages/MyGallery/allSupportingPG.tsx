@@ -59,7 +59,6 @@ const AllSupportingPG: React.FC = () => {
       );
       setLast(response.data.last);
       setData(response.data.content);
-      console.log(response.data);
     } catch (e) {
       console.log(e);
     }
@@ -165,7 +164,7 @@ const AllSupportingPG: React.FC = () => {
           </View>
           {/* Supporting Photographers 타이틀 끝  */}
           {/* 필터 버튼 시작 */}
-          {data && data.length !== 0 && (
+          {/* {data && data.length !== 0 && (
             <TouchableOpacity
               style={{
                 backgroundColor: "white",
@@ -178,7 +177,7 @@ const AllSupportingPG: React.FC = () => {
             >
               <Text style={{ fontSize: 17, fontWeight: "500" }}>Filter</Text>
             </TouchableOpacity>
-          )}
+          )} */}
 
           {/* 필터 버튼 끝 */}
           {data && data.length === 0 && (
@@ -452,7 +451,7 @@ const AllSupportingPG: React.FC = () => {
           </View>
         </View>
       )}
-      <NavBar type={SvgType.MyGallery} />
+      <NavBar type={SvgType.Any} />
     </SafeAreaView>
   );
 };

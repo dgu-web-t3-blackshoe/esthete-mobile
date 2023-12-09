@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 //요소
 import {
   Image,
-  Alert,
   Text,
   View,
   SafeAreaView,
@@ -36,8 +35,8 @@ import { SERVER_IP } from "../../components/utils";
 type RootStackParamList = {
   LightMapList: {
     state: string;
-    city: string;
-    town: string;
+    city?: string;
+    town?: string;
   };
   Error: undefined;
 };
@@ -75,7 +74,7 @@ const LightMap: React.FC = () => {
 
   useEffect(() => {
     if (locationInfo) {
-      getData(lat, lon);
+      getData(lat, lon, radius);
     }
   }, [locationInfo]);
 
@@ -105,7 +104,7 @@ const LightMap: React.FC = () => {
         {
           params: {
             latlng: `${latitude},${longitude}`,
-            key: API_KEY,
+            key: 'AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA',
             language: "ko",
           },
         }
@@ -134,10 +133,18 @@ const LightMap: React.FC = () => {
 
   const [photoData, setPhotoData] = useState<any>(null);
 
-  const getData = async (lat: any, lon: any) => {
+  const getData = async (lat: any, lon: any, radius: any) => {
     try {
+      let group = "city";
+
+      if (radius > 60) {
+        group = "state";
+      } else if (radius < 5) {
+        group = "town";
+      }
+
       const response = await axios.get(
-        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=100000&group=city`
+        `${SERVER_IP}core/photos/locations/current?longitude=${lon}&latitude=${lat}&radius=${radius}&group=${group}`
       );
       setPhotoData(response.data.content);
     } catch (e) {
@@ -145,16 +152,24 @@ const LightMap: React.FC = () => {
       console.log(e);
     }
   };
-
-  const [dataWithmMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
+  const [dataWithMarkers, setDataWithmMarkers] = useState<Array<object>>([]);
   useEffect(() => {
     const fetchCoordinates = async () => {
       if (photoData !== null) {
         const temp = await Promise.all(
           photoData
-            .filter((e: { state: string }) => e.state !== "string")
-            .map(async (e: { state: string; city: string }) => {
-              const latlon: any = await getLatLon(e.state, e.city, "");
+            .filter(
+              (e: { state: string; city: string }) => e.state !== "string"
+            )
+            .map(async (e: any) => {
+              let latlon: any = [lat, lon];
+              if (e.town) {
+                latlon = await getLatLon(e.state, e.city, e.town);
+              } else if (e.city) {
+                latlon = await getLatLon(e.state, e.city, "");
+              } else {
+                latlon = await getLatLon(e.state, "", "");
+              }
               return {
                 ...e,
                 latitude: latlon[0],
@@ -163,7 +178,7 @@ const LightMap: React.FC = () => {
             })
         );
 
-        setDataWithmMarkers((prev) => [...prev, ...temp]);
+        setDataWithmMarkers(temp);
       }
     };
 
@@ -174,13 +189,12 @@ const LightMap: React.FC = () => {
   const getLatLon = async (country: string, state: string, city: string) => {
     try {
       const address = `${city}, ${state}, ${country}`;
-
       const response = await axios.get(
         "https://maps.googleapis.com/maps/api/geocode/json",
         {
           params: {
             address: address,
-            key: API_KEY,
+            key: 'AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA',
           },
         }
       );
@@ -192,6 +206,26 @@ const LightMap: React.FC = () => {
       console.error(e);
       return null;
     }
+  };
+
+  //델타를 킬로미터로
+  function deltaToKilometers(delta: number) {
+    return delta * 111;
+  }
+
+  const [latlon, setLatlon] = useState<Array<number>>([0, 0]);
+  const [radius, setRadius] = useState<number>(5);
+
+  useEffect(() => {
+    if (latlon[0] !== 0) {
+      getData(latlon[0], latlon[1], radius);
+    }
+  }, [latlon]);
+
+  //지도 이동
+  const handleRegionChangeComplete = (region: any) => {
+    setRadius(deltaToKilometers(region.latitudeDelta));
+    setLatlon([region.latitude, region.longitude]);
   };
 
   return (
@@ -225,7 +259,7 @@ const LightMap: React.FC = () => {
           initialRegion={currentRegion}
           region={currentRegion}
           provider={PROVIDER_GOOGLE}
-          onRegionChangeComplete={() => console.log("moved")}
+          onRegionChangeComplete={handleRegionChangeComplete}
         >
           {/* <Marker
             coordinate={{
@@ -234,8 +268,8 @@ const LightMap: React.FC = () => {
             }}
             title={"내 위치"}
           /> */}
-          {dataWithmMarkers.length > 0 &&
-            dataWithmMarkers.map((e: any, i) => {
+          {dataWithMarkers.length > 0 &&
+            dataWithMarkers.map((e: any, i: number) => {
               return (
                 <Marker
                   key={i}
@@ -243,19 +277,30 @@ const LightMap: React.FC = () => {
                     latitude: e.latitude,
                     longitude: e.longitude,
                   }}
-                  // onPress={() =>
-                  //   navigation.navigate("LightMapList", {
-                  //     state: locationInfo[0],
-                  //     city: locationInfo[1],
-                  //     town: locationInfo[2],
-                  //   })
-                  // }
+                  onPress={() => {
+                    if (e.town) {
+                      navigation.navigate("LightMapList", {
+                        state: e.state,
+                        city: e.city,
+                        town: e.town,
+                      });
+                    } else if (e.city) {
+                      navigation.navigate("LightMapList", {
+                        state: e.state,
+                        city: e.city,
+                      });
+                    } else {
+                      navigation.navigate("LightMapList", {
+                        state: e.state,
+                      });
+                    }
+                  }}
                 >
                   <View
                     style={{
-                      padding: 5,
+                      padding: 3,
                       backgroundColor: "black",
-                      borderRadius: 50,
+                      borderRadius: 60,
                     }}
                   >
                     <Image
@@ -263,21 +308,21 @@ const LightMap: React.FC = () => {
                       style={{
                         width:
                           e.count > 10
+                            ? 120
+                            : e.count > 6
                             ? 100
-                            : e.count > 5
+                            : e.count > 3
                             ? 80
-                            : e.count > 2
-                            ? 60
-                            : 50,
+                            : 60,
                         height:
                           e.count > 10
+                            ? 120
+                            : e.count > 6
                             ? 100
-                            : e.count > 5
+                            : e.count > 3
                             ? 80
-                            : e.count > 2
-                            ? 60
-                            : 50,
-                        borderRadius: 50,
+                            : 60,
+                        borderRadius: 60,
                       }}
                     />
                   </View>

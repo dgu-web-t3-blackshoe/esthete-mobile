@@ -156,28 +156,28 @@ export default function App() {
                 name="Gallery"
                 component={Gallery}
                 options={{
-                  header: () => <CustomHeader />,
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen
                 name="Photo"
                 component={Photo}
                 options={{
-                  header: () => <CustomHeader />,
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen
                 name="Exhibition"
                 component={Exhibition}
                 options={{
-                  header: () => <CustomHeader />,
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen
                 name="Room"
                 component={Room}
                 options={{
-                  header: () => <CustomHeader />,
+                  header: () => <CustomHeader2 />,
                 }}
               />
 
@@ -186,14 +186,14 @@ export default function App() {
                 name="LightMap"
                 component={LightMap}
                 options={{
-                  header: () => <CustomHeader />,
+                  header: () => <CustomHeader2 />,
                 }}
               />
               <Stack.Screen
                 name="LightMapList"
                 component={LightMapList}
                 options={{
-                  header: () => <CustomHeader />,
+                  header: () => <CustomHeader2 />,
                 }}
               />
 

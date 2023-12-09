@@ -25,6 +25,8 @@ import { State } from "../storage/reducers";
 //navigation
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import * as FileSystem from "expo-file-system";
+
 import { useFocusEffect } from "@react-navigation/native";
 
 //api
@@ -65,8 +67,22 @@ const Exhibition: React.FC = ({ route }: any) => {
   useEffect(() => {
     if (exhibitionData !== null) {
       getRooms();
+      postView();
     }
   }, [exhibitionData]);
+
+  //전시회 조회 등록
+
+  const postView = async () => {
+    try {
+      await axios.post(
+        `${SERVER_IP}core/exhibitions/${exhibitionData.exhibition_id}/users/${userId}`
+      );
+    } catch (e) {
+      navigation.replace("Error");
+      console.log(e);
+    }
+  };
 
   const getRandom = async () => {
     try {
@@ -74,7 +90,6 @@ const Exhibition: React.FC = ({ route }: any) => {
       setExhibitionData(response.data);
     } catch (e) {
       navigation.replace("Error");
-
       console.log(e);
     }
   };
@@ -171,15 +186,33 @@ const Exhibition: React.FC = ({ route }: any) => {
       </TouchableOpacity>
     );
   };
+
+  const makePdf = async () => {
+    try {
+      const fileUri = FileSystem.documentDirectory + "myExhibition.pdf";
+      const downloadResumable = FileSystem.createDownloadResumable(
+        `https://api.esthete.roberniro-projects.xyz/core/exhibitions/${exhibitionData.exhibition_id}/pdf`,
+        fileUri
+      );
+
+      const { uri } = await downloadResumable.downloadAsync();
+      console.log("File has been downloaded to:", uri);
+
+      Alert.alert(
+        "완료",
+        "PDF를 다운로드 했습니다. 파일 경로: " + uri,
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
+    } catch (e) {
+      console.log("Download Error:", e);
+    }
+  };
+
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
     setRefreshing(true);
     setRoomData(null);
-    // if (route.params) {
-    //   getRooms();
-    // } else {
-    //   getRandom();
-    // }
     getRandom();
     setRefreshing(false);
   };
@@ -263,6 +296,7 @@ const Exhibition: React.FC = ({ route }: any) => {
                         height: 30,
                         backgroundColor: "black",
                       }}
+                      onPress={makePdf}
                     >
                       <Text style={{ fontSize: 14, color: "white" }}>
                         Download Pdf
