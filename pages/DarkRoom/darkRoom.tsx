@@ -334,7 +334,6 @@ const DarkRoom: React.FC = () => {
     const jsonData = JSON.stringify(imageData);
 
     formData.append("photo_upload_request", jsonData);
-    console.log(formData._parts[0][0]);
 
     try {
       await fetch(`${SERVER_IP}core/photos/${userId}`, {
@@ -533,7 +532,7 @@ const DarkRoom: React.FC = () => {
             onPress={handleSelectLocation}
             query={{
               key: API_KEY,
-              language: "ko",
+              language: "en",
             }}
             GooglePlacesDetailsQuery={{ fields: "geometry" }}
             fetchDetails={true}
