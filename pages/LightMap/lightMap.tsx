@@ -43,6 +43,7 @@ type RootStackParamList = {
 
 const LightMap: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  console.log(API_KEY);
 
   //현재 위치 (기본값 : 서울역)
   const [currentRegion, setCurrentRegion] = useState({
@@ -104,7 +105,7 @@ const LightMap: React.FC = () => {
         {
           params: {
             latlng: `${latitude},${longitude}`,
-            key: 'AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA',
+            key: API_KEY,
             language: "ko",
           },
         }
@@ -189,12 +190,13 @@ const LightMap: React.FC = () => {
   const getLatLon = async (country: string, state: string, city: string) => {
     try {
       const address = `${city}, ${state}, ${country}`;
+
       const response = await axios.get(
         "https://maps.googleapis.com/maps/api/geocode/json",
         {
           params: {
             address: address,
-            key: 'AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA',
+            key: API_KEY,
           },
         }
       );

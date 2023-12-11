@@ -153,10 +153,11 @@ const PageExhibition: React.FC = () => {
           width={width}
           height={height - 70 - 49}
           autoPlay={auto}
-          autoPlayInterval={2000}
+          autoPlayInterval={5000}
           data={exhibitionData}
           loop={false}
           snapEnabled={false}
+          enabled={false}
           overscrollEnabled={false}
           onSnapToItem={(index) => {
             if (index % 4 === 0) {

@@ -86,24 +86,24 @@ const Random: React.FC = ({
 
   const renderItem = ({ item }: any): React.JSX.Element => {
     return (
-      <TouchableOpacity
+      <View
         style={{
           width: size,
           height: size,
           aspectRatio: 1,
           marginBottom: 16,
         }}
-        onPress={() => {
-          navigation.push("Room", {
-            exhibition_id: exhibitionData.exhibition_id,
-            exhibition_title: exhibitionData.title,
-            room_id: item.room_id,
-            room_thumbnail: item.thumbnail,
-            room_title: item.title,
-            room_description: item.description,
-            nickname: exhibitionData.nickname,
-          });
-        }}
+        // onPress={() => {
+        //   navigation.push("Room", {
+        //     exhibition_id: exhibitionData.exhibition_id,
+        //     exhibition_title: exhibitionData.title,
+        //     room_id: item.room_id,
+        //     room_thumbnail: item.thumbnail,
+        //     room_title: item.title,
+        //     room_description: item.description,
+        //     nickname: exhibitionData.nickname,
+        //   });
+        // }}
       >
         <ImageBackground
           source={{ uri: item.thumbnail }}
@@ -136,7 +136,7 @@ const Random: React.FC = ({
             </Text>
           </View>
         </ImageBackground>
-      </TouchableOpacity>
+      </View>
     );
   };
 

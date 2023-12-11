@@ -189,21 +189,21 @@ const Exhibition: React.FC = ({ route }: any) => {
 
   const makePdf = async () => {
     try {
-      const fileUri = FileSystem.documentDirectory + "myExhibition.pdf";
-      const downloadResumable = FileSystem.createDownloadResumable(
-        `https://api.esthete.roberniro-projects.xyz/core/exhibitions/${exhibitionData.exhibition_id}/pdf`,
-        fileUri
-      );
+      // const fileUri = FileSystem.documentDirectory + "myExhibition.pdf";
+      // const downloadResumable = FileSystem.createDownloadResumable(
+      //   `https://api.esthete.roberniro-projects.xyz/core/exhibitions/${exhibitionData.exhibition_id}/pdf`,
+      //   fileUri
+      // );
 
-      const { uri } = await downloadResumable.downloadAsync();
-      console.log("File has been downloaded to:", uri);
+      // const { uri } = await downloadResumable.downloadAsync();
+      // console.log("File has been downloaded to:", uri);
 
-      Alert.alert(
-        "완료",
-        "PDF를 다운로드 했습니다. 파일 경로: " + uri,
-        [{ text: "OK" }],
-        { cancelable: true }
-      );
+      // Alert.alert(
+      //   "완료",
+      //   "PDF를 다운로드 했습니다. 파일 경로: " + uri,
+      //   [{ text: "OK" }],
+      //   { cancelable: true }
+      // );
     } catch (e) {
       console.log("Download Error:", e);
     }

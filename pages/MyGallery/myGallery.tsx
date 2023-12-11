@@ -426,9 +426,7 @@ const MyGallery: React.FC = () => {
                 })}
             </ScrollView>
           ) : null}
-
           {/* 후원중인 작가 수평 스크롤뷰 끝 */}
-
           <View style={{ backgroundColor: "black" }}>
             {/* 프로필 타이틀, edit 버튼 뷰 시작 */}
             <View
