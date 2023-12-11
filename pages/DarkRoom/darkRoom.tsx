@@ -417,7 +417,7 @@ const DarkRoom: React.FC = () => {
         {
           params: {
             latlng: `${latitude},${longitude}`,
-            key: "AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA",
+            key: API_KEY,
             language: "ko",
           },
         }
@@ -532,8 +532,8 @@ const DarkRoom: React.FC = () => {
             placeholder="Search"
             onPress={handleSelectLocation}
             query={{
-              key: "AIzaSyCYoJvYb3bnv00lPUXO9XVTs0jrugosnKA",
-              language: "en",
+              key: API_KEY,
+              language: "ko",
             }}
             GooglePlacesDetailsQuery={{ fields: "geometry" }}
             fetchDetails={true}
@@ -1018,6 +1018,8 @@ const DarkRoom: React.FC = () => {
                     user_id: photoId[1],
                     nickname: photoId[2],
                   });
+                  setPhotoId(null)
+
                 }}
               >
                 <Text style={{ fontSize: 20, color: "white" }}>
@@ -1044,10 +1046,10 @@ const DarkRoom: React.FC = () => {
                 backgroundColor: "black",
               }}
               onPress={() => {
-                setIsModalVisible(false);
+                setPhotoId(null);
                 setAlert("");
                 setSafe(null);
-                setPhotoId(null);
+                setIsModalVisible(false);
               }}
             >
               <Text style={{ fontSize: 20, color: "white" }}>OK</Text>

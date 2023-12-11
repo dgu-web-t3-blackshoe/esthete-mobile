@@ -134,7 +134,7 @@ export const NavBar: React.FC<SvgProps> = ({ type }) => {
                 //   );
                 // }
               } else if (i === 2) {
-                navigation.navigate("DarkRoom");
+                navigation.push("DarkRoom");
                 // if (userId === null) {
                 //   Alert.alert(
                 //     "알림",

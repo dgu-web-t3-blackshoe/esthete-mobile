@@ -59,6 +59,7 @@ const AllSupportingPG: React.FC = () => {
       );
       setLast(response.data.last);
       setData(response.data.content);
+      console.log(response.data.content[0].genres);
     } catch (e) {
       console.log(e);
     }
@@ -245,10 +246,10 @@ const AllSupportingPG: React.FC = () => {
                         >
                           {e.nickname}
                         </Text>
-
-                        <Text style={{ color: "white" }}>
+                        
+                        <Text style={{ color: "white", width:140 }}>
                           {e.genres.map((e: any, i: any) => {
-                            return e + "   ";
+                            return e.genre + "   ";
                           })}
                         </Text>
                         <Text style={{ color: "white" }}>{e.biography}</Text>
